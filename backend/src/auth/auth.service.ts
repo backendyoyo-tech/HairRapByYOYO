@@ -42,6 +42,20 @@ interface LoginResult {
 }
 
 /**
+ * Find account by email (staff)
+ */
+async function findAccountByEmail(email: string) {
+  return prisma.account.findUnique({
+    where: { email },
+    include: {
+      staffProfile: true,
+      artistProfile: true,
+      clientProfile: true,
+    },
+  });
+}
+
+/**
  * Find account by username (staff)
  */
 async function findAccountByUsername(username: string) {
@@ -178,46 +192,46 @@ async function createTokenPairAndSession(
 }
 
 /**
- * Staff login with username/password
+ * Staff login with email/password
  */
 export async function staffLogin(
-  username: string,
+  email: string,
   password: string,
   ipAddress?: string,
   userAgent?: string
 ): Promise<LoginResult> {
-  const account = await findAccountByUsername(username);
+  const account = await findAccountByEmail(email);
 
   if (!account) {
     await logAuthEvent({
       action: AuditAction.STAFF_LOGIN_FAILED,
-      metadata: { username, reason: "account_not_found" },
+      metadata: { email, reason: "account_not_found" },
       ipAddress,
       userAgent,
       success: false,
       errorCode: "INVALID_CREDENTIALS",
     });
-    throw new AppError(401, "INVALID_CREDENTIALS", "Invalid username or password.");
+    throw new AppError(401, "INVALID_CREDENTIALS", "Invalid email or password.");
   }
 
   if (account.accountType !== "STAFF") {
     await logAuthEvent({
       accountId: account.id,
       action: AuditAction.STAFF_LOGIN_FAILED,
-      metadata: { username, reason: "not_staff_account" },
+      metadata: { email, reason: "not_staff_account" },
       ipAddress,
       userAgent,
       success: false,
       errorCode: "INVALID_CREDENTIALS",
     });
-    throw new AppError(401, "INVALID_CREDENTIALS", "Invalid username or password.");
+    throw new AppError(401, "INVALID_CREDENTIALS", "Invalid email or password.");
   }
 
   if (!account.isActive) {
     await logAuthEvent({
       accountId: account.id,
       action: AuditAction.STAFF_LOGIN_FAILED,
-      metadata: { username, reason: "account_disabled" },
+      metadata: { email, reason: "account_disabled" },
       ipAddress,
       userAgent,
       success: false,
@@ -230,13 +244,13 @@ export async function staffLogin(
     await logAuthEvent({
       accountId: account.id,
       action: AuditAction.STAFF_LOGIN_FAILED,
-      metadata: { username, reason: "no_password_set" },
+      metadata: { email, reason: "no_password_set" },
       ipAddress,
       userAgent,
       success: false,
       errorCode: "INVALID_CREDENTIALS",
     });
-    throw new AppError(401, "INVALID_CREDENTIALS", "Invalid username or password.");
+    throw new AppError(401, "INVALID_CREDENTIALS", "Invalid email or password.");
   }
 
   const isValid = await verifyPassword(password, account.passwordHash);
@@ -245,13 +259,13 @@ export async function staffLogin(
     await logAuthEvent({
       accountId: account.id,
       action: AuditAction.STAFF_LOGIN_FAILED,
-      metadata: { username, reason: "invalid_password" },
+      metadata: { email, reason: "invalid_password" },
       ipAddress,
       userAgent,
       success: false,
       errorCode: "INVALID_CREDENTIALS",
     });
-    throw new AppError(401, "INVALID_CREDENTIALS", "Invalid username or password.");
+    throw new AppError(401, "INVALID_CREDENTIALS", "Invalid email or password.");
   }
 
   // Update last login
@@ -268,7 +282,7 @@ export async function staffLogin(
     actorType: "STAFF",
     actorId: actorInfo.actorId,
     action: AuditAction.STAFF_LOGIN,
-    metadata: { username },
+    metadata: { email },
     ipAddress,
     userAgent,
     success: true,

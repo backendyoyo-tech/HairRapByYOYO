@@ -21,6 +21,7 @@ import {
   refreshTokenSchema,
   logoutSchema,
 } from "./auth.validation.js";
+import { successResponse } from "../shared/responses/index.js";
 
 const router = Router();
 
@@ -29,7 +30,7 @@ router.use(actorContextMiddleware);
 
 // ===== PUBLIC AUTH ENDPOINTS =====
 
-// Staff authentication (username/password)
+// Staff authentication (email/password)
 router.post(
   "/staff/login",
   validate(staffLoginSchema),
@@ -103,8 +104,31 @@ router.get(
   "/me",
   requireAuth,
   async (req, res) => {
-    // TODO: Implement me endpoint
-    res.status(501).json({ error: { code: "NOT_IMPLEMENTED", message: "Not yet implemented" } });
+    const actor = req.actor;
+    if (!actor) {
+      res.status(401).json(
+        {
+          error: {
+            code: "AUTH_REQUIRED",
+            message: "Authentication required"
+          },
+          request_id: req.requestContext.requestId
+        }
+      );
+      return;
+    }
+
+    res.status(200).json(
+      successResponse(
+        {
+          actorType: actor.actorType,
+          actorId: actor.actorId,
+          role: actor.role,
+          accountType: actor.accountType,
+        },
+        req.requestContext.requestId
+      )
+    );
   }
 );
 

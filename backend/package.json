@@ -8,7 +8,10 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit",
-    "test": "echo \"Tests not configured yet\" && exit 0"
+    "test": "echo \"Tests not configured yet\" && exit 0",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",

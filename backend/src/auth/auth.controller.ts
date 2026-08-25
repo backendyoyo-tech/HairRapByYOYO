@@ -14,11 +14,11 @@ import {
  * POST /api/v1/auth/staff/login
  */
 export async function staffLoginController(req: Request, res: Response): Promise<void> {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
   const ipAddress = req.ip;
   const userAgent = req.headers["user-agent"];
 
-  const result = await staffLogin(username, password, ipAddress, userAgent);
+  const result = await staffLogin(email, password, ipAddress, userAgent);
 
   res.status(200).json(
     successResponse(

@@ -1,3 +1,7 @@
+-- Migration: Init Auth Schema
+-- Generated from Prisma schema
+-- Run this in your Supabase SQL editor
+
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
@@ -206,4 +210,3 @@ ALTER TABLE "Session" ADD CONSTRAINT "Session_accountId_fkey" FOREIGN KEY ("acco
 
 -- AddForeignKey
 ALTER TABLE "OTP" ADD CONSTRAINT "OTP_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
