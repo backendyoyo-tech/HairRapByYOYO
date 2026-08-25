@@ -5,9 +5,147 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "./src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  RECEPTIONIST
+  ARTIST
+  CLIENT
+}
+
+enum AccountType {
+  STAFF
+  ARTIST
+  CLIENT
+}
+
+enum SessionStatus {
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+model Account {
+  id              String       @id @default(cuid())
+  accountType     AccountType
+  email           String?      @unique
+  phone           String?      @unique
+  username        String?      @unique
+  passwordHash    String?
+  role            Role         @default(CLIENT)
+  isActive        Boolean      @default(true)
+  isVerified      Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  lastLoginAt     DateTime?
+
+  // Relations
+  staffProfile    StaffProfile?
+  artistProfile   ArtistProfile?
+  clientProfile   ClientProfile?
+  sessions        Session[]
+  otps            OTP[]
+
+  @@index([accountType])
+  @@index([email])
+  @@index([phone])
+  @@index([username])
+}
+
+model StaffProfile {
+  id          String   @id @default(cuid())
+  accountId   String   @unique
+  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  firstName   String
+  lastName    String
+  employeeId  String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ArtistProfile {
+  id              String   @id @default(cuid())
+  accountId       String   @unique
+  account         Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  firstName       String
+  lastName        String
+  displayName     String
+  specialization  String?
+  bio             String?
+  isAvailable     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ClientProfile {
+  id            String   @id @default(cuid())
+  accountId     String   @unique
+  account       Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  firstName     String
+  lastName      String
+  dateOfBirth   DateTime?
+  preferences   Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Session {
+  id           String         @id @default(cuid())
+  accountId    String
+  account      Account        @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  refreshToken String         @unique
+  accessToken  String         @unique
+  status       SessionStatus  @default(ACTIVE)
+  expiresAt    DateTime
+  createdAt    DateTime       @default(now())
+  revokedAt    DateTime?
+  userAgent    String?
+  ipAddress    String?
+
+  @@index([accountId])
+  @@index([refreshToken])
+  @@index([accessToken])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model OTP {
+  id        String   @id @default(cuid())
+  accountId String
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  code      String
+  purpose   String   // "login", "registration", "password_reset"
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([accountId, purpose])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  accountId   String?
+  actorType   String?  // "STAFF", "ARTIST", "CLIENT", "SYSTEM"
+  actorId     String?
+  action      String   // "LOGIN", "LOGOUT", "OTP_SENT", "OTP_VERIFIED", "TOKEN_REFRESH", "LOGIN_FAILED", etc.
+  metadata    Json?
+  ipAddress   String?
+  userAgent   String?
+  success     Boolean  @default(true)
+  errorCode   String?
+  createdAt   DateTime @default(now())
+
+  @@index([accountId])
+  @@index([actorType, actorId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([success])
 }
