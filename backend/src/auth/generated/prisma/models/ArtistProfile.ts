@@ -223,6 +223,7 @@ export type ArtistProfileWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"ArtistProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ArtistProfile"> | Date | string
   account?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
+  artistServices?: Prisma.ArtistServiceListRelationFilter
 }
 
 export type ArtistProfileOrderByWithRelationInput = {
@@ -237,6 +238,7 @@ export type ArtistProfileOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   account?: Prisma.AccountOrderByWithRelationInput
+  artistServices?: Prisma.ArtistServiceOrderByRelationAggregateInput
 }
 
 export type ArtistProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -254,6 +256,7 @@ export type ArtistProfileWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"ArtistProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ArtistProfile"> | Date | string
   account?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
+  artistServices?: Prisma.ArtistServiceListRelationFilter
 }, "id" | "accountId">
 
 export type ArtistProfileOrderByWithAggregationInput = {
@@ -299,6 +302,7 @@ export type ArtistProfileCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   account: Prisma.AccountCreateNestedOneWithoutArtistProfileInput
+  artistServices?: Prisma.ArtistServiceCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileUncheckedCreateInput = {
@@ -312,6 +316,7 @@ export type ArtistProfileUncheckedCreateInput = {
   isAvailable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  artistServices?: Prisma.ArtistServiceUncheckedCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileUpdateInput = {
@@ -325,6 +330,7 @@ export type ArtistProfileUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   account?: Prisma.AccountUpdateOneRequiredWithoutArtistProfileNestedInput
+  artistServices?: Prisma.ArtistServiceUpdateManyWithoutArtistNestedInput
 }
 
 export type ArtistProfileUncheckedUpdateInput = {
@@ -338,6 +344,7 @@ export type ArtistProfileUncheckedUpdateInput = {
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artistServices?: Prisma.ArtistServiceUncheckedUpdateManyWithoutArtistNestedInput
 }
 
 export type ArtistProfileCreateManyInput = {
@@ -422,6 +429,11 @@ export type ArtistProfileMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type ArtistProfileScalarRelationFilter = {
+  is?: Prisma.ArtistProfileWhereInput
+  isNot?: Prisma.ArtistProfileWhereInput
+}
+
 export type ArtistProfileCreateNestedOneWithoutAccountInput = {
   create?: Prisma.XOR<Prisma.ArtistProfileCreateWithoutAccountInput, Prisma.ArtistProfileUncheckedCreateWithoutAccountInput>
   connectOrCreate?: Prisma.ArtistProfileCreateOrConnectWithoutAccountInput
@@ -454,6 +466,20 @@ export type ArtistProfileUncheckedUpdateOneWithoutAccountNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ArtistProfileUpdateToOneWithWhereWithoutAccountInput, Prisma.ArtistProfileUpdateWithoutAccountInput>, Prisma.ArtistProfileUncheckedUpdateWithoutAccountInput>
 }
 
+export type ArtistProfileCreateNestedOneWithoutArtistServicesInput = {
+  create?: Prisma.XOR<Prisma.ArtistProfileCreateWithoutArtistServicesInput, Prisma.ArtistProfileUncheckedCreateWithoutArtistServicesInput>
+  connectOrCreate?: Prisma.ArtistProfileCreateOrConnectWithoutArtistServicesInput
+  connect?: Prisma.ArtistProfileWhereUniqueInput
+}
+
+export type ArtistProfileUpdateOneRequiredWithoutArtistServicesNestedInput = {
+  create?: Prisma.XOR<Prisma.ArtistProfileCreateWithoutArtistServicesInput, Prisma.ArtistProfileUncheckedCreateWithoutArtistServicesInput>
+  connectOrCreate?: Prisma.ArtistProfileCreateOrConnectWithoutArtistServicesInput
+  upsert?: Prisma.ArtistProfileUpsertWithoutArtistServicesInput
+  connect?: Prisma.ArtistProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ArtistProfileUpdateToOneWithWhereWithoutArtistServicesInput, Prisma.ArtistProfileUpdateWithoutArtistServicesInput>, Prisma.ArtistProfileUncheckedUpdateWithoutArtistServicesInput>
+}
+
 export type ArtistProfileCreateWithoutAccountInput = {
   id?: string
   firstName: string
@@ -464,6 +490,7 @@ export type ArtistProfileCreateWithoutAccountInput = {
   isAvailable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  artistServices?: Prisma.ArtistServiceCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileUncheckedCreateWithoutAccountInput = {
@@ -476,6 +503,7 @@ export type ArtistProfileUncheckedCreateWithoutAccountInput = {
   isAvailable?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  artistServices?: Prisma.ArtistServiceUncheckedCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileCreateOrConnectWithoutAccountInput = {
@@ -504,6 +532,7 @@ export type ArtistProfileUpdateWithoutAccountInput = {
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artistServices?: Prisma.ArtistServiceUpdateManyWithoutArtistNestedInput
 }
 
 export type ArtistProfileUncheckedUpdateWithoutAccountInput = {
@@ -516,8 +545,106 @@ export type ArtistProfileUncheckedUpdateWithoutAccountInput = {
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artistServices?: Prisma.ArtistServiceUncheckedUpdateManyWithoutArtistNestedInput
 }
 
+export type ArtistProfileCreateWithoutArtistServicesInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  displayName: string
+  specialization?: string | null
+  bio?: string | null
+  isAvailable?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  account: Prisma.AccountCreateNestedOneWithoutArtistProfileInput
+}
+
+export type ArtistProfileUncheckedCreateWithoutArtistServicesInput = {
+  id?: string
+  accountId: string
+  firstName: string
+  lastName: string
+  displayName: string
+  specialization?: string | null
+  bio?: string | null
+  isAvailable?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ArtistProfileCreateOrConnectWithoutArtistServicesInput = {
+  where: Prisma.ArtistProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ArtistProfileCreateWithoutArtistServicesInput, Prisma.ArtistProfileUncheckedCreateWithoutArtistServicesInput>
+}
+
+export type ArtistProfileUpsertWithoutArtistServicesInput = {
+  update: Prisma.XOR<Prisma.ArtistProfileUpdateWithoutArtistServicesInput, Prisma.ArtistProfileUncheckedUpdateWithoutArtistServicesInput>
+  create: Prisma.XOR<Prisma.ArtistProfileCreateWithoutArtistServicesInput, Prisma.ArtistProfileUncheckedCreateWithoutArtistServicesInput>
+  where?: Prisma.ArtistProfileWhereInput
+}
+
+export type ArtistProfileUpdateToOneWithWhereWithoutArtistServicesInput = {
+  where?: Prisma.ArtistProfileWhereInput
+  data: Prisma.XOR<Prisma.ArtistProfileUpdateWithoutArtistServicesInput, Prisma.ArtistProfileUncheckedUpdateWithoutArtistServicesInput>
+}
+
+export type ArtistProfileUpdateWithoutArtistServicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  account?: Prisma.AccountUpdateOneRequiredWithoutArtistProfileNestedInput
+}
+
+export type ArtistProfileUncheckedUpdateWithoutArtistServicesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type ArtistProfileCountOutputType
+ */
+
+export type ArtistProfileCountOutputType = {
+  artistServices: number
+}
+
+export type ArtistProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  artistServices?: boolean | ArtistProfileCountOutputTypeCountArtistServicesArgs
+}
+
+/**
+ * ArtistProfileCountOutputType without action
+ */
+export type ArtistProfileCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ArtistProfileCountOutputType
+   */
+  select?: Prisma.ArtistProfileCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ArtistProfileCountOutputType without action
+ */
+export type ArtistProfileCountOutputTypeCountArtistServicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ArtistServiceWhereInput
+}
 
 
 export type ArtistProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -532,6 +659,8 @@ export type ArtistProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   createdAt?: boolean
   updatedAt?: boolean
   account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
+  artistServices?: boolean | Prisma.ArtistProfile$artistServicesArgs<ExtArgs>
+  _count?: boolean | Prisma.ArtistProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["artistProfile"]>
 
 export type ArtistProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -578,6 +707,8 @@ export type ArtistProfileSelectScalar = {
 export type ArtistProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "accountId" | "firstName" | "lastName" | "displayName" | "specialization" | "bio" | "isAvailable" | "createdAt" | "updatedAt", ExtArgs["result"]["artistProfile"]>
 export type ArtistProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
+  artistServices?: boolean | Prisma.ArtistProfile$artistServicesArgs<ExtArgs>
+  _count?: boolean | Prisma.ArtistProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ArtistProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
@@ -590,6 +721,7 @@ export type $ArtistProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
   name: "ArtistProfile"
   objects: {
     account: Prisma.$AccountPayload<ExtArgs>
+    artistServices: Prisma.$ArtistServicePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -997,6 +1129,7 @@ readonly fields: ArtistProfileFieldRefs;
 export interface Prisma__ArtistProfileClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   account<T extends Prisma.AccountDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AccountDefaultArgs<ExtArgs>>): Prisma.Prisma__AccountClient<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  artistServices<T extends Prisma.ArtistProfile$artistServicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ArtistProfile$artistServicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArtistServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1434,6 +1567,30 @@ export type ArtistProfileDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many ArtistProfiles to delete.
    */
   limit?: number
+}
+
+/**
+ * ArtistProfile.artistServices
+ */
+export type ArtistProfile$artistServicesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ArtistService
+   */
+  select?: Prisma.ArtistServiceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ArtistService
+   */
+  omit?: Prisma.ArtistServiceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ArtistServiceInclude<ExtArgs> | null
+  where?: Prisma.ArtistServiceWhereInput
+  orderBy?: Prisma.ArtistServiceOrderByWithRelationInput | Prisma.ArtistServiceOrderByWithRelationInput[]
+  cursor?: Prisma.ArtistServiceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ArtistServiceScalarFieldEnum | Prisma.ArtistServiceScalarFieldEnum[]
 }
 
 /**

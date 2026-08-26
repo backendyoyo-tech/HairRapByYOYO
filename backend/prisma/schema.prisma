@@ -52,6 +52,7 @@ model Account {
   clientProfile   ClientProfile?
   sessions        Session[]
   otps            OTP[]
+  wishlistItems   WishlistItem[]
 
   @@index([accountType])
   @@index([email])
@@ -82,6 +83,8 @@ model ArtistProfile {
   isAvailable     Boolean  @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  artistServices  ArtistService[]
 }
 
 model ClientProfile {
@@ -148,4 +151,278 @@ model AuditLog {
   @@index([action])
   @@index([createdAt])
   @@index([success])
+}
+
+// ============================================================
+// CLUSTER 3 — CATALOGUE & INVENTORY (Day 5)
+// ============================================================
+
+enum ServiceGender {
+  MALE
+  FEMALE
+  UNISEX
+}
+
+enum RiskClass {
+  NORMAL
+  HIGH_RISK
+}
+
+enum ProductType {
+  RETAIL
+  TOOLS
+  SALON_USE
+}
+
+model ServiceCategory {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  displayOrder Int     @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  subcategories ServiceSubcategory[]
+
+  @@index([isActive, displayOrder])
+}
+
+model ServiceSubcategory {
+  id              String   @id @default(cuid())
+  categoryId      String
+  category        ServiceCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name            String
+  description     String?
+  displayOrder    Int      @default(0)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  services Service[]
+
+  @@index([categoryId, isActive, displayOrder])
+  @@unique([categoryId, name])
+}
+
+model Service {
+  id                          String       @id @default(cuid())
+  subcategoryId               String?
+  subcategory                 ServiceSubcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+  name                        String
+  description                 String?
+  durationMinutes             Int
+  gender                      ServiceGender @default(UNISEX)
+  requiredArtistCount         Int          @default(1)
+  active                      Boolean      @default(true)
+  creativeDirectorEligible    Boolean      @default(false)
+  allowsParallelClientService Boolean      @default(false)
+  riskClass                   RiskClass    @default(NORMAL)
+  requiresServiceConsent      Boolean      @default(false)
+  price                       Decimal      @db.Decimal(10, 2)
+  displayOrder                Int          @default(0)
+  createdAt                   DateTime     @default(now())
+  updatedAt                   DateTime     @updatedAt
+
+  artistServices          ArtistService[]
+  bookingServices         BookingService[]
+  serviceProductSuggestions ServiceProductSuggestion[]
+
+  @@index([active, displayOrder])
+  @@index([subcategoryId])
+  @@index([gender, active])
+}
+
+model ProductCategory {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  displayOrder Int     @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
+
+  @@index([isActive, displayOrder])
+}
+
+model Product {
+  id                String       @id @default(cuid())
+  categoryId        String
+  category          ProductCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name              String
+  description       String?
+  type              ProductType  @default(RETAIL)
+  price             Decimal      @db.Decimal(10, 2)
+  cost              Decimal?     @db.Decimal(10, 2)
+  stockQty          Int          @default(0)
+  lowStockThreshold Int          @default(5)
+  sku               String?      @unique
+  barcode           String?      @unique
+  isActive          Boolean      @default(true)
+  displayOrder      Int          @default(0)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  inventoryMovements      InventoryMovement[]
+  serviceProductSuggestions ServiceProductSuggestion[]
+
+  @@index([categoryId, isActive, displayOrder])
+  @@index([sku])
+  @@index([barcode])
+  @@index([isActive, type])
+}
+
+model InventoryMovement {
+  id              String   @id @default(cuid())
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity        Int      // positive = in, negative = out
+  reason          String   // "sale", "purchase", "adjustment", "transfer", "return"
+  referenceId     String?  // booking_id, purchase_order_id, etc.
+  referenceType   String?  // "booking", "purchase_order", "adjustment"
+  performedByAccountId String?
+  createdAt       DateTime @default(now())
+
+  @@index([productId, createdAt])
+  @@index([referenceId, referenceType])
+}
+
+model ServiceProductSuggestion {
+  id          String   @id @default(cuid())
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  displayOrder Int     @default(0)
+  createdAt   DateTime @default(now())
+
+  @@unique([serviceId, productId])
+  @@index([serviceId])
+}
+
+model WishlistItem {
+  id          String   @id @default(cuid())
+  accountId   String
+  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  itemType    String   // "SERVICE", "PRODUCT", "ARTIST"
+  itemId      String
+  createdAt   DateTime @default(now())
+
+  @@unique([accountId, itemType, itemId])
+  @@index([accountId])
+}
+
+// ============================================================
+// CLUSTER 2 — BOOKING & ASSIGNMENT (referenced by Catalogue)
+// ============================================================
+
+model ArtistService {
+  id          String   @id @default(cuid())
+  artistId    String
+  artist      ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([artistId, serviceId])
+  @@index([artistId, isActive])
+  @@index([serviceId, isActive])
+}
+
+model BookingService {
+  id                      String   @id @default(cuid())
+  bookingId               String
+  serviceId               String
+  service                 Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  assignmentStrategy      String   // "SPECIFIC_ARTIST", "AUTO_ASSIGN", "YOYO_ASSIGNED_TEAM"
+  requestedArtistId       String?
+  plannedStartAt          DateTime
+  plannedEndAt            DateTime
+  bufferMinutes           Int      @default(10)
+  executionStatus         String   @default("NOT_STARTED")
+  actualStartAt           DateTime?
+  actualEndAt             DateTime?
+  priceSnapshot           Decimal  @db.Decimal(10, 2)
+  assignmentStatus        String   @default("AWAITING_ASSIGNMENT")
+  artistConfirmationState String   @default("NONE")
+  version                 Int      @default(1)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  assignments BookingServiceAssignment[]
+  sessions    ServiceSession[]
+  consents    ServiceConsent[]
+
+  @@index([bookingId])
+  @@index([serviceId])
+  @@index([assignmentStatus])
+  @@index([plannedStartAt])
+}
+
+model BookingServiceAssignment {
+  id                 String   @id @default(cuid())
+  bookingServiceId   String
+  bookingService     BookingService @relation(fields: [bookingServiceId], references: [id], onDelete: Cascade)
+  artistId           String
+  role               String   // "PRIMARY", "LEAD", "SUPPORT"
+  assignmentSource   String   // "CLIENT_REQUEST", "FLOOR_MANAGER", "RECEPTIONIST"
+  status             String   @default("PENDING")
+  assignedByStaffId  String?
+  assignedAt         DateTime @default(now())
+
+  @@unique([bookingServiceId, artistId])
+  @@index([bookingServiceId, status])
+  @@index([artistId, status])
+}
+
+model ServiceSession {
+  id                   String   @id @default(cuid())
+  bookingServiceId     String   @unique
+  bookingService       BookingService @relation(fields: [bookingServiceId], references: [id], onDelete: Cascade)
+  status               String   @default("NOT_STARTED") // NOT_STARTED, ACTIVE, READY_FOR_BILLING
+  ownerArtistId        String?
+  startedAt            DateTime?
+  readyForBillingAt    DateTime?
+  durationMinutes      Int?
+  version              Int      @default(1)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  events SessionEvent[]
+
+  @@index([status])
+}
+
+model SessionEvent {
+  id                  String   @id @default(cuid())
+  serviceSessionId    String
+  serviceSession      ServiceSession @relation(fields: [serviceSessionId], references: [id], onDelete: Cascade)
+  eventType           String   // "STARTED", "PAUSED", "RESUMED", "COMPLETED", "READY_FOR_BILLING"
+  actorType           String   // "ARTIST", "SYSTEM"
+  actorId             String
+  idempotencyKey      String   @unique
+  occurredAt          DateTime @default(now())
+
+  @@index([serviceSessionId, occurredAt])
+}
+
+model ServiceConsent {
+  id              String   @id @default(cuid())
+  bookingServiceId String
+  bookingService   BookingService @relation(fields: [bookingServiceId], references: [id], onDelete: Cascade)
+  clientId        String
+  templateId      String
+  templateVersion Int
+  status          String   // "PENDING", "SIGNED", "DECLINED"
+  signatureRef    String?
+  signedAt        DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([bookingServiceId, clientId, templateId])
+  @@index([bookingServiceId, status])
 }

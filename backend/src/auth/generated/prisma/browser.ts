@@ -52,3 +52,73 @@ export type OTP = Prisma.OTPModel
  * 
  */
 export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model ServiceCategory
+ * 
+ */
+export type ServiceCategory = Prisma.ServiceCategoryModel
+/**
+ * Model ServiceSubcategory
+ * 
+ */
+export type ServiceSubcategory = Prisma.ServiceSubcategoryModel
+/**
+ * Model Service
+ * 
+ */
+export type Service = Prisma.ServiceModel
+/**
+ * Model ProductCategory
+ * 
+ */
+export type ProductCategory = Prisma.ProductCategoryModel
+/**
+ * Model Product
+ * 
+ */
+export type Product = Prisma.ProductModel
+/**
+ * Model InventoryMovement
+ * 
+ */
+export type InventoryMovement = Prisma.InventoryMovementModel
+/**
+ * Model ServiceProductSuggestion
+ * 
+ */
+export type ServiceProductSuggestion = Prisma.ServiceProductSuggestionModel
+/**
+ * Model WishlistItem
+ * 
+ */
+export type WishlistItem = Prisma.WishlistItemModel
+/**
+ * Model ArtistService
+ * 
+ */
+export type ArtistService = Prisma.ArtistServiceModel
+/**
+ * Model BookingService
+ * 
+ */
+export type BookingService = Prisma.BookingServiceModel
+/**
+ * Model BookingServiceAssignment
+ * 
+ */
+export type BookingServiceAssignment = Prisma.BookingServiceAssignmentModel
+/**
+ * Model ServiceSession
+ * 
+ */
+export type ServiceSession = Prisma.ServiceSessionModel
+/**
+ * Model SessionEvent
+ * 
+ */
+export type SessionEvent = Prisma.SessionEventModel
+/**
+ * Model ServiceConsent
+ * 
+ */
+export type ServiceConsent = Prisma.ServiceConsentModel

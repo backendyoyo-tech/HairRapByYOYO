@@ -57,7 +57,21 @@ export const ModelName = {
   ClientProfile: 'ClientProfile',
   Session: 'Session',
   OTP: 'OTP',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  ServiceCategory: 'ServiceCategory',
+  ServiceSubcategory: 'ServiceSubcategory',
+  Service: 'Service',
+  ProductCategory: 'ProductCategory',
+  Product: 'Product',
+  InventoryMovement: 'InventoryMovement',
+  ServiceProductSuggestion: 'ServiceProductSuggestion',
+  WishlistItem: 'WishlistItem',
+  ArtistService: 'ArtistService',
+  BookingService: 'BookingService',
+  BookingServiceAssignment: 'BookingServiceAssignment',
+  ServiceSession: 'ServiceSession',
+  SessionEvent: 'SessionEvent',
+  ServiceConsent: 'ServiceConsent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -181,6 +195,219 @@ export const AuditLogScalarFieldEnum = {
 } as const
 
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const ServiceCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  displayOrder: 'displayOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceCategoryScalarFieldEnum = (typeof ServiceCategoryScalarFieldEnum)[keyof typeof ServiceCategoryScalarFieldEnum]
+
+
+export const ServiceSubcategoryScalarFieldEnum = {
+  id: 'id',
+  categoryId: 'categoryId',
+  name: 'name',
+  description: 'description',
+  displayOrder: 'displayOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceSubcategoryScalarFieldEnum = (typeof ServiceSubcategoryScalarFieldEnum)[keyof typeof ServiceSubcategoryScalarFieldEnum]
+
+
+export const ServiceScalarFieldEnum = {
+  id: 'id',
+  subcategoryId: 'subcategoryId',
+  name: 'name',
+  description: 'description',
+  durationMinutes: 'durationMinutes',
+  gender: 'gender',
+  requiredArtistCount: 'requiredArtistCount',
+  active: 'active',
+  creativeDirectorEligible: 'creativeDirectorEligible',
+  allowsParallelClientService: 'allowsParallelClientService',
+  riskClass: 'riskClass',
+  requiresServiceConsent: 'requiresServiceConsent',
+  price: 'price',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceScalarFieldEnum = (typeof ServiceScalarFieldEnum)[keyof typeof ServiceScalarFieldEnum]
+
+
+export const ProductCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  displayOrder: 'displayOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductCategoryScalarFieldEnum = (typeof ProductCategoryScalarFieldEnum)[keyof typeof ProductCategoryScalarFieldEnum]
+
+
+export const ProductScalarFieldEnum = {
+  id: 'id',
+  categoryId: 'categoryId',
+  name: 'name',
+  description: 'description',
+  type: 'type',
+  price: 'price',
+  cost: 'cost',
+  stockQty: 'stockQty',
+  lowStockThreshold: 'lowStockThreshold',
+  sku: 'sku',
+  barcode: 'barcode',
+  isActive: 'isActive',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
+
+
+export const InventoryMovementScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  quantity: 'quantity',
+  reason: 'reason',
+  referenceId: 'referenceId',
+  referenceType: 'referenceType',
+  performedByAccountId: 'performedByAccountId',
+  createdAt: 'createdAt'
+} as const
+
+export type InventoryMovementScalarFieldEnum = (typeof InventoryMovementScalarFieldEnum)[keyof typeof InventoryMovementScalarFieldEnum]
+
+
+export const ServiceProductSuggestionScalarFieldEnum = {
+  id: 'id',
+  serviceId: 'serviceId',
+  productId: 'productId',
+  displayOrder: 'displayOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type ServiceProductSuggestionScalarFieldEnum = (typeof ServiceProductSuggestionScalarFieldEnum)[keyof typeof ServiceProductSuggestionScalarFieldEnum]
+
+
+export const WishlistItemScalarFieldEnum = {
+  id: 'id',
+  accountId: 'accountId',
+  itemType: 'itemType',
+  itemId: 'itemId',
+  createdAt: 'createdAt'
+} as const
+
+export type WishlistItemScalarFieldEnum = (typeof WishlistItemScalarFieldEnum)[keyof typeof WishlistItemScalarFieldEnum]
+
+
+export const ArtistServiceScalarFieldEnum = {
+  id: 'id',
+  artistId: 'artistId',
+  serviceId: 'serviceId',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ArtistServiceScalarFieldEnum = (typeof ArtistServiceScalarFieldEnum)[keyof typeof ArtistServiceScalarFieldEnum]
+
+
+export const BookingServiceScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  serviceId: 'serviceId',
+  assignmentStrategy: 'assignmentStrategy',
+  requestedArtistId: 'requestedArtistId',
+  plannedStartAt: 'plannedStartAt',
+  plannedEndAt: 'plannedEndAt',
+  bufferMinutes: 'bufferMinutes',
+  executionStatus: 'executionStatus',
+  actualStartAt: 'actualStartAt',
+  actualEndAt: 'actualEndAt',
+  priceSnapshot: 'priceSnapshot',
+  assignmentStatus: 'assignmentStatus',
+  artistConfirmationState: 'artistConfirmationState',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BookingServiceScalarFieldEnum = (typeof BookingServiceScalarFieldEnum)[keyof typeof BookingServiceScalarFieldEnum]
+
+
+export const BookingServiceAssignmentScalarFieldEnum = {
+  id: 'id',
+  bookingServiceId: 'bookingServiceId',
+  artistId: 'artistId',
+  role: 'role',
+  assignmentSource: 'assignmentSource',
+  status: 'status',
+  assignedByStaffId: 'assignedByStaffId',
+  assignedAt: 'assignedAt'
+} as const
+
+export type BookingServiceAssignmentScalarFieldEnum = (typeof BookingServiceAssignmentScalarFieldEnum)[keyof typeof BookingServiceAssignmentScalarFieldEnum]
+
+
+export const ServiceSessionScalarFieldEnum = {
+  id: 'id',
+  bookingServiceId: 'bookingServiceId',
+  status: 'status',
+  ownerArtistId: 'ownerArtistId',
+  startedAt: 'startedAt',
+  readyForBillingAt: 'readyForBillingAt',
+  durationMinutes: 'durationMinutes',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceSessionScalarFieldEnum = (typeof ServiceSessionScalarFieldEnum)[keyof typeof ServiceSessionScalarFieldEnum]
+
+
+export const SessionEventScalarFieldEnum = {
+  id: 'id',
+  serviceSessionId: 'serviceSessionId',
+  eventType: 'eventType',
+  actorType: 'actorType',
+  actorId: 'actorId',
+  idempotencyKey: 'idempotencyKey',
+  occurredAt: 'occurredAt'
+} as const
+
+export type SessionEventScalarFieldEnum = (typeof SessionEventScalarFieldEnum)[keyof typeof SessionEventScalarFieldEnum]
+
+
+export const ServiceConsentScalarFieldEnum = {
+  id: 'id',
+  bookingServiceId: 'bookingServiceId',
+  clientId: 'clientId',
+  templateId: 'templateId',
+  templateVersion: 'templateVersion',
+  status: 'status',
+  signatureRef: 'signatureRef',
+  signedAt: 'signedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceConsentScalarFieldEnum = (typeof ServiceConsentScalarFieldEnum)[keyof typeof ServiceConsentScalarFieldEnum]
 
 
 export const SortOrder = {

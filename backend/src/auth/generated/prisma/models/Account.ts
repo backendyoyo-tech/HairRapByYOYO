@@ -243,6 +243,7 @@ export type AccountWhereInput = {
   clientProfile?: Prisma.XOR<Prisma.ClientProfileNullableScalarRelationFilter, Prisma.ClientProfileWhereInput> | null
   sessions?: Prisma.SessionListRelationFilter
   otps?: Prisma.OTPListRelationFilter
+  wishlistItems?: Prisma.WishlistItemListRelationFilter
 }
 
 export type AccountOrderByWithRelationInput = {
@@ -263,6 +264,7 @@ export type AccountOrderByWithRelationInput = {
   clientProfile?: Prisma.ClientProfileOrderByWithRelationInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   otps?: Prisma.OTPOrderByRelationAggregateInput
+  wishlistItems?: Prisma.WishlistItemOrderByRelationAggregateInput
 }
 
 export type AccountWhereUniqueInput = Prisma.AtLeast<{
@@ -286,6 +288,7 @@ export type AccountWhereUniqueInput = Prisma.AtLeast<{
   clientProfile?: Prisma.XOR<Prisma.ClientProfileNullableScalarRelationFilter, Prisma.ClientProfileWhereInput> | null
   sessions?: Prisma.SessionListRelationFilter
   otps?: Prisma.OTPListRelationFilter
+  wishlistItems?: Prisma.WishlistItemListRelationFilter
 }, "id" | "email" | "phone" | "username">
 
 export type AccountOrderByWithAggregationInput = {
@@ -342,6 +345,7 @@ export type AccountCreateInput = {
   clientProfile?: Prisma.ClientProfileCreateNestedOneWithoutAccountInput
   sessions?: Prisma.SessionCreateNestedManyWithoutAccountInput
   otps?: Prisma.OTPCreateNestedManyWithoutAccountInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutAccountInput
 }
 
 export type AccountUncheckedCreateInput = {
@@ -362,6 +366,7 @@ export type AccountUncheckedCreateInput = {
   clientProfile?: Prisma.ClientProfileUncheckedCreateNestedOneWithoutAccountInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutAccountInput
   otps?: Prisma.OTPUncheckedCreateNestedManyWithoutAccountInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutAccountInput
 }
 
 export type AccountUpdateInput = {
@@ -382,6 +387,7 @@ export type AccountUpdateInput = {
   clientProfile?: Prisma.ClientProfileUpdateOneWithoutAccountNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutAccountNestedInput
   otps?: Prisma.OTPUpdateManyWithoutAccountNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountUncheckedUpdateInput = {
@@ -402,6 +408,7 @@ export type AccountUncheckedUpdateInput = {
   clientProfile?: Prisma.ClientProfileUncheckedUpdateOneWithoutAccountNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutAccountNestedInput
   otps?: Prisma.OTPUncheckedUpdateManyWithoutAccountNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountCreateManyInput = {
@@ -597,6 +604,20 @@ export type AccountUpdateOneRequiredWithoutOtpsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AccountUpdateToOneWithWhereWithoutOtpsInput, Prisma.AccountUpdateWithoutOtpsInput>, Prisma.AccountUncheckedUpdateWithoutOtpsInput>
 }
 
+export type AccountCreateNestedOneWithoutWishlistItemsInput = {
+  create?: Prisma.XOR<Prisma.AccountCreateWithoutWishlistItemsInput, Prisma.AccountUncheckedCreateWithoutWishlistItemsInput>
+  connectOrCreate?: Prisma.AccountCreateOrConnectWithoutWishlistItemsInput
+  connect?: Prisma.AccountWhereUniqueInput
+}
+
+export type AccountUpdateOneRequiredWithoutWishlistItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.AccountCreateWithoutWishlistItemsInput, Prisma.AccountUncheckedCreateWithoutWishlistItemsInput>
+  connectOrCreate?: Prisma.AccountCreateOrConnectWithoutWishlistItemsInput
+  upsert?: Prisma.AccountUpsertWithoutWishlistItemsInput
+  connect?: Prisma.AccountWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.AccountUpdateToOneWithWhereWithoutWishlistItemsInput, Prisma.AccountUpdateWithoutWishlistItemsInput>, Prisma.AccountUncheckedUpdateWithoutWishlistItemsInput>
+}
+
 export type AccountCreateWithoutStaffProfileInput = {
   id?: string
   accountType: $Enums.AccountType
@@ -614,6 +635,7 @@ export type AccountCreateWithoutStaffProfileInput = {
   clientProfile?: Prisma.ClientProfileCreateNestedOneWithoutAccountInput
   sessions?: Prisma.SessionCreateNestedManyWithoutAccountInput
   otps?: Prisma.OTPCreateNestedManyWithoutAccountInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutAccountInput
 }
 
 export type AccountUncheckedCreateWithoutStaffProfileInput = {
@@ -633,6 +655,7 @@ export type AccountUncheckedCreateWithoutStaffProfileInput = {
   clientProfile?: Prisma.ClientProfileUncheckedCreateNestedOneWithoutAccountInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutAccountInput
   otps?: Prisma.OTPUncheckedCreateNestedManyWithoutAccountInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutAccountInput
 }
 
 export type AccountCreateOrConnectWithoutStaffProfileInput = {
@@ -668,6 +691,7 @@ export type AccountUpdateWithoutStaffProfileInput = {
   clientProfile?: Prisma.ClientProfileUpdateOneWithoutAccountNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutAccountNestedInput
   otps?: Prisma.OTPUpdateManyWithoutAccountNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountUncheckedUpdateWithoutStaffProfileInput = {
@@ -687,6 +711,7 @@ export type AccountUncheckedUpdateWithoutStaffProfileInput = {
   clientProfile?: Prisma.ClientProfileUncheckedUpdateOneWithoutAccountNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutAccountNestedInput
   otps?: Prisma.OTPUncheckedUpdateManyWithoutAccountNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountCreateWithoutArtistProfileInput = {
@@ -706,6 +731,7 @@ export type AccountCreateWithoutArtistProfileInput = {
   clientProfile?: Prisma.ClientProfileCreateNestedOneWithoutAccountInput
   sessions?: Prisma.SessionCreateNestedManyWithoutAccountInput
   otps?: Prisma.OTPCreateNestedManyWithoutAccountInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutAccountInput
 }
 
 export type AccountUncheckedCreateWithoutArtistProfileInput = {
@@ -725,6 +751,7 @@ export type AccountUncheckedCreateWithoutArtistProfileInput = {
   clientProfile?: Prisma.ClientProfileUncheckedCreateNestedOneWithoutAccountInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutAccountInput
   otps?: Prisma.OTPUncheckedCreateNestedManyWithoutAccountInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutAccountInput
 }
 
 export type AccountCreateOrConnectWithoutArtistProfileInput = {
@@ -760,6 +787,7 @@ export type AccountUpdateWithoutArtistProfileInput = {
   clientProfile?: Prisma.ClientProfileUpdateOneWithoutAccountNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutAccountNestedInput
   otps?: Prisma.OTPUpdateManyWithoutAccountNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountUncheckedUpdateWithoutArtistProfileInput = {
@@ -779,6 +807,7 @@ export type AccountUncheckedUpdateWithoutArtistProfileInput = {
   clientProfile?: Prisma.ClientProfileUncheckedUpdateOneWithoutAccountNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutAccountNestedInput
   otps?: Prisma.OTPUncheckedUpdateManyWithoutAccountNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountCreateWithoutClientProfileInput = {
@@ -798,6 +827,7 @@ export type AccountCreateWithoutClientProfileInput = {
   artistProfile?: Prisma.ArtistProfileCreateNestedOneWithoutAccountInput
   sessions?: Prisma.SessionCreateNestedManyWithoutAccountInput
   otps?: Prisma.OTPCreateNestedManyWithoutAccountInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutAccountInput
 }
 
 export type AccountUncheckedCreateWithoutClientProfileInput = {
@@ -817,6 +847,7 @@ export type AccountUncheckedCreateWithoutClientProfileInput = {
   artistProfile?: Prisma.ArtistProfileUncheckedCreateNestedOneWithoutAccountInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutAccountInput
   otps?: Prisma.OTPUncheckedCreateNestedManyWithoutAccountInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutAccountInput
 }
 
 export type AccountCreateOrConnectWithoutClientProfileInput = {
@@ -852,6 +883,7 @@ export type AccountUpdateWithoutClientProfileInput = {
   artistProfile?: Prisma.ArtistProfileUpdateOneWithoutAccountNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutAccountNestedInput
   otps?: Prisma.OTPUpdateManyWithoutAccountNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountUncheckedUpdateWithoutClientProfileInput = {
@@ -871,6 +903,7 @@ export type AccountUncheckedUpdateWithoutClientProfileInput = {
   artistProfile?: Prisma.ArtistProfileUncheckedUpdateOneWithoutAccountNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutAccountNestedInput
   otps?: Prisma.OTPUncheckedUpdateManyWithoutAccountNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountCreateWithoutSessionsInput = {
@@ -890,6 +923,7 @@ export type AccountCreateWithoutSessionsInput = {
   artistProfile?: Prisma.ArtistProfileCreateNestedOneWithoutAccountInput
   clientProfile?: Prisma.ClientProfileCreateNestedOneWithoutAccountInput
   otps?: Prisma.OTPCreateNestedManyWithoutAccountInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutAccountInput
 }
 
 export type AccountUncheckedCreateWithoutSessionsInput = {
@@ -909,6 +943,7 @@ export type AccountUncheckedCreateWithoutSessionsInput = {
   artistProfile?: Prisma.ArtistProfileUncheckedCreateNestedOneWithoutAccountInput
   clientProfile?: Prisma.ClientProfileUncheckedCreateNestedOneWithoutAccountInput
   otps?: Prisma.OTPUncheckedCreateNestedManyWithoutAccountInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutAccountInput
 }
 
 export type AccountCreateOrConnectWithoutSessionsInput = {
@@ -944,6 +979,7 @@ export type AccountUpdateWithoutSessionsInput = {
   artistProfile?: Prisma.ArtistProfileUpdateOneWithoutAccountNestedInput
   clientProfile?: Prisma.ClientProfileUpdateOneWithoutAccountNestedInput
   otps?: Prisma.OTPUpdateManyWithoutAccountNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountUncheckedUpdateWithoutSessionsInput = {
@@ -963,6 +999,7 @@ export type AccountUncheckedUpdateWithoutSessionsInput = {
   artistProfile?: Prisma.ArtistProfileUncheckedUpdateOneWithoutAccountNestedInput
   clientProfile?: Prisma.ClientProfileUncheckedUpdateOneWithoutAccountNestedInput
   otps?: Prisma.OTPUncheckedUpdateManyWithoutAccountNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountCreateWithoutOtpsInput = {
@@ -982,6 +1019,7 @@ export type AccountCreateWithoutOtpsInput = {
   artistProfile?: Prisma.ArtistProfileCreateNestedOneWithoutAccountInput
   clientProfile?: Prisma.ClientProfileCreateNestedOneWithoutAccountInput
   sessions?: Prisma.SessionCreateNestedManyWithoutAccountInput
+  wishlistItems?: Prisma.WishlistItemCreateNestedManyWithoutAccountInput
 }
 
 export type AccountUncheckedCreateWithoutOtpsInput = {
@@ -1001,6 +1039,7 @@ export type AccountUncheckedCreateWithoutOtpsInput = {
   artistProfile?: Prisma.ArtistProfileUncheckedCreateNestedOneWithoutAccountInput
   clientProfile?: Prisma.ClientProfileUncheckedCreateNestedOneWithoutAccountInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutAccountInput
+  wishlistItems?: Prisma.WishlistItemUncheckedCreateNestedManyWithoutAccountInput
 }
 
 export type AccountCreateOrConnectWithoutOtpsInput = {
@@ -1036,6 +1075,7 @@ export type AccountUpdateWithoutOtpsInput = {
   artistProfile?: Prisma.ArtistProfileUpdateOneWithoutAccountNestedInput
   clientProfile?: Prisma.ClientProfileUpdateOneWithoutAccountNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutAccountNestedInput
+  wishlistItems?: Prisma.WishlistItemUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountUncheckedUpdateWithoutOtpsInput = {
@@ -1055,6 +1095,103 @@ export type AccountUncheckedUpdateWithoutOtpsInput = {
   artistProfile?: Prisma.ArtistProfileUncheckedUpdateOneWithoutAccountNestedInput
   clientProfile?: Prisma.ClientProfileUncheckedUpdateOneWithoutAccountNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutAccountNestedInput
+  wishlistItems?: Prisma.WishlistItemUncheckedUpdateManyWithoutAccountNestedInput
+}
+
+export type AccountCreateWithoutWishlistItemsInput = {
+  id?: string
+  accountType: $Enums.AccountType
+  email?: string | null
+  phone?: string | null
+  username?: string | null
+  passwordHash?: string | null
+  role?: $Enums.Role
+  isActive?: boolean
+  isVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lastLoginAt?: Date | string | null
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutAccountInput
+  artistProfile?: Prisma.ArtistProfileCreateNestedOneWithoutAccountInput
+  clientProfile?: Prisma.ClientProfileCreateNestedOneWithoutAccountInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutAccountInput
+  otps?: Prisma.OTPCreateNestedManyWithoutAccountInput
+}
+
+export type AccountUncheckedCreateWithoutWishlistItemsInput = {
+  id?: string
+  accountType: $Enums.AccountType
+  email?: string | null
+  phone?: string | null
+  username?: string | null
+  passwordHash?: string | null
+  role?: $Enums.Role
+  isActive?: boolean
+  isVerified?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  lastLoginAt?: Date | string | null
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutAccountInput
+  artistProfile?: Prisma.ArtistProfileUncheckedCreateNestedOneWithoutAccountInput
+  clientProfile?: Prisma.ClientProfileUncheckedCreateNestedOneWithoutAccountInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutAccountInput
+  otps?: Prisma.OTPUncheckedCreateNestedManyWithoutAccountInput
+}
+
+export type AccountCreateOrConnectWithoutWishlistItemsInput = {
+  where: Prisma.AccountWhereUniqueInput
+  create: Prisma.XOR<Prisma.AccountCreateWithoutWishlistItemsInput, Prisma.AccountUncheckedCreateWithoutWishlistItemsInput>
+}
+
+export type AccountUpsertWithoutWishlistItemsInput = {
+  update: Prisma.XOR<Prisma.AccountUpdateWithoutWishlistItemsInput, Prisma.AccountUncheckedUpdateWithoutWishlistItemsInput>
+  create: Prisma.XOR<Prisma.AccountCreateWithoutWishlistItemsInput, Prisma.AccountUncheckedCreateWithoutWishlistItemsInput>
+  where?: Prisma.AccountWhereInput
+}
+
+export type AccountUpdateToOneWithWhereWithoutWishlistItemsInput = {
+  where?: Prisma.AccountWhereInput
+  data: Prisma.XOR<Prisma.AccountUpdateWithoutWishlistItemsInput, Prisma.AccountUncheckedUpdateWithoutWishlistItemsInput>
+}
+
+export type AccountUpdateWithoutWishlistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  accountType?: Prisma.EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutAccountNestedInput
+  artistProfile?: Prisma.ArtistProfileUpdateOneWithoutAccountNestedInput
+  clientProfile?: Prisma.ClientProfileUpdateOneWithoutAccountNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutAccountNestedInput
+  otps?: Prisma.OTPUpdateManyWithoutAccountNestedInput
+}
+
+export type AccountUncheckedUpdateWithoutWishlistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  accountType?: Prisma.EnumAccountTypeFieldUpdateOperationsInput | $Enums.AccountType
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutAccountNestedInput
+  artistProfile?: Prisma.ArtistProfileUncheckedUpdateOneWithoutAccountNestedInput
+  clientProfile?: Prisma.ClientProfileUncheckedUpdateOneWithoutAccountNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutAccountNestedInput
+  otps?: Prisma.OTPUncheckedUpdateManyWithoutAccountNestedInput
 }
 
 
@@ -1065,11 +1202,13 @@ export type AccountUncheckedUpdateWithoutOtpsInput = {
 export type AccountCountOutputType = {
   sessions: number
   otps: number
+  wishlistItems: number
 }
 
 export type AccountCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | AccountCountOutputTypeCountSessionsArgs
   otps?: boolean | AccountCountOutputTypeCountOtpsArgs
+  wishlistItems?: boolean | AccountCountOutputTypeCountWishlistItemsArgs
 }
 
 /**
@@ -1096,6 +1235,13 @@ export type AccountCountOutputTypeCountOtpsArgs<ExtArgs extends runtime.Types.Ex
   where?: Prisma.OTPWhereInput
 }
 
+/**
+ * AccountCountOutputType without action
+ */
+export type AccountCountOutputTypeCountWishlistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WishlistItemWhereInput
+}
+
 
 export type AccountSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1115,6 +1261,7 @@ export type AccountSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   clientProfile?: boolean | Prisma.Account$clientProfileArgs<ExtArgs>
   sessions?: boolean | Prisma.Account$sessionsArgs<ExtArgs>
   otps?: boolean | Prisma.Account$otpsArgs<ExtArgs>
+  wishlistItems?: boolean | Prisma.Account$wishlistItemsArgs<ExtArgs>
   _count?: boolean | Prisma.AccountCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["account"]>
 
@@ -1170,6 +1317,7 @@ export type AccountInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   clientProfile?: boolean | Prisma.Account$clientProfileArgs<ExtArgs>
   sessions?: boolean | Prisma.Account$sessionsArgs<ExtArgs>
   otps?: boolean | Prisma.Account$otpsArgs<ExtArgs>
+  wishlistItems?: boolean | Prisma.Account$wishlistItemsArgs<ExtArgs>
   _count?: boolean | Prisma.AccountCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AccountIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1183,6 +1331,7 @@ export type $AccountPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     clientProfile: Prisma.$ClientProfilePayload<ExtArgs> | null
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     otps: Prisma.$OTPPayload<ExtArgs>[]
+    wishlistItems: Prisma.$WishlistItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1596,6 +1745,7 @@ export interface Prisma__AccountClient<T, Null = never, ExtArgs extends runtime.
   clientProfile<T extends Prisma.Account$clientProfileArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Account$clientProfileArgs<ExtArgs>>): Prisma.Prisma__ClientProfileClient<runtime.Types.Result.GetResult<Prisma.$ClientProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   sessions<T extends Prisma.Account$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Account$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   otps<T extends Prisma.Account$otpsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Account$otpsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OTPPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  wishlistItems<T extends Prisma.Account$wishlistItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Account$wishlistItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WishlistItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2132,6 +2282,30 @@ export type Account$otpsArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   distinct?: Prisma.OTPScalarFieldEnum | Prisma.OTPScalarFieldEnum[]
+}
+
+/**
+ * Account.wishlistItems
+ */
+export type Account$wishlistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WishlistItem
+   */
+  select?: Prisma.WishlistItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WishlistItem
+   */
+  omit?: Prisma.WishlistItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WishlistItemInclude<ExtArgs> | null
+  where?: Prisma.WishlistItemWhereInput
+  orderBy?: Prisma.WishlistItemOrderByWithRelationInput | Prisma.WishlistItemOrderByWithRelationInput[]
+  cursor?: Prisma.WishlistItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WishlistItemScalarFieldEnum | Prisma.WishlistItemScalarFieldEnum[]
 }
 
 /**

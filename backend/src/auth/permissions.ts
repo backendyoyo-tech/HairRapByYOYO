@@ -74,6 +74,10 @@ export const permissionMatrix: Record<string, Partial<Record<Role, PermissionSco
     ARTIST: 'ASSIGNED',
   },
   sign_high_risk_service_consent: {
+    RECEPTIONIST: 'READ',
+    ADMIN: 'READ',
+    SUPER_ADMIN: 'READ',
+    ARTIST: 'READ',
     CLIENT: 'OWN',
   },
 
@@ -126,6 +130,7 @@ export const permissionMatrix: Record<string, Partial<Record<Role, PermissionSco
   manage_artists_eligibility: {
     ADMIN: 'FULL',
     SUPER_ADMIN: 'FULL',
+    ARTIST: 'READ', // artist can view own eligibility
   },
   manage_artist_shift_day_off: {
     RECEPTIONIST: 'READ',
@@ -137,12 +142,18 @@ export const permissionMatrix: Record<string, Partial<Record<Role, PermissionSco
     ADMIN: 'FULL',
     SUPER_ADMIN: 'FULL',
   },
+  suggested_slot_content_override: {
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+  },
 
   // ---- Products / Inventory ----
   manage_products_inventory: {
     RECEPTIONIST: 'READ', // ops read
     ADMIN: 'FULL',
     SUPER_ADMIN: 'FULL',
+    ARTIST: 'READ', // artist can read/use products
+    CLIENT: 'READ', // client can browse retail
   },
 
   // ---- Finance Reports ----
@@ -171,7 +182,7 @@ export const permissionMatrix: Record<string, Partial<Record<Role, PermissionSco
     RECEPTIONIST: 'FULL',
     ADMIN: 'FULL',
     SUPER_ADMIN: 'FULL',
-    CLIENT: 'FULL', // client purchase
+    CLIENT: 'OWN', // client purchase for self
   },
   add_remove_membership_member: {
     RECEPTIONIST: 'FULL',

@@ -92,9 +92,9 @@ router.post(
 );
 
 // Protected endpoints requiring valid access token
+// Logout uses refresh token to identify and revoke the session
 router.post(
   "/logout",
-  requireAuth,
   validate(logoutSchema),
   logoutController
 );

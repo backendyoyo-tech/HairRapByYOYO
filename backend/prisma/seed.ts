@@ -5,19 +5,20 @@
  * This script is idempotent - safe to run multiple times.
  */
 
-import { PrismaClient } from "../src/generated/prisma/client.js";
+import "dotenv/config";
+import { PrismaClient } from "../prisma/src/generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { hashPassword } from "../src/auth/auth.utils.js";
 
 // Use the same DATABASE_URL as the app
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL || "postgresql://postgres:***@localhost:5432/postgres?schema=public" });
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
 // Development seed credentials - NEVER use in production!
 const SEED_SUPER_ADMIN = {
-  email: "superadmin@hairrap.local",
+  email: "admin@hairrap.local",
   username: "superadmin",
-  password: "SuperAdmin123!",
+  password: "Admin@123",
   role: "SUPER_ADMIN" as const,
   firstName: "Super",
   lastName: "Admin",

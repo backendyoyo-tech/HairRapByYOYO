@@ -3,6 +3,7 @@ import { PrismaClient } from "./generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { AppError } from "../shared/errors/index.js";
 import { verifyAccessToken, type AccessTokenPayload } from "./jwt.utils.js";
+import { hashToken } from "./auth.utils.js";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/postgres?schema=public" });
 const prisma = new PrismaClient({ adapter });
@@ -58,7 +59,7 @@ export async function actorContextMiddleware(
 
     // Verify session exists and is active
     const session = await prisma.session.findUnique({
-      where: { accessToken: token },
+      where: { accessToken: hashToken(token) },
       include: { account: true },
     });
 

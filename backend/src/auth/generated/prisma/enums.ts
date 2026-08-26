@@ -36,3 +36,29 @@ export const SessionStatus = {
 } as const
 
 export type SessionStatus = (typeof SessionStatus)[keyof typeof SessionStatus]
+
+
+export const ServiceGender = {
+  MALE: 'MALE',
+  FEMALE: 'FEMALE',
+  UNISEX: 'UNISEX'
+} as const
+
+export type ServiceGender = (typeof ServiceGender)[keyof typeof ServiceGender]
+
+
+export const RiskClass = {
+  NORMAL: 'NORMAL',
+  HIGH_RISK: 'HIGH_RISK'
+} as const
+
+export type RiskClass = (typeof RiskClass)[keyof typeof RiskClass]
+
+
+export const ProductType = {
+  RETAIL: 'RETAIL',
+  TOOLS: 'TOOLS',
+  SALON_USE: 'SALON_USE'
+} as const
+
+export type ProductType = (typeof ProductType)[keyof typeof ProductType]

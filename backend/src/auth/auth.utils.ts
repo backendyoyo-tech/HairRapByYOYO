@@ -1,5 +1,4 @@
-import { randomBytes, createHash, timingSafeEqual } from "node:crypto";
-
+import { randomBytes, timingSafeEqual, pbkdf2, createHash } from "node:crypto";
 /**
  * Hash a password using PBKDF2 with SHA-256
  */
@@ -8,7 +7,7 @@ export async function hashPassword(password: string): Promise<string> {
   const iterations = 100000;
   const keyLength = 32;
   const hash = await new Promise<Buffer>((resolve, reject) => {
-    require("node:crypto").pbkdf2(
+    pbkdf2(
       password,
       salt,
       iterations,
@@ -41,7 +40,7 @@ export async function verifyPassword(
     const expectedHash = Buffer.from(hashB64, "base64");
 
     const hash = await new Promise<Buffer>((resolve, reject) => {
-      require("node:crypto").pbkdf2(
+      pbkdf2(
         password,
         salt,
         iterations,
