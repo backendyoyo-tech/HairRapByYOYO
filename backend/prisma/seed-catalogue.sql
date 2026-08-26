@@ -77,7 +77,7 @@ ON CONFLICT DO NOTHING;
 -- 3 Initial Products as requested: BioTop, GK, PH
 INSERT INTO "Product" (id, "categoryId", name, description, type, price, cost, "stockQty", "lowStockThreshold", sku, barcode, "isActive", "displayOrder", "createdAt", "updatedAt") VALUES
 ('prod_biotop_shampoo', 'prod_cat_shampoo', 'BioTop Anti-Hairfall Shampoo', 'Clinical formula with biotin, caffeine, saw palmetto. Reduces hairfall in 4 weeks.', 'RETAIL', 899.00, 450.00, 50, 10, 'BIO-SHMP-250', '8901234567890', true, 1, NOW(), NOW()),
-('prod_gk_serum', 'prod_cat_treatment', 'GK Hair Serum', 'Keratin-infused serum for frizz control, shine, and heat protection up to 230°C.', 'RETAIL', 1299.00, 650.00, 30, 8, 'GK-SER-50', '8901234567891', true, 1, NOW(), NOW()),
+('prod_gk_serum', 'prod_cat_treatment', 'GK Hair Serum', 'Keratin-infused serum for frizz control, shine, and heat protection up to 230Â°C.', 'RETAIL', 1299.00, 650.00, 30, 8, 'GK-SER-50', '8901234567891', true, 1, NOW(), NOW()),
 ('prod_ph_pomade', 'prod_cat_styling', 'PH Matte Clay Pomade', 'Strong hold, matte finish, water-based, washes out easy. All-day hold.', 'RETAIL', 699.00, 320.00, 40, 10, 'PH-POM-100', '8901234567892', true, 1, NOW(), NOW())
 ON CONFLICT DO NOTHING;
 
@@ -95,10 +95,10 @@ ON CONFLICT DO NOTHING;
 
 -- Now create artist profiles
 INSERT INTO "ArtistProfile" (id, "accountId", "firstName", "lastName", "displayName", specialization, bio, "isAvailable", "createdAt", "updatedAt") VALUES
-('art_cd_yoyo', 'acc_cd_yoyo', 'Yogesh', 'Sir', 'YOYO Sir — Creative Director', 'Creative Direction, Color Architecture, Precision Cutting', 'Founder & Creative Director with 20+ years transforming hair artistry. Specialist in bespoke color architecture, precision cutting, and bridal couture. Trained 500+ artists globally.', true, NOW(), NOW()),
-('art_top_artist', 'acc_top_artist', 'Rahul', 'Sharma', 'Rahul Sharma — Top Artist', 'Advanced Color, Balayage, Creative Cutting', 'Award-winning colorist with 12+ years experience. Expert in balayage, color correction, and creative cutting. International competition winner.', true, NOW(), NOW()),
-('art_senior_artist', 'acc_senior_artist', 'Priya', 'Patel', 'Priya Patel — Senior Artist', 'Bridal Styling, Updos, Hair Treatments', 'Senior artist with 8+ years specializing in bridal styling, intricate updos, and restorative hair treatments. Certified in keratin & bond repair.', true, NOW(), NOW()),
-('art_junior_artist', 'acc_junior_artist', 'Arjun', 'Singh', 'Arjun Singh — Junior Artist', 'Classic Cuts, Beard Grooming, Basic Color', 'Enthusiastic junior artist with 3+ years. Strong foundation in classic cuts, beard shaping, and essential color techniques. Fast learner, detail-oriented.', true, NOW(), NOW())
+('art_cd_yoyo', 'acc_cd_yoyo', 'Yogesh', 'Sir', 'YOYO Sir â€” Creative Director', 'Creative Direction, Color Architecture, Precision Cutting', 'Founder & Creative Director with 20+ years transforming hair artistry. Specialist in bespoke color architecture, precision cutting, and bridal couture. Trained 500+ artists globally.', true, NOW(), NOW()),
+('art_top_artist', 'acc_top_artist', 'Rahul', 'Sharma', 'Rahul Sharma â€” Top Artist', 'Advanced Color, Balayage, Creative Cutting', 'Award-winning colorist with 12+ years experience. Expert in balayage, color correction, and creative cutting. International competition winner.', true, NOW(), NOW()),
+('art_senior_artist', 'acc_senior_artist', 'Priya', 'Patel', 'Priya Patel â€” Senior Artist', 'Bridal Styling, Updos, Hair Treatments', 'Senior artist with 8+ years specializing in bridal styling, intricate updos, and restorative hair treatments. Certified in keratin & bond repair.', true, NOW(), NOW()),
+('art_junior_artist', 'acc_junior_artist', 'Arjun', 'Singh', 'Arjun Singh â€” Junior Artist', 'Classic Cuts, Beard Grooming, Basic Color', 'Enthusiastic junior artist with 3+ years. Strong foundation in classic cuts, beard shaping, and essential color techniques. Fast learner, detail-oriented.', true, NOW(), NOW())
 ON CONFLICT DO NOTHING;
 
 -- ============================================
@@ -173,39 +173,4 @@ INSERT INTO "ServiceProductSuggestion" (id, "serviceId", "productId", "displayOr
 ('sps_12', 'svc_pkg_groom_complete', 'prod_ph_pomade', 3, NOW())
 ON CONFLICT DO NOTHING;
 
--- ============================================
--- VERIFICATION QUERIES
--- ============================================
 
--- Check counts
-SELECT 'ServiceCategory' as table_name, COUNT(*) FROM "ServiceCategory"
-UNION ALL SELECT 'ServiceSubcategory', COUNT(*) FROM "ServiceSubcategory"
-UNION ALL SELECT 'Service', COUNT(*) FROM "Service"
-UNION ALL SELECT 'ProductCategory', COUNT(*) FROM "ProductCategory"
-UNION ALL SELECT 'Product', COUNT(*) FROM "Product"
-UNION ALL SELECT 'ArtistProfile', COUNT(*) FROM "ArtistProfile"
-UNION ALL SELECT 'ArtistService', COUNT(*) FROM "ArtistService"
-UNION ALL SELECT 'ServiceProductSuggestion', COUNT(*) FROM "ServiceProductSuggestion";
-
--- Test API-like queries
--- Services with categories
-SELECT s.name as service, sc.name as category, ssc.name as subcategory, s.price, s.durationMinutes
-FROM "Service" s
-LEFT JOIN "ServiceSubcategory" ssc ON s."subcategoryId" = ssc.id
-LEFT JOIN "ServiceCategory" sc ON ssc."categoryId" = sc.id
-WHERE s.active = true
-ORDER BY sc."displayOrder", ssc."displayOrder", s."displayOrder";
-
--- Products with categories
-SELECT p.name as product, pc.name as category, p.price, p."stockQty", p.type
-FROM "Product" p
-JOIN "ProductCategory" pc ON p."categoryId" = pc.id
-WHERE p."isActive" = true
-ORDER BY pc."displayOrder", p."displayOrder";
-
--- Artists with services
-SELECT ap."displayName" as artist, COUNT(arts."serviceId") as service_count
-FROM "ArtistProfile" ap
-LEFT JOIN "ArtistService" arts ON ap.id = arts."artistId" AND arts."isActive" = true
-GROUP BY ap.id, ap."displayName"
-ORDER BY service_count DESC;
