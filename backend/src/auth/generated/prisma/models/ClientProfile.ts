@@ -203,6 +203,8 @@ export type ClientProfileWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"ClientProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ClientProfile"> | Date | string
   account?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
+  bookings?: Prisma.BookingListRelationFilter
+  holds?: Prisma.BookingHoldListRelationFilter
 }
 
 export type ClientProfileOrderByWithRelationInput = {
@@ -215,6 +217,8 @@ export type ClientProfileOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   account?: Prisma.AccountOrderByWithRelationInput
+  bookings?: Prisma.BookingOrderByRelationAggregateInput
+  holds?: Prisma.BookingHoldOrderByRelationAggregateInput
 }
 
 export type ClientProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -230,6 +234,8 @@ export type ClientProfileWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"ClientProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ClientProfile"> | Date | string
   account?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
+  bookings?: Prisma.BookingListRelationFilter
+  holds?: Prisma.BookingHoldListRelationFilter
 }, "id" | "accountId">
 
 export type ClientProfileOrderByWithAggregationInput = {
@@ -269,6 +275,8 @@ export type ClientProfileCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   account: Prisma.AccountCreateNestedOneWithoutClientProfileInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutClientInput
+  holds?: Prisma.BookingHoldCreateNestedManyWithoutClientInput
 }
 
 export type ClientProfileUncheckedCreateInput = {
@@ -280,6 +288,8 @@ export type ClientProfileUncheckedCreateInput = {
   preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutClientInput
+  holds?: Prisma.BookingHoldUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ClientProfileUpdateInput = {
@@ -291,6 +301,8 @@ export type ClientProfileUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   account?: Prisma.AccountUpdateOneRequiredWithoutClientProfileNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutClientNestedInput
+  holds?: Prisma.BookingHoldUpdateManyWithoutClientNestedInput
 }
 
 export type ClientProfileUncheckedUpdateInput = {
@@ -302,6 +314,8 @@ export type ClientProfileUncheckedUpdateInput = {
   preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutClientNestedInput
+  holds?: Prisma.BookingHoldUncheckedUpdateManyWithoutClientNestedInput
 }
 
 export type ClientProfileCreateManyInput = {
@@ -372,6 +386,11 @@ export type ClientProfileMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type ClientProfileScalarRelationFilter = {
+  is?: Prisma.ClientProfileWhereInput
+  isNot?: Prisma.ClientProfileWhereInput
+}
+
 export type ClientProfileCreateNestedOneWithoutAccountInput = {
   create?: Prisma.XOR<Prisma.ClientProfileCreateWithoutAccountInput, Prisma.ClientProfileUncheckedCreateWithoutAccountInput>
   connectOrCreate?: Prisma.ClientProfileCreateOrConnectWithoutAccountInput
@@ -404,6 +423,34 @@ export type ClientProfileUncheckedUpdateOneWithoutAccountNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ClientProfileUpdateToOneWithWhereWithoutAccountInput, Prisma.ClientProfileUpdateWithoutAccountInput>, Prisma.ClientProfileUncheckedUpdateWithoutAccountInput>
 }
 
+export type ClientProfileCreateNestedOneWithoutBookingsInput = {
+  create?: Prisma.XOR<Prisma.ClientProfileCreateWithoutBookingsInput, Prisma.ClientProfileUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.ClientProfileCreateOrConnectWithoutBookingsInput
+  connect?: Prisma.ClientProfileWhereUniqueInput
+}
+
+export type ClientProfileUpdateOneRequiredWithoutBookingsNestedInput = {
+  create?: Prisma.XOR<Prisma.ClientProfileCreateWithoutBookingsInput, Prisma.ClientProfileUncheckedCreateWithoutBookingsInput>
+  connectOrCreate?: Prisma.ClientProfileCreateOrConnectWithoutBookingsInput
+  upsert?: Prisma.ClientProfileUpsertWithoutBookingsInput
+  connect?: Prisma.ClientProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ClientProfileUpdateToOneWithWhereWithoutBookingsInput, Prisma.ClientProfileUpdateWithoutBookingsInput>, Prisma.ClientProfileUncheckedUpdateWithoutBookingsInput>
+}
+
+export type ClientProfileCreateNestedOneWithoutHoldsInput = {
+  create?: Prisma.XOR<Prisma.ClientProfileCreateWithoutHoldsInput, Prisma.ClientProfileUncheckedCreateWithoutHoldsInput>
+  connectOrCreate?: Prisma.ClientProfileCreateOrConnectWithoutHoldsInput
+  connect?: Prisma.ClientProfileWhereUniqueInput
+}
+
+export type ClientProfileUpdateOneRequiredWithoutHoldsNestedInput = {
+  create?: Prisma.XOR<Prisma.ClientProfileCreateWithoutHoldsInput, Prisma.ClientProfileUncheckedCreateWithoutHoldsInput>
+  connectOrCreate?: Prisma.ClientProfileCreateOrConnectWithoutHoldsInput
+  upsert?: Prisma.ClientProfileUpsertWithoutHoldsInput
+  connect?: Prisma.ClientProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ClientProfileUpdateToOneWithWhereWithoutHoldsInput, Prisma.ClientProfileUpdateWithoutHoldsInput>, Prisma.ClientProfileUncheckedUpdateWithoutHoldsInput>
+}
+
 export type ClientProfileCreateWithoutAccountInput = {
   id?: string
   firstName: string
@@ -412,6 +459,8 @@ export type ClientProfileCreateWithoutAccountInput = {
   preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  bookings?: Prisma.BookingCreateNestedManyWithoutClientInput
+  holds?: Prisma.BookingHoldCreateNestedManyWithoutClientInput
 }
 
 export type ClientProfileUncheckedCreateWithoutAccountInput = {
@@ -422,6 +471,8 @@ export type ClientProfileUncheckedCreateWithoutAccountInput = {
   preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutClientInput
+  holds?: Prisma.BookingHoldUncheckedCreateNestedManyWithoutClientInput
 }
 
 export type ClientProfileCreateOrConnectWithoutAccountInput = {
@@ -448,6 +499,8 @@ export type ClientProfileUpdateWithoutAccountInput = {
   preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUpdateManyWithoutClientNestedInput
+  holds?: Prisma.BookingHoldUpdateManyWithoutClientNestedInput
 }
 
 export type ClientProfileUncheckedUpdateWithoutAccountInput = {
@@ -458,8 +511,176 @@ export type ClientProfileUncheckedUpdateWithoutAccountInput = {
   preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutClientNestedInput
+  holds?: Prisma.BookingHoldUncheckedUpdateManyWithoutClientNestedInput
 }
 
+export type ClientProfileCreateWithoutBookingsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  dateOfBirth?: Date | string | null
+  preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  account: Prisma.AccountCreateNestedOneWithoutClientProfileInput
+  holds?: Prisma.BookingHoldCreateNestedManyWithoutClientInput
+}
+
+export type ClientProfileUncheckedCreateWithoutBookingsInput = {
+  id?: string
+  accountId: string
+  firstName: string
+  lastName: string
+  dateOfBirth?: Date | string | null
+  preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  holds?: Prisma.BookingHoldUncheckedCreateNestedManyWithoutClientInput
+}
+
+export type ClientProfileCreateOrConnectWithoutBookingsInput = {
+  where: Prisma.ClientProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ClientProfileCreateWithoutBookingsInput, Prisma.ClientProfileUncheckedCreateWithoutBookingsInput>
+}
+
+export type ClientProfileUpsertWithoutBookingsInput = {
+  update: Prisma.XOR<Prisma.ClientProfileUpdateWithoutBookingsInput, Prisma.ClientProfileUncheckedUpdateWithoutBookingsInput>
+  create: Prisma.XOR<Prisma.ClientProfileCreateWithoutBookingsInput, Prisma.ClientProfileUncheckedCreateWithoutBookingsInput>
+  where?: Prisma.ClientProfileWhereInput
+}
+
+export type ClientProfileUpdateToOneWithWhereWithoutBookingsInput = {
+  where?: Prisma.ClientProfileWhereInput
+  data: Prisma.XOR<Prisma.ClientProfileUpdateWithoutBookingsInput, Prisma.ClientProfileUncheckedUpdateWithoutBookingsInput>
+}
+
+export type ClientProfileUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  account?: Prisma.AccountUpdateOneRequiredWithoutClientProfileNestedInput
+  holds?: Prisma.BookingHoldUpdateManyWithoutClientNestedInput
+}
+
+export type ClientProfileUncheckedUpdateWithoutBookingsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  holds?: Prisma.BookingHoldUncheckedUpdateManyWithoutClientNestedInput
+}
+
+export type ClientProfileCreateWithoutHoldsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  dateOfBirth?: Date | string | null
+  preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  account: Prisma.AccountCreateNestedOneWithoutClientProfileInput
+  bookings?: Prisma.BookingCreateNestedManyWithoutClientInput
+}
+
+export type ClientProfileUncheckedCreateWithoutHoldsInput = {
+  id?: string
+  accountId: string
+  firstName: string
+  lastName: string
+  dateOfBirth?: Date | string | null
+  preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  bookings?: Prisma.BookingUncheckedCreateNestedManyWithoutClientInput
+}
+
+export type ClientProfileCreateOrConnectWithoutHoldsInput = {
+  where: Prisma.ClientProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ClientProfileCreateWithoutHoldsInput, Prisma.ClientProfileUncheckedCreateWithoutHoldsInput>
+}
+
+export type ClientProfileUpsertWithoutHoldsInput = {
+  update: Prisma.XOR<Prisma.ClientProfileUpdateWithoutHoldsInput, Prisma.ClientProfileUncheckedUpdateWithoutHoldsInput>
+  create: Prisma.XOR<Prisma.ClientProfileCreateWithoutHoldsInput, Prisma.ClientProfileUncheckedCreateWithoutHoldsInput>
+  where?: Prisma.ClientProfileWhereInput
+}
+
+export type ClientProfileUpdateToOneWithWhereWithoutHoldsInput = {
+  where?: Prisma.ClientProfileWhereInput
+  data: Prisma.XOR<Prisma.ClientProfileUpdateWithoutHoldsInput, Prisma.ClientProfileUncheckedUpdateWithoutHoldsInput>
+}
+
+export type ClientProfileUpdateWithoutHoldsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  account?: Prisma.AccountUpdateOneRequiredWithoutClientProfileNestedInput
+  bookings?: Prisma.BookingUpdateManyWithoutClientNestedInput
+}
+
+export type ClientProfileUncheckedUpdateWithoutHoldsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  preferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookings?: Prisma.BookingUncheckedUpdateManyWithoutClientNestedInput
+}
+
+
+/**
+ * Count Type ClientProfileCountOutputType
+ */
+
+export type ClientProfileCountOutputType = {
+  bookings: number
+  holds: number
+}
+
+export type ClientProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  bookings?: boolean | ClientProfileCountOutputTypeCountBookingsArgs
+  holds?: boolean | ClientProfileCountOutputTypeCountHoldsArgs
+}
+
+/**
+ * ClientProfileCountOutputType without action
+ */
+export type ClientProfileCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ClientProfileCountOutputType
+   */
+  select?: Prisma.ClientProfileCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ClientProfileCountOutputType without action
+ */
+export type ClientProfileCountOutputTypeCountBookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingWhereInput
+}
+
+/**
+ * ClientProfileCountOutputType without action
+ */
+export type ClientProfileCountOutputTypeCountHoldsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingHoldWhereInput
+}
 
 
 export type ClientProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -472,6 +693,9 @@ export type ClientProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   createdAt?: boolean
   updatedAt?: boolean
   account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
+  bookings?: boolean | Prisma.ClientProfile$bookingsArgs<ExtArgs>
+  holds?: boolean | Prisma.ClientProfile$holdsArgs<ExtArgs>
+  _count?: boolean | Prisma.ClientProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["clientProfile"]>
 
 export type ClientProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -512,6 +736,9 @@ export type ClientProfileSelectScalar = {
 export type ClientProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "accountId" | "firstName" | "lastName" | "dateOfBirth" | "preferences" | "createdAt" | "updatedAt", ExtArgs["result"]["clientProfile"]>
 export type ClientProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
+  bookings?: boolean | Prisma.ClientProfile$bookingsArgs<ExtArgs>
+  holds?: boolean | Prisma.ClientProfile$holdsArgs<ExtArgs>
+  _count?: boolean | Prisma.ClientProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ClientProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
@@ -524,6 +751,8 @@ export type $ClientProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
   name: "ClientProfile"
   objects: {
     account: Prisma.$AccountPayload<ExtArgs>
+    bookings: Prisma.$BookingPayload<ExtArgs>[]
+    holds: Prisma.$BookingHoldPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -929,6 +1158,8 @@ readonly fields: ClientProfileFieldRefs;
 export interface Prisma__ClientProfileClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   account<T extends Prisma.AccountDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AccountDefaultArgs<ExtArgs>>): Prisma.Prisma__AccountClient<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  bookings<T extends Prisma.ClientProfile$bookingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientProfile$bookingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  holds<T extends Prisma.ClientProfile$holdsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientProfile$holdsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingHoldPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1364,6 +1595,54 @@ export type ClientProfileDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many ClientProfiles to delete.
    */
   limit?: number
+}
+
+/**
+ * ClientProfile.bookings
+ */
+export type ClientProfile$bookingsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Booking
+   */
+  select?: Prisma.BookingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Booking
+   */
+  omit?: Prisma.BookingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingInclude<ExtArgs> | null
+  where?: Prisma.BookingWhereInput
+  orderBy?: Prisma.BookingOrderByWithRelationInput | Prisma.BookingOrderByWithRelationInput[]
+  cursor?: Prisma.BookingWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingScalarFieldEnum | Prisma.BookingScalarFieldEnum[]
+}
+
+/**
+ * ClientProfile.holds
+ */
+export type ClientProfile$holdsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BookingHold
+   */
+  select?: Prisma.BookingHoldSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BookingHold
+   */
+  omit?: Prisma.BookingHoldOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingHoldInclude<ExtArgs> | null
+  where?: Prisma.BookingHoldWhereInput
+  orderBy?: Prisma.BookingHoldOrderByWithRelationInput | Prisma.BookingHoldOrderByWithRelationInput[]
+  cursor?: Prisma.BookingHoldWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingHoldScalarFieldEnum | Prisma.BookingHoldScalarFieldEnum[]
 }
 
 /**

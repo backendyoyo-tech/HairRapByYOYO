@@ -138,14 +138,6 @@ export const permissionMatrix: Record<string, Partial<Record<Role, PermissionSco
     SUPER_ADMIN: 'FULL',
     ARTIST: 'READ', // own schedule
   },
-  create_sudden_unavailability_exception: {
-    ADMIN: 'FULL',
-    SUPER_ADMIN: 'FULL',
-  },
-  suggested_slot_content_override: {
-    ADMIN: 'FULL',
-    SUPER_ADMIN: 'FULL',
-  },
 
   // ---- Products / Inventory ----
   manage_products_inventory: {
@@ -194,6 +186,127 @@ export const permissionMatrix: Record<string, Partial<Record<Role, PermissionSco
     SUPER_ADMIN: 'APPROVE',
   },
   change_membership_price_credit_value: {
+    SUPER_ADMIN: 'FULL',
+  },
+
+  // ============================================================
+  // CLUSTER 4 — BOOKING & AVAILABILITY (Day 6)
+  // ============================================================
+
+  // Availability & Quotes
+  search_availability: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+    ARTIST: 'OWN',
+    CLIENT: 'OWN',
+  },
+  create_booking_quote: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+    CLIENT: 'OWN',
+  },
+  view_booking_quote: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+    CLIENT: 'OWN',
+  },
+
+  // Booking Holds
+  create_booking_hold: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+    CLIENT: 'OWN',
+  },
+  view_booking_hold: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+    CLIENT: 'OWN',
+  },
+  release_booking_hold: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+    CLIENT: 'OWN',
+  },
+
+  // Booking Lifecycle
+  create_booking_from_hold: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+    CLIENT: 'OWN',
+  },
+  view_booking: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+    ARTIST: 'ASSIGNED',
+    CLIENT: 'OWN',
+  },
+  list_bookings: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+    ARTIST: 'ASSIGNED',
+    CLIENT: 'OWN',
+  },
+  cancel_booking: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+    CLIENT: 'OWN',
+  },
+  reschedule_booking: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+    CLIENT: 'OWN',
+  },
+
+  // Artist Assignment
+  assign_artist_to_service: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+  },
+  reassign_artist: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+  },
+
+  // State Machine Transitions
+  transition_booking_state: {
+    RECEPTIONIST: 'FULL',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+  },
+
+  // Schedule Management
+  manage_artist_work_schedule: {
+    RECEPTIONIST: 'READ',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+    ARTIST: 'OWN',
+  },
+  manage_artist_schedule_exception: {
+    RECEPTIONIST: 'READ',
+    ADMIN: 'FULL',
+    SUPER_ADMIN: 'FULL',
+    ARTIST: 'OWN',
+  },
+
+  // Idempotency & Admin
+  view_idempotency_keys: {
+    ADMIN: 'READ',
+    SUPER_ADMIN: 'FULL',
+  },
+  manage_idempotency_keys: {
     SUPER_ADMIN: 'FULL',
   },
 

@@ -26,10 +26,165 @@ enum AccountType {
   CLIENT
 }
 
-enum SessionStatus {
+enum AuthSessionStatus {
   ACTIVE
   REVOKED
   EXPIRED
+}
+
+// ============================================================
+// CLUSTER 4 — BOOKING & AVAILABILITY ENUMS (Day 6)
+// ============================================================
+
+enum BookingStatus {
+  CONFIRMED
+  CHECKED_IN
+  IN_SERVICE
+  SERVICE_COMPLETED
+  CLOSED
+  CANCELLED
+  NO_SHOW
+}
+
+enum AssignmentStrategy {
+  SPECIFIC_ARTIST
+  AUTO_ASSIGN
+  YOYO_ASSIGNED_TEAM
+}
+
+enum AssignmentStatus {
+  AWAITING_ASSIGNMENT
+  PARTIALLY_ASSIGNED
+  FULLY_ASSIGNED
+  ASSIGNMENT_EXCEPTION
+}
+
+enum ArtistConfirmationState {
+  NONE
+  PROVISIONAL
+  FINAL
+  CONFIRMATION_EXCEPTION
+}
+
+enum AssignmentRole {
+  PRIMARY
+  LEAD
+  SUPPORT
+}
+
+enum AssignmentSource {
+  CLIENT_REQUEST
+  FLOOR_MANAGER
+  RECEPTIONIST
+  AUTO_STANDARD_RESERVED_P2
+}
+
+enum AssignmentRowStatus {
+  PENDING
+  CONFIRMED
+  RELEASED
+  REPLACED
+}
+
+enum HoldStatus {
+  HOLD_ACTIVE
+  HOLD_CONSUMED
+  HOLD_EXPIRED
+  HOLD_RELEASED
+}
+
+enum SessionStatusEnum {
+  NOT_STARTED
+  ACTIVE
+  READY_FOR_BILLING
+}
+
+enum ConsultationReviewOutcome {
+  NO_CHANGES
+  UPDATED
+}
+
+enum ConsentStatus {
+  SIGNED
+  DECLINED
+  MISSING
+}
+
+enum MediaConsent {
+  ALLOW
+  DECLINE
+  NOT_ANSWERED
+}
+
+enum PaymentPurpose {
+  ADVANCE
+  FINAL
+}
+
+enum PaymentStatus {
+  INITIATED
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+enum ReconciliationState {
+  CLEAN
+  REQUIRED
+  IN_REVIEW
+  RESOLVED
+}
+
+enum RefundStatus {
+  REQUESTED
+  APPROVED
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REJECTED
+  CANCELLED
+}
+
+enum RefundDestination {
+  ORIGINAL
+  WALLET
+  MEMBERSHIP
+}
+
+enum MembershipStatus {
+  ACTIVE
+  EXPIRED
+}
+
+enum MembershipMemberStatus {
+  ACTIVE
+  REMOVED
+}
+
+enum MembershipTxnType {
+  PURCHASE_GRANT
+  SERVICE_DEBIT
+  REFUND_CREDIT
+  MANUAL_ADJUSTMENT
+  RENEWAL_RESERVED
+  EXPIRY_RESERVED
+}
+
+enum ExpenseApprovalStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  VOIDED
+}
+
+enum WebhookProcessingStatus {
+  RECEIVED
+  PROCESSING
+  PROCESSED
+  DUPLICATE
+  FAILED_RETRYABLE
+  FAILED_FINAL
 }
 
 model Account {
@@ -85,6 +240,10 @@ model ArtistProfile {
   updatedAt       DateTime @updatedAt
 
   artistServices  ArtistService[]
+  workSchedules   ArtistWorkSchedule[]
+  scheduleExceptions ArtistScheduleException[]
+
+  @@index([isAvailable])
 }
 
 model ClientProfile {
@@ -97,15 +256,18 @@ model ClientProfile {
   preferences   Json?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  bookings      Booking[]
+  holds         BookingHold[]
 }
 
 model Session {
-  id           String         @id @default(cuid())
+  id           String             @id @default(cuid())
   accountId    String
   account      Account        @relation(fields: [accountId], references: [id], onDelete: Cascade)
   refreshToken String         @unique
   accessToken  String         @unique
-  status       SessionStatus  @default(ACTIVE)
+  status       AuthSessionStatus  @default(ACTIVE)
   expiresAt    DateTime
   createdAt    DateTime       @default(now())
   revokedAt    DateTime?
@@ -336,19 +498,20 @@ model ArtistService {
 model BookingService {
   id                      String   @id @default(cuid())
   bookingId               String
+  booking                 Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   serviceId               String
   service                 Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  assignmentStrategy      String   // "SPECIFIC_ARTIST", "AUTO_ASSIGN", "YOYO_ASSIGNED_TEAM"
+  assignmentStrategy      AssignmentStrategy
   requestedArtistId       String?
   plannedStartAt          DateTime
   plannedEndAt            DateTime
   bufferMinutes           Int      @default(10)
-  executionStatus         String   @default("NOT_STARTED")
+  executionStatus         SessionStatusEnum @default(NOT_STARTED)
   actualStartAt           DateTime?
   actualEndAt             DateTime?
   priceSnapshot           Decimal  @db.Decimal(10, 2)
-  assignmentStatus        String   @default("AWAITING_ASSIGNMENT")
-  artistConfirmationState String   @default("NONE")
+  assignmentStatus        AssignmentStatus @default(AWAITING_ASSIGNMENT)
+  artistConfirmationState ArtistConfirmationState @default(NONE)
   version                 Int      @default(1)
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
@@ -368,9 +531,9 @@ model BookingServiceAssignment {
   bookingServiceId   String
   bookingService     BookingService @relation(fields: [bookingServiceId], references: [id], onDelete: Cascade)
   artistId           String
-  role               String   // "PRIMARY", "LEAD", "SUPPORT"
-  assignmentSource   String   // "CLIENT_REQUEST", "FLOOR_MANAGER", "RECEPTIONIST"
-  status             String   @default("PENDING")
+  role               AssignmentRole
+  assignmentSource   AssignmentSource
+  status             AssignmentRowStatus @default(PENDING)
   assignedByStaffId  String?
   assignedAt         DateTime @default(now())
 
@@ -383,7 +546,7 @@ model ServiceSession {
   id                   String   @id @default(cuid())
   bookingServiceId     String   @unique
   bookingService       BookingService @relation(fields: [bookingServiceId], references: [id], onDelete: Cascade)
-  status               String   @default("NOT_STARTED") // NOT_STARTED, ACTIVE, READY_FOR_BILLING
+  status               SessionStatusEnum @default(NOT_STARTED)
   ownerArtistId        String?
   startedAt            DateTime?
   readyForBillingAt    DateTime?
@@ -425,4 +588,167 @@ model ServiceConsent {
 
   @@unique([bookingServiceId, clientId, templateId])
   @@index([bookingServiceId, status])
+}
+
+// ============================================================
+// CLUSTER 5 — BOOKING & AVAILABILITY MODELS (Day 6)
+// ============================================================
+
+model Booking {
+  id                  String   @id @default(cuid())
+  clientId            String
+  client              ClientProfile @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  status              BookingStatus @default(CONFIRMED)
+  assignmentStrategy  AssignmentStrategy
+  totalPrice          Decimal  @db.Decimal(10, 2)
+  totalAdvanceRequired Decimal @db.Decimal(10, 2)
+  advanceRule         String   // "STANDARD_20_PERCENT", "SPECIFIC_CREATIVE_DIRECTOR_FIXED"
+  version             Int      @default(1)
+  confirmedAt         DateTime?
+  checkedInAt         DateTime?
+  cancelledAt         DateTime?
+  cancelReason        String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  services            BookingService[]
+  holds               BookingHold[]
+  statusHistory       BookingStatusHistory[]
+  rescheduleHistory   BookingRescheduleHistory[]
+
+  @@index([clientId, status])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model BookingHold {
+  id              String   @id @default(cuid())
+  bookingId       String?
+  booking         Booking? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  clientId        String
+  client          ClientProfile @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  quoteId         String   @unique
+  status          HoldStatus @default(HOLD_ACTIVE)
+  expiresAt       DateTime
+  totalAdvanceAmount Decimal @db.Decimal(10, 2)
+  advanceRule     String
+  idempotencyKey  String   @unique
+  consumedAt      DateTime?
+  releasedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  resources       BookingHoldResource[]
+
+  @@index([clientId, status])
+  @@index([status, expiresAt])
+  @@index([quoteId])
+}
+
+model BookingHoldResource {
+  id              String   @id @default(cuid())
+  holdId          String
+  hold            BookingHold @relation(fields: [holdId], references: [id], onDelete: Cascade)
+  bookingServiceId String?
+  artistId        String?
+  resourceType    String   // "ARTIST_SLOT", "ANONYMOUS_CAPACITY"
+  startAt         DateTime
+  endAt           DateTime
+  createdAt       DateTime @default(now())
+
+  @@unique([holdId, artistId, startAt, endAt])
+  @@index([holdId])
+  @@index([artistId, startAt, endAt])
+}
+
+model BookingQuote {
+  id                  String   @id @default(cuid())
+  clientId            String
+  services            Json     // Array of service items with pricing
+  serviceTotal        Decimal  @db.Decimal(10, 2)
+  advanceRule         String   // "STANDARD_20_PERCENT", "SPECIFIC_CREATIVE_DIRECTOR_FIXED"
+  advanceRequired     Decimal  @db.Decimal(10, 2)
+  expiresAt           DateTime
+  warnings            Json?    // Non-blocking warnings
+  createdAt           DateTime @default(now())
+
+  @@index([clientId, createdAt])
+}
+
+model BookingStatusHistory {
+  id          String       @id @default(cuid())
+  bookingId   String
+  booking     Booking      @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  fromStatus  BookingStatus?
+  toStatus    BookingStatus
+  actorType   String       // "STAFF", "ARTIST", "CLIENT", "SYSTEM"
+  actorId     String?
+  reason      String?
+  metadata    Json?
+  createdAt   DateTime     @default(now())
+
+  @@index([bookingId, createdAt])
+}
+
+model BookingRescheduleHistory {
+  id                  String   @id @default(cuid())
+  bookingId           String
+  booking             Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  reason              String
+  oldServicesJson     Json     // Previous service windows
+  newServicesJson     Json     // New service windows
+  moneyActionRequired Boolean  @default(false)
+  actorType           String   // "STAFF", "CLIENT"
+  actorId             String
+  idempotencyKey      String   @unique
+  createdAt           DateTime @default(now())
+
+  @@index([bookingId, createdAt])
+}
+
+model ArtistWorkSchedule {
+  id          String   @id @default(cuid())
+  artistId    String
+  artist      ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  dayOfWeek   Int      // 0=Sunday, 1=Monday, ..., 6=Saturday
+  startTime   DateTime // Time component only (date part ignored)
+  endTime     DateTime // Time component only (date part ignored)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([artistId, dayOfWeek, startTime, endTime])
+  @@index([artistId, dayOfWeek, isActive])
+}
+
+model ArtistScheduleException {
+  id          String   @id @default(cuid())
+  artistId    String
+  artist      ArtistProfile @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  exceptionDate DateTime
+  startTime   DateTime? // Null = full day off
+  endTime     DateTime? // Null = full day off
+  reason      String?
+  isAvailable Boolean  @default(false) // true = extra availability, false = day off
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([artistId, exceptionDate, startTime, endTime])
+  @@index([artistId, exceptionDate])
+  @@index([exceptionDate, isAvailable])
+}
+
+model IdempotencyKey {
+  id              String   @id @default(cuid())
+  key             String   @unique
+  endpoint        String
+  method          String
+  requestHash     String   // Hash of canonical request payload
+  responseStatus  Int?
+  responseBody    Json?
+  createdAt       DateTime @default(now())
+  expiresAt       DateTime
+
+  @@index([key])
+  @@index([expiresAt])
 }

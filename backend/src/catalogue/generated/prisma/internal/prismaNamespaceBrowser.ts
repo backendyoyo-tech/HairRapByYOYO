@@ -71,7 +71,16 @@ export const ModelName = {
   BookingServiceAssignment: 'BookingServiceAssignment',
   ServiceSession: 'ServiceSession',
   SessionEvent: 'SessionEvent',
-  ServiceConsent: 'ServiceConsent'
+  ServiceConsent: 'ServiceConsent',
+  Booking: 'Booking',
+  BookingHold: 'BookingHold',
+  BookingHoldResource: 'BookingHoldResource',
+  BookingQuote: 'BookingQuote',
+  BookingStatusHistory: 'BookingStatusHistory',
+  BookingRescheduleHistory: 'BookingRescheduleHistory',
+  ArtistWorkSchedule: 'ArtistWorkSchedule',
+  ArtistScheduleException: 'ArtistScheduleException',
+  IdempotencyKey: 'IdempotencyKey'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -410,6 +419,149 @@ export const ServiceConsentScalarFieldEnum = {
 export type ServiceConsentScalarFieldEnum = (typeof ServiceConsentScalarFieldEnum)[keyof typeof ServiceConsentScalarFieldEnum]
 
 
+export const BookingScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  status: 'status',
+  assignmentStrategy: 'assignmentStrategy',
+  totalPrice: 'totalPrice',
+  totalAdvanceRequired: 'totalAdvanceRequired',
+  advanceRule: 'advanceRule',
+  version: 'version',
+  confirmedAt: 'confirmedAt',
+  checkedInAt: 'checkedInAt',
+  cancelledAt: 'cancelledAt',
+  cancelReason: 'cancelReason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BookingScalarFieldEnum = (typeof BookingScalarFieldEnum)[keyof typeof BookingScalarFieldEnum]
+
+
+export const BookingHoldScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  clientId: 'clientId',
+  quoteId: 'quoteId',
+  status: 'status',
+  expiresAt: 'expiresAt',
+  totalAdvanceAmount: 'totalAdvanceAmount',
+  advanceRule: 'advanceRule',
+  idempotencyKey: 'idempotencyKey',
+  consumedAt: 'consumedAt',
+  releasedAt: 'releasedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BookingHoldScalarFieldEnum = (typeof BookingHoldScalarFieldEnum)[keyof typeof BookingHoldScalarFieldEnum]
+
+
+export const BookingHoldResourceScalarFieldEnum = {
+  id: 'id',
+  holdId: 'holdId',
+  bookingServiceId: 'bookingServiceId',
+  artistId: 'artistId',
+  resourceType: 'resourceType',
+  startAt: 'startAt',
+  endAt: 'endAt',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingHoldResourceScalarFieldEnum = (typeof BookingHoldResourceScalarFieldEnum)[keyof typeof BookingHoldResourceScalarFieldEnum]
+
+
+export const BookingQuoteScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  services: 'services',
+  serviceTotal: 'serviceTotal',
+  advanceRule: 'advanceRule',
+  advanceRequired: 'advanceRequired',
+  expiresAt: 'expiresAt',
+  warnings: 'warnings',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingQuoteScalarFieldEnum = (typeof BookingQuoteScalarFieldEnum)[keyof typeof BookingQuoteScalarFieldEnum]
+
+
+export const BookingStatusHistoryScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  fromStatus: 'fromStatus',
+  toStatus: 'toStatus',
+  actorType: 'actorType',
+  actorId: 'actorId',
+  reason: 'reason',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingStatusHistoryScalarFieldEnum = (typeof BookingStatusHistoryScalarFieldEnum)[keyof typeof BookingStatusHistoryScalarFieldEnum]
+
+
+export const BookingRescheduleHistoryScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  reason: 'reason',
+  oldServicesJson: 'oldServicesJson',
+  newServicesJson: 'newServicesJson',
+  moneyActionRequired: 'moneyActionRequired',
+  actorType: 'actorType',
+  actorId: 'actorId',
+  idempotencyKey: 'idempotencyKey',
+  createdAt: 'createdAt'
+} as const
+
+export type BookingRescheduleHistoryScalarFieldEnum = (typeof BookingRescheduleHistoryScalarFieldEnum)[keyof typeof BookingRescheduleHistoryScalarFieldEnum]
+
+
+export const ArtistWorkScheduleScalarFieldEnum = {
+  id: 'id',
+  artistId: 'artistId',
+  dayOfWeek: 'dayOfWeek',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ArtistWorkScheduleScalarFieldEnum = (typeof ArtistWorkScheduleScalarFieldEnum)[keyof typeof ArtistWorkScheduleScalarFieldEnum]
+
+
+export const ArtistScheduleExceptionScalarFieldEnum = {
+  id: 'id',
+  artistId: 'artistId',
+  exceptionDate: 'exceptionDate',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  reason: 'reason',
+  isAvailable: 'isAvailable',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ArtistScheduleExceptionScalarFieldEnum = (typeof ArtistScheduleExceptionScalarFieldEnum)[keyof typeof ArtistScheduleExceptionScalarFieldEnum]
+
+
+export const IdempotencyKeyScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  endpoint: 'endpoint',
+  method: 'method',
+  requestHash: 'requestHash',
+  responseStatus: 'responseStatus',
+  responseBody: 'responseBody',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type IdempotencyKeyScalarFieldEnum = (typeof IdempotencyKeyScalarFieldEnum)[keyof typeof IdempotencyKeyScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -424,6 +576,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

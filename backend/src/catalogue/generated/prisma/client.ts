@@ -146,3 +146,48 @@ export type SessionEvent = Prisma.SessionEventModel
  * 
  */
 export type ServiceConsent = Prisma.ServiceConsentModel
+/**
+ * Model Booking
+ * 
+ */
+export type Booking = Prisma.BookingModel
+/**
+ * Model BookingHold
+ * 
+ */
+export type BookingHold = Prisma.BookingHoldModel
+/**
+ * Model BookingHoldResource
+ * 
+ */
+export type BookingHoldResource = Prisma.BookingHoldResourceModel
+/**
+ * Model BookingQuote
+ * 
+ */
+export type BookingQuote = Prisma.BookingQuoteModel
+/**
+ * Model BookingStatusHistory
+ * 
+ */
+export type BookingStatusHistory = Prisma.BookingStatusHistoryModel
+/**
+ * Model BookingRescheduleHistory
+ * 
+ */
+export type BookingRescheduleHistory = Prisma.BookingRescheduleHistoryModel
+/**
+ * Model ArtistWorkSchedule
+ * 
+ */
+export type ArtistWorkSchedule = Prisma.ArtistWorkScheduleModel
+/**
+ * Model ArtistScheduleException
+ * 
+ */
+export type ArtistScheduleException = Prisma.ArtistScheduleExceptionModel
+/**
+ * Model IdempotencyKey
+ * 
+ */
+export type IdempotencyKey = Prisma.IdempotencyKeyModel

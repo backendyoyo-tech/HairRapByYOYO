@@ -1,0 +1,453 @@
+import { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
+import { AppError } from "../shared/errors/app-error.js";
+import { availabilityService, AvailabilitySearchParams } from "./availability.service.js";
+import { bookingQuoteService, BookingQuoteRequest } from "./booking-quote.service.js";
+import { bookingHoldService, CreateHoldRequest, HoldResourceInput } from "./booking-hold.service.js";
+import { bookingService, CreateBookingFromHoldRequest, RescheduleRequest, AssignArtistRequest, ReassignArtistRequest } from "./booking.service.js";
+import { PrismaClient } from "../shared/generated/prisma/index.js";
+import { requireAuth, requireRole } from "../auth/actor.middleware.js";
+
+const prisma = new PrismaClient();
+
+// ============================================================
+// ZOD VALIDATION SCHEMAS
+// ============================================================
+
+const AvailabilitySearchQuerySchema = z.object({
+  serviceIds: z.string().transform(s => s.split(',')).refine(arr => arr.length > 0, 'At least one serviceId required'),
+  date: z.string().datetime().transform(s => new Date(s)),
+  requestedArtistId: z.string().optional(),
+  partySize: z.coerce.number().int().positive().optional().default(1),
+  page: z.coerce.number().int().positive().optional().default(1),
+  limit: z.coerce.number().int().positive().max(100).optional().default(50),
+});
+
+const BookingQuoteSchema = z.object({
+  serviceItems: z.array(z.object({
+    serviceId: z.string(),
+    requestedArtistId: z.string().optional(),
+    assignmentStrategy: z.enum(['SPECIFIC_ARTIST', 'AUTO_ASSIGN', 'YOYO_ASSIGNED_TEAM']),
+  })).min(1, 'At least one service item required'),
+  date: z.string().datetime().transform(s => new Date(s)),
+  partySize: z.coerce.number().int().positive().optional().default(1),
+});
+
+const CreateHoldSchema = z.object({
+  quoteId: z.string(),
+  resources: z.array(z.object({
+    serviceIndex: z.number().int().nonnegative(),
+    artistId: z.string().optional(),
+    startAt: z.string().datetime().transform(s => new Date(s)),
+    endAt: z.string().datetime().transform(s => new Date(s)),
+  })).min(1, 'At least one resource required'),
+  idempotencyKey: z.string().min(1, 'Idempotency key required'),
+});
+
+const CreateBookingFromHoldSchema = z.object({
+  holdId: z.string(),
+  idempotencyKey: z.string().min(1, 'Idempotency key required'),
+});
+
+const RescheduleSchema = z.object({
+  newServices: z.array(z.object({
+    serviceId: z.string(),
+    artistId: z.string().optional(),
+    startAt: z.string().datetime().transform(s => new Date(s)),
+    endAt: z.string().datetime().transform(s => new Date(s)),
+    bufferMinutes: z.number().int().nonnegative().optional().default(10),
+  })).min(1),
+  reason: z.string().min(1, 'Reason required'),
+  idempotencyKey: z.string().min(1, 'Idempotency key required'),
+});
+
+const CancelSchema = z.object({
+  reason: z.string().min(1, 'Cancellation reason required'),
+});
+
+const AssignArtistSchema = z.object({
+  artistId: z.string(),
+  role: z.enum(['PRIMARY', 'LEAD', 'SUPPORT']),
+  assignmentSource: z.enum(['CLIENT_REQUEST', 'FLOOR_MANAGER', 'RECEPTIONIST', 'AUTO_STANDARD_RESERVED_P2']),
+  assignedByStaffId: z.string().optional(),
+});
+
+const ReassignArtistSchema = z.object({
+  newArtistId: z.string(),
+  assignedByStaffId: z.string(),
+});
+
+const BookingListQuerySchema = z.object({
+  status: z.string().optional().transform(s => s ? s.split(',') : undefined),
+  page: z.coerce.number().int().positive().optional().default(1),
+  limit: z.coerce.number().int().positive().max(100).optional().default(20),
+  fromDate: z.string().datetime().transform(s => new Date(s)).optional(),
+  toDate: z.string().datetime().transform(s => new Date(s)).optional(),
+});
+
+const TransitionStateSchema = z.object({
+  toStatus: z.enum(['CHECKED_IN', 'IN_SERVICE', 'SERVICE_COMPLETED', 'CLOSED', 'CANCELLED', 'NO_SHOW']),
+  reason: z.string().optional(),
+});
+
+// ============================================================
+// CONTROLLER
+// ============================================================
+
+export class BookingController {
+  /**
+   * GET /api/v1/availability/search
+   * Search available artist slots for services on a date
+   */
+  async searchAvailability(req: Request, res: Response, next: NextFunction) {
+    try {
+      const query = AvailabilitySearchQuerySchema.parse(req.query);
+      const result = await availabilityService.searchAvailability(query as AvailabilitySearchParams);
+
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/booking-quotes
+   * Generate a booking quote with pricing and availability
+   */
+  async createQuote(req: Request, res: Response, next: NextFunction) {
+    try {
+      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
+      if (!clientId) {
+        throw new AppError(401, 'UNAUTHORIZED', 'Client authentication required');
+      }
+
+      const body = BookingQuoteSchema.parse(req.body);
+      const request: BookingQuoteRequest = {
+        serviceItems: body.serviceItems,
+        date: body.date,
+        partySize: body.partySize,
+      };
+
+      const quote = await bookingQuoteService.createQuote(request, clientId);
+
+      res.status(201).json({
+        success: true,
+        data: quote,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/v1/booking-quotes/:quoteId
+   * Get quote details
+   */
+  async getQuote(req: Request, res: Response, next: NextFunction) {
+    try {
+      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
+      const { quoteId } = req.params;
+
+      const quote = await bookingQuoteService.getQuote(quoteId);
+      if (!quote) {
+        throw new AppError(404, 'NOT_FOUND', 'Quote not found');
+      }
+      if (quote.services[0] && quote.services[0].availableSlots.length === 0) {
+        // Quote belongs to client check would need quote.clientId in response
+      }
+
+      res.json({
+        success: true,
+        data: quote,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/booking-holds
+   * Create a booking hold from a quote
+   */
+  async createHold(req: Request, res: Response, next: NextFunction) {
+    try {
+      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
+      if (!clientId) {
+        throw new AppError(401, 'UNAUTHORIZED', 'Client authentication required');
+      }
+
+      const body = CreateHoldSchema.parse(req.body);
+      const request: CreateHoldRequest = {
+        quoteId: body.quoteId,
+        resources: body.resources,
+        idempotencyKey: body.idempotencyKey,
+      };
+
+      const hold = await bookingHoldService.createHold(request, clientId);
+
+      res.status(201).json({
+        success: true,
+        data: hold,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/v1/booking-holds/:holdId
+   * Get hold details
+   */
+  async getHold(req: Request, res: Response, next: NextFunction) {
+    try {
+      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
+      const { holdId } = req.params;
+
+      const hold = await bookingHoldService.getHold(holdId, clientId);
+
+      res.json({
+        success: true,
+        data: hold,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/booking-holds/:holdId/release
+   * Release a hold early
+   */
+  async releaseHold(req: Request, res: Response, next: NextFunction) {
+    try {
+      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
+      const { holdId } = req.params;
+
+      await bookingHoldService.releaseHold(holdId, clientId);
+
+      res.json({
+        success: true,
+        data: { message: 'Hold released' },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/bookings/from-hold
+   * Create booking from consumed hold
+   */
+  async createBookingFromHold(req: Request, res: Response, next: NextFunction) {
+    try {
+      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
+      if (!clientId) {
+        throw new AppError(401, 'UNAUTHORIZED', 'Client authentication required');
+      }
+
+      const body = CreateBookingFromHoldSchema.parse(req.body);
+      const request: CreateBookingFromHoldRequest = {
+        holdId: body.holdId,
+        idempotencyKey: body.idempotencyKey,
+      };
+
+      const result = await bookingService.createBookingFromHold(request, clientId);
+
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/v1/bookings
+   * List bookings for authenticated client
+   */
+  async listBookings(req: Request, res: Response, next: NextFunction) {
+    try {
+      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
+      if (!clientId) {
+        throw new AppError(401, 'UNAUTHORIZED', 'Client authentication required');
+      }
+
+      const query = BookingListQuerySchema.parse(req.query);
+      const result = await bookingService.listBookings(clientId, query);
+
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/v1/bookings/:bookingId
+   * Get booking details
+   */
+  async getBooking(req: Request, res: Response, next: NextFunction) {
+    try {
+      const requesterId = (req as any).user?.accountId;
+      const requesterRole = (req as any).user?.role;
+      const { bookingId } = req.params;
+
+      const booking = await bookingService.getBooking(bookingId, requesterId, requesterRole);
+
+      res.json({
+        success: true,
+        data: booking,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/bookings/:bookingId/cancel
+   * Cancel booking
+   */
+  async cancelBooking(req: Request, res: Response, next: NextFunction) {
+    try {
+      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
+      const { bookingId } = req.params;
+
+      const body = CancelSchema.parse(req.body);
+
+      const result = await bookingService.cancelBooking(bookingId, clientId, body.reason);
+
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/bookings/:bookingId/reschedule
+   * Reschedule booking with optimistic concurrency
+   */
+  async rescheduleBooking(req: Request, res: Response, next: NextFunction) {
+    try {
+      const actorId = (req as any).user?.accountId;
+      const actorType = (req as any).user?.role === 'CLIENT' ? 'CLIENT' : 'STAFF';
+      const { bookingId } = req.params;
+
+      const body = RescheduleSchema.parse(req.body);
+      const request: RescheduleRequest = {
+        bookingId,
+        newServices: body.newServices,
+        reason: body.reason,
+        idempotencyKey: body.idempotencyKey,
+      };
+
+      const result = await bookingService.rescheduleBooking(request, actorId, actorType);
+
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/booking-services/:bookingServiceId/assign
+   * Assign artist to booking service (staff only)
+   */
+  async assignArtist(req: Request, res: Response, next: NextFunction) {
+    try {
+      const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
+      const { bookingServiceId } = req.params;
+
+      const body = AssignArtistSchema.parse(req.body);
+      const request: AssignArtistRequest = {
+        bookingServiceId,
+        artistId: body.artistId,
+        role: body.role,
+        assignmentSource: body.assignmentSource,
+        assignedByStaffId: staffId,
+      };
+
+      const assignment = await bookingService.assignArtist(request, staffId);
+
+      res.status(201).json({
+        success: true,
+        data: assignment,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/booking-service-assignments/:assignmentId/reassign
+   * Reassign artist (staff only)
+   */
+  async reassignArtist(req: Request, res: Response, next: NextFunction) {
+    try {
+      const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
+      const { assignmentId } = req.params;
+
+      const body = ReassignArtistSchema.parse(req.body);
+      const request: ReassignArtistRequest = {
+        bookingServiceAssignmentId: assignmentId,
+        newArtistId: body.newArtistId,
+        assignedByStaffId: staffId,
+      };
+
+      const result = await bookingService.reassignArtist(request, staffId);
+
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/bookings/:bookingId/transition
+   * State machine transition (staff only)
+   */
+  async transitionState(req: Request, res: Response, next: NextFunction) {
+    try {
+      const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
+      const { bookingId } = req.params;
+
+      const body = TransitionStateSchema.parse(req.body);
+      const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+      if (!booking) {
+        throw new AppError(404, 'NOT_FOUND', 'Booking not found');
+      }
+
+      await bookingService.transitionBookingState(
+        bookingId,
+        booking.status,
+        body.toStatus,
+        'STAFF',
+        staffId,
+        body.reason
+      );
+
+      res.json({
+        success: true,
+        data: { message: `Booking transitioned to ${body.toStatus}` },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+}
+
+export const bookingController = new BookingController();

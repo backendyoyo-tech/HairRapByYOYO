@@ -29,13 +29,230 @@ export const AccountType = {
 export type AccountType = (typeof AccountType)[keyof typeof AccountType]
 
 
-export const SessionStatus = {
+export const AuthSessionStatus = {
   ACTIVE: 'ACTIVE',
   REVOKED: 'REVOKED',
   EXPIRED: 'EXPIRED'
 } as const
 
-export type SessionStatus = (typeof SessionStatus)[keyof typeof SessionStatus]
+export type AuthSessionStatus = (typeof AuthSessionStatus)[keyof typeof AuthSessionStatus]
+
+
+export const BookingStatus = {
+  CONFIRMED: 'CONFIRMED',
+  CHECKED_IN: 'CHECKED_IN',
+  IN_SERVICE: 'IN_SERVICE',
+  SERVICE_COMPLETED: 'SERVICE_COMPLETED',
+  CLOSED: 'CLOSED',
+  CANCELLED: 'CANCELLED',
+  NO_SHOW: 'NO_SHOW'
+} as const
+
+export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus]
+
+
+export const AssignmentStrategy = {
+  SPECIFIC_ARTIST: 'SPECIFIC_ARTIST',
+  AUTO_ASSIGN: 'AUTO_ASSIGN',
+  YOYO_ASSIGNED_TEAM: 'YOYO_ASSIGNED_TEAM'
+} as const
+
+export type AssignmentStrategy = (typeof AssignmentStrategy)[keyof typeof AssignmentStrategy]
+
+
+export const AssignmentStatus = {
+  AWAITING_ASSIGNMENT: 'AWAITING_ASSIGNMENT',
+  PARTIALLY_ASSIGNED: 'PARTIALLY_ASSIGNED',
+  FULLY_ASSIGNED: 'FULLY_ASSIGNED',
+  ASSIGNMENT_EXCEPTION: 'ASSIGNMENT_EXCEPTION'
+} as const
+
+export type AssignmentStatus = (typeof AssignmentStatus)[keyof typeof AssignmentStatus]
+
+
+export const ArtistConfirmationState = {
+  NONE: 'NONE',
+  PROVISIONAL: 'PROVISIONAL',
+  FINAL: 'FINAL',
+  CONFIRMATION_EXCEPTION: 'CONFIRMATION_EXCEPTION'
+} as const
+
+export type ArtistConfirmationState = (typeof ArtistConfirmationState)[keyof typeof ArtistConfirmationState]
+
+
+export const AssignmentRole = {
+  PRIMARY: 'PRIMARY',
+  LEAD: 'LEAD',
+  SUPPORT: 'SUPPORT'
+} as const
+
+export type AssignmentRole = (typeof AssignmentRole)[keyof typeof AssignmentRole]
+
+
+export const AssignmentSource = {
+  CLIENT_REQUEST: 'CLIENT_REQUEST',
+  FLOOR_MANAGER: 'FLOOR_MANAGER',
+  RECEPTIONIST: 'RECEPTIONIST',
+  AUTO_STANDARD_RESERVED_P2: 'AUTO_STANDARD_RESERVED_P2'
+} as const
+
+export type AssignmentSource = (typeof AssignmentSource)[keyof typeof AssignmentSource]
+
+
+export const AssignmentRowStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  RELEASED: 'RELEASED',
+  REPLACED: 'REPLACED'
+} as const
+
+export type AssignmentRowStatus = (typeof AssignmentRowStatus)[keyof typeof AssignmentRowStatus]
+
+
+export const HoldStatus = {
+  HOLD_ACTIVE: 'HOLD_ACTIVE',
+  HOLD_CONSUMED: 'HOLD_CONSUMED',
+  HOLD_EXPIRED: 'HOLD_EXPIRED',
+  HOLD_RELEASED: 'HOLD_RELEASED'
+} as const
+
+export type HoldStatus = (typeof HoldStatus)[keyof typeof HoldStatus]
+
+
+export const SessionStatusEnum = {
+  NOT_STARTED: 'NOT_STARTED',
+  ACTIVE: 'ACTIVE',
+  READY_FOR_BILLING: 'READY_FOR_BILLING'
+} as const
+
+export type SessionStatusEnum = (typeof SessionStatusEnum)[keyof typeof SessionStatusEnum]
+
+
+export const ConsultationReviewOutcome = {
+  NO_CHANGES: 'NO_CHANGES',
+  UPDATED: 'UPDATED'
+} as const
+
+export type ConsultationReviewOutcome = (typeof ConsultationReviewOutcome)[keyof typeof ConsultationReviewOutcome]
+
+
+export const ConsentStatus = {
+  SIGNED: 'SIGNED',
+  DECLINED: 'DECLINED',
+  MISSING: 'MISSING'
+} as const
+
+export type ConsentStatus = (typeof ConsentStatus)[keyof typeof ConsentStatus]
+
+
+export const MediaConsent = {
+  ALLOW: 'ALLOW',
+  DECLINE: 'DECLINE',
+  NOT_ANSWERED: 'NOT_ANSWERED'
+} as const
+
+export type MediaConsent = (typeof MediaConsent)[keyof typeof MediaConsent]
+
+
+export const PaymentPurpose = {
+  ADVANCE: 'ADVANCE',
+  FINAL: 'FINAL'
+} as const
+
+export type PaymentPurpose = (typeof PaymentPurpose)[keyof typeof PaymentPurpose]
+
+
+export const PaymentStatus = {
+  INITIATED: 'INITIATED',
+  PENDING: 'PENDING',
+  SUCCEEDED: 'SUCCEEDED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
+export const ReconciliationState = {
+  CLEAN: 'CLEAN',
+  REQUIRED: 'REQUIRED',
+  IN_REVIEW: 'IN_REVIEW',
+  RESOLVED: 'RESOLVED'
+} as const
+
+export type ReconciliationState = (typeof ReconciliationState)[keyof typeof ReconciliationState]
+
+
+export const RefundStatus = {
+  REQUESTED: 'REQUESTED',
+  APPROVED: 'APPROVED',
+  PROCESSING: 'PROCESSING',
+  SUCCEEDED: 'SUCCEEDED',
+  FAILED: 'FAILED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type RefundStatus = (typeof RefundStatus)[keyof typeof RefundStatus]
+
+
+export const RefundDestination = {
+  ORIGINAL: 'ORIGINAL',
+  WALLET: 'WALLET',
+  MEMBERSHIP: 'MEMBERSHIP'
+} as const
+
+export type RefundDestination = (typeof RefundDestination)[keyof typeof RefundDestination]
+
+
+export const MembershipStatus = {
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED'
+} as const
+
+export type MembershipStatus = (typeof MembershipStatus)[keyof typeof MembershipStatus]
+
+
+export const MembershipMemberStatus = {
+  ACTIVE: 'ACTIVE',
+  REMOVED: 'REMOVED'
+} as const
+
+export type MembershipMemberStatus = (typeof MembershipMemberStatus)[keyof typeof MembershipMemberStatus]
+
+
+export const MembershipTxnType = {
+  PURCHASE_GRANT: 'PURCHASE_GRANT',
+  SERVICE_DEBIT: 'SERVICE_DEBIT',
+  REFUND_CREDIT: 'REFUND_CREDIT',
+  MANUAL_ADJUSTMENT: 'MANUAL_ADJUSTMENT',
+  RENEWAL_RESERVED: 'RENEWAL_RESERVED',
+  EXPIRY_RESERVED: 'EXPIRY_RESERVED'
+} as const
+
+export type MembershipTxnType = (typeof MembershipTxnType)[keyof typeof MembershipTxnType]
+
+
+export const ExpenseApprovalStatus = {
+  PENDING_REVIEW: 'PENDING_REVIEW',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  VOIDED: 'VOIDED'
+} as const
+
+export type ExpenseApprovalStatus = (typeof ExpenseApprovalStatus)[keyof typeof ExpenseApprovalStatus]
+
+
+export const WebhookProcessingStatus = {
+  RECEIVED: 'RECEIVED',
+  PROCESSING: 'PROCESSING',
+  PROCESSED: 'PROCESSED',
+  DUPLICATE: 'DUPLICATE',
+  FAILED_RETRYABLE: 'FAILED_RETRYABLE',
+  FAILED_FINAL: 'FAILED_FINAL'
+} as const
+
+export type WebhookProcessingStatus = (typeof WebhookProcessingStatus)[keyof typeof WebhookProcessingStatus]
 
 
 export const ServiceGender = {

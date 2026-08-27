@@ -39,7 +39,7 @@ export type ServiceSessionSumAggregateOutputType = {
 export type ServiceSessionMinAggregateOutputType = {
   id: string | null
   bookingServiceId: string | null
-  status: string | null
+  status: $Enums.SessionStatusEnum | null
   ownerArtistId: string | null
   startedAt: Date | null
   readyForBillingAt: Date | null
@@ -52,7 +52,7 @@ export type ServiceSessionMinAggregateOutputType = {
 export type ServiceSessionMaxAggregateOutputType = {
   id: string | null
   bookingServiceId: string | null
-  status: string | null
+  status: $Enums.SessionStatusEnum | null
   ownerArtistId: string | null
   startedAt: Date | null
   readyForBillingAt: Date | null
@@ -216,7 +216,7 @@ export type ServiceSessionGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 export type ServiceSessionGroupByOutputType = {
   id: string
   bookingServiceId: string
-  status: string
+  status: $Enums.SessionStatusEnum
   ownerArtistId: string | null
   startedAt: Date | null
   readyForBillingAt: Date | null
@@ -252,7 +252,7 @@ export type ServiceSessionWhereInput = {
   NOT?: Prisma.ServiceSessionWhereInput | Prisma.ServiceSessionWhereInput[]
   id?: Prisma.StringFilter<"ServiceSession"> | string
   bookingServiceId?: Prisma.StringFilter<"ServiceSession"> | string
-  status?: Prisma.StringFilter<"ServiceSession"> | string
+  status?: Prisma.EnumSessionStatusEnumFilter<"ServiceSession"> | $Enums.SessionStatusEnum
   ownerArtistId?: Prisma.StringNullableFilter<"ServiceSession"> | string | null
   startedAt?: Prisma.DateTimeNullableFilter<"ServiceSession"> | Date | string | null
   readyForBillingAt?: Prisma.DateTimeNullableFilter<"ServiceSession"> | Date | string | null
@@ -285,7 +285,7 @@ export type ServiceSessionWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ServiceSessionWhereInput | Prisma.ServiceSessionWhereInput[]
   OR?: Prisma.ServiceSessionWhereInput[]
   NOT?: Prisma.ServiceSessionWhereInput | Prisma.ServiceSessionWhereInput[]
-  status?: Prisma.StringFilter<"ServiceSession"> | string
+  status?: Prisma.EnumSessionStatusEnumFilter<"ServiceSession"> | $Enums.SessionStatusEnum
   ownerArtistId?: Prisma.StringNullableFilter<"ServiceSession"> | string | null
   startedAt?: Prisma.DateTimeNullableFilter<"ServiceSession"> | Date | string | null
   readyForBillingAt?: Prisma.DateTimeNullableFilter<"ServiceSession"> | Date | string | null
@@ -321,7 +321,7 @@ export type ServiceSessionScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ServiceSessionScalarWhereWithAggregatesInput | Prisma.ServiceSessionScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ServiceSession"> | string
   bookingServiceId?: Prisma.StringWithAggregatesFilter<"ServiceSession"> | string
-  status?: Prisma.StringWithAggregatesFilter<"ServiceSession"> | string
+  status?: Prisma.EnumSessionStatusEnumWithAggregatesFilter<"ServiceSession"> | $Enums.SessionStatusEnum
   ownerArtistId?: Prisma.StringNullableWithAggregatesFilter<"ServiceSession"> | string | null
   startedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ServiceSession"> | Date | string | null
   readyForBillingAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ServiceSession"> | Date | string | null
@@ -333,7 +333,7 @@ export type ServiceSessionScalarWhereWithAggregatesInput = {
 
 export type ServiceSessionCreateInput = {
   id?: string
-  status?: string
+  status?: $Enums.SessionStatusEnum
   ownerArtistId?: string | null
   startedAt?: Date | string | null
   readyForBillingAt?: Date | string | null
@@ -348,7 +348,7 @@ export type ServiceSessionCreateInput = {
 export type ServiceSessionUncheckedCreateInput = {
   id?: string
   bookingServiceId: string
-  status?: string
+  status?: $Enums.SessionStatusEnum
   ownerArtistId?: string | null
   startedAt?: Date | string | null
   readyForBillingAt?: Date | string | null
@@ -361,7 +361,7 @@ export type ServiceSessionUncheckedCreateInput = {
 
 export type ServiceSessionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   ownerArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readyForBillingAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -376,7 +376,7 @@ export type ServiceSessionUpdateInput = {
 export type ServiceSessionUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   bookingServiceId?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   ownerArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readyForBillingAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -390,7 +390,7 @@ export type ServiceSessionUncheckedUpdateInput = {
 export type ServiceSessionCreateManyInput = {
   id?: string
   bookingServiceId: string
-  status?: string
+  status?: $Enums.SessionStatusEnum
   ownerArtistId?: string | null
   startedAt?: Date | string | null
   readyForBillingAt?: Date | string | null
@@ -402,7 +402,7 @@ export type ServiceSessionCreateManyInput = {
 
 export type ServiceSessionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   ownerArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readyForBillingAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -415,7 +415,7 @@ export type ServiceSessionUpdateManyMutationInput = {
 export type ServiceSessionUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   bookingServiceId?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   ownerArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readyForBillingAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -555,7 +555,7 @@ export type ServiceSessionUpdateOneRequiredWithoutEventsNestedInput = {
 
 export type ServiceSessionCreateWithoutBookingServiceInput = {
   id?: string
-  status?: string
+  status?: $Enums.SessionStatusEnum
   ownerArtistId?: string | null
   startedAt?: Date | string | null
   readyForBillingAt?: Date | string | null
@@ -568,7 +568,7 @@ export type ServiceSessionCreateWithoutBookingServiceInput = {
 
 export type ServiceSessionUncheckedCreateWithoutBookingServiceInput = {
   id?: string
-  status?: string
+  status?: $Enums.SessionStatusEnum
   ownerArtistId?: string | null
   startedAt?: Date | string | null
   readyForBillingAt?: Date | string | null
@@ -611,7 +611,7 @@ export type ServiceSessionScalarWhereInput = {
   NOT?: Prisma.ServiceSessionScalarWhereInput | Prisma.ServiceSessionScalarWhereInput[]
   id?: Prisma.StringFilter<"ServiceSession"> | string
   bookingServiceId?: Prisma.StringFilter<"ServiceSession"> | string
-  status?: Prisma.StringFilter<"ServiceSession"> | string
+  status?: Prisma.EnumSessionStatusEnumFilter<"ServiceSession"> | $Enums.SessionStatusEnum
   ownerArtistId?: Prisma.StringNullableFilter<"ServiceSession"> | string | null
   startedAt?: Prisma.DateTimeNullableFilter<"ServiceSession"> | Date | string | null
   readyForBillingAt?: Prisma.DateTimeNullableFilter<"ServiceSession"> | Date | string | null
@@ -623,7 +623,7 @@ export type ServiceSessionScalarWhereInput = {
 
 export type ServiceSessionCreateWithoutEventsInput = {
   id?: string
-  status?: string
+  status?: $Enums.SessionStatusEnum
   ownerArtistId?: string | null
   startedAt?: Date | string | null
   readyForBillingAt?: Date | string | null
@@ -637,7 +637,7 @@ export type ServiceSessionCreateWithoutEventsInput = {
 export type ServiceSessionUncheckedCreateWithoutEventsInput = {
   id?: string
   bookingServiceId: string
-  status?: string
+  status?: $Enums.SessionStatusEnum
   ownerArtistId?: string | null
   startedAt?: Date | string | null
   readyForBillingAt?: Date | string | null
@@ -665,7 +665,7 @@ export type ServiceSessionUpdateToOneWithWhereWithoutEventsInput = {
 
 export type ServiceSessionUpdateWithoutEventsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   ownerArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readyForBillingAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -679,7 +679,7 @@ export type ServiceSessionUpdateWithoutEventsInput = {
 export type ServiceSessionUncheckedUpdateWithoutEventsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   bookingServiceId?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   ownerArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readyForBillingAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -691,7 +691,7 @@ export type ServiceSessionUncheckedUpdateWithoutEventsInput = {
 
 export type ServiceSessionCreateManyBookingServiceInput = {
   id?: string
-  status?: string
+  status?: $Enums.SessionStatusEnum
   ownerArtistId?: string | null
   startedAt?: Date | string | null
   readyForBillingAt?: Date | string | null
@@ -703,7 +703,7 @@ export type ServiceSessionCreateManyBookingServiceInput = {
 
 export type ServiceSessionUpdateWithoutBookingServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   ownerArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readyForBillingAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -716,7 +716,7 @@ export type ServiceSessionUpdateWithoutBookingServiceInput = {
 
 export type ServiceSessionUncheckedUpdateWithoutBookingServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   ownerArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readyForBillingAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -729,7 +729,7 @@ export type ServiceSessionUncheckedUpdateWithoutBookingServiceInput = {
 
 export type ServiceSessionUncheckedUpdateManyWithoutBookingServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   ownerArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   readyForBillingAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -849,7 +849,7 @@ export type $ServiceSessionPayload<ExtArgs extends runtime.Types.Extensions.Inte
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     bookingServiceId: string
-    status: string
+    status: $Enums.SessionStatusEnum
     ownerArtistId: string | null
     startedAt: Date | null
     readyForBillingAt: Date | null
@@ -1284,7 +1284,7 @@ export interface Prisma__ServiceSessionClient<T, Null = never, ExtArgs extends r
 export interface ServiceSessionFieldRefs {
   readonly id: Prisma.FieldRef<"ServiceSession", 'String'>
   readonly bookingServiceId: Prisma.FieldRef<"ServiceSession", 'String'>
-  readonly status: Prisma.FieldRef<"ServiceSession", 'String'>
+  readonly status: Prisma.FieldRef<"ServiceSession", 'SessionStatusEnum'>
   readonly ownerArtistId: Prisma.FieldRef<"ServiceSession", 'String'>
   readonly startedAt: Prisma.FieldRef<"ServiceSession", 'DateTime'>
   readonly readyForBillingAt: Prisma.FieldRef<"ServiceSession", 'DateTime'>

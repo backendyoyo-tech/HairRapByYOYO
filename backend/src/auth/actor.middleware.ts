@@ -179,6 +179,8 @@ export function requireActorType(...allowedTypes: ActorContext["actorType"][]) {
  * Middleware to require specific role(s)
  */
 export function requireRole(...allowedRoles: string[]) {
+  // Support both requireRole('CLIENT', 'ARTIST') and requireRole(['CLIENT', 'ARTIST'])
+  const roles = allowedRoles.length === 1 && Array.isArray(allowedRoles[0]) ? allowedRoles[0] : allowedRoles;
   return (req: Request, _res: Response, next: NextFunction): void => {
     if (!req.actor) {
       next(
@@ -191,12 +193,12 @@ export function requireRole(...allowedRoles: string[]) {
       return;
     }
 
-    if (!allowedRoles.includes(req.actor.role)) {
+    if (!roles.includes(req.actor.role)) {
       next(
         new AppError(
           403,
           "INSUFFICIENT_ROLE",
-          `This endpoint requires role: ${allowedRoles.join(", ")}`
+          `This endpoint requires role: ${roles.join(", ")}`
         )
       );
       return;

@@ -42,17 +42,17 @@ export type BookingServiceMinAggregateOutputType = {
   id: string | null
   bookingId: string | null
   serviceId: string | null
-  assignmentStrategy: string | null
+  assignmentStrategy: $Enums.AssignmentStrategy | null
   requestedArtistId: string | null
   plannedStartAt: Date | null
   plannedEndAt: Date | null
   bufferMinutes: number | null
-  executionStatus: string | null
+  executionStatus: $Enums.SessionStatusEnum | null
   actualStartAt: Date | null
   actualEndAt: Date | null
   priceSnapshot: runtime.Decimal | null
-  assignmentStatus: string | null
-  artistConfirmationState: string | null
+  assignmentStatus: $Enums.AssignmentStatus | null
+  artistConfirmationState: $Enums.ArtistConfirmationState | null
   version: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -62,17 +62,17 @@ export type BookingServiceMaxAggregateOutputType = {
   id: string | null
   bookingId: string | null
   serviceId: string | null
-  assignmentStrategy: string | null
+  assignmentStrategy: $Enums.AssignmentStrategy | null
   requestedArtistId: string | null
   plannedStartAt: Date | null
   plannedEndAt: Date | null
   bufferMinutes: number | null
-  executionStatus: string | null
+  executionStatus: $Enums.SessionStatusEnum | null
   actualStartAt: Date | null
   actualEndAt: Date | null
   priceSnapshot: runtime.Decimal | null
-  assignmentStatus: string | null
-  artistConfirmationState: string | null
+  assignmentStatus: $Enums.AssignmentStatus | null
+  artistConfirmationState: $Enums.ArtistConfirmationState | null
   version: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -263,17 +263,17 @@ export type BookingServiceGroupByOutputType = {
   id: string
   bookingId: string
   serviceId: string
-  assignmentStrategy: string
+  assignmentStrategy: $Enums.AssignmentStrategy
   requestedArtistId: string | null
   plannedStartAt: Date
   plannedEndAt: Date
   bufferMinutes: number
-  executionStatus: string
+  executionStatus: $Enums.SessionStatusEnum
   actualStartAt: Date | null
   actualEndAt: Date | null
   priceSnapshot: runtime.Decimal
-  assignmentStatus: string
-  artistConfirmationState: string
+  assignmentStatus: $Enums.AssignmentStatus
+  artistConfirmationState: $Enums.ArtistConfirmationState
   version: number
   createdAt: Date
   updatedAt: Date
@@ -306,20 +306,21 @@ export type BookingServiceWhereInput = {
   id?: Prisma.StringFilter<"BookingService"> | string
   bookingId?: Prisma.StringFilter<"BookingService"> | string
   serviceId?: Prisma.StringFilter<"BookingService"> | string
-  assignmentStrategy?: Prisma.StringFilter<"BookingService"> | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFilter<"BookingService"> | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.StringNullableFilter<"BookingService"> | string | null
   plannedStartAt?: Prisma.DateTimeFilter<"BookingService"> | Date | string
   plannedEndAt?: Prisma.DateTimeFilter<"BookingService"> | Date | string
   bufferMinutes?: Prisma.IntFilter<"BookingService"> | number
-  executionStatus?: Prisma.StringFilter<"BookingService"> | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFilter<"BookingService"> | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.DateTimeNullableFilter<"BookingService"> | Date | string | null
   actualEndAt?: Prisma.DateTimeNullableFilter<"BookingService"> | Date | string | null
   priceSnapshot?: Prisma.DecimalFilter<"BookingService"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFilter<"BookingService"> | string
-  artistConfirmationState?: Prisma.StringFilter<"BookingService"> | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFilter<"BookingService"> | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFilter<"BookingService"> | $Enums.ArtistConfirmationState
   version?: Prisma.IntFilter<"BookingService"> | number
   createdAt?: Prisma.DateTimeFilter<"BookingService"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BookingService"> | Date | string
+  booking?: Prisma.XOR<Prisma.BookingScalarRelationFilter, Prisma.BookingWhereInput>
   service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
   assignments?: Prisma.BookingServiceAssignmentListRelationFilter
   sessions?: Prisma.ServiceSessionListRelationFilter
@@ -344,6 +345,7 @@ export type BookingServiceOrderByWithRelationInput = {
   version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  booking?: Prisma.BookingOrderByWithRelationInput
   service?: Prisma.ServiceOrderByWithRelationInput
   assignments?: Prisma.BookingServiceAssignmentOrderByRelationAggregateInput
   sessions?: Prisma.ServiceSessionOrderByRelationAggregateInput
@@ -357,20 +359,21 @@ export type BookingServiceWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.BookingServiceWhereInput | Prisma.BookingServiceWhereInput[]
   bookingId?: Prisma.StringFilter<"BookingService"> | string
   serviceId?: Prisma.StringFilter<"BookingService"> | string
-  assignmentStrategy?: Prisma.StringFilter<"BookingService"> | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFilter<"BookingService"> | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.StringNullableFilter<"BookingService"> | string | null
   plannedStartAt?: Prisma.DateTimeFilter<"BookingService"> | Date | string
   plannedEndAt?: Prisma.DateTimeFilter<"BookingService"> | Date | string
   bufferMinutes?: Prisma.IntFilter<"BookingService"> | number
-  executionStatus?: Prisma.StringFilter<"BookingService"> | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFilter<"BookingService"> | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.DateTimeNullableFilter<"BookingService"> | Date | string | null
   actualEndAt?: Prisma.DateTimeNullableFilter<"BookingService"> | Date | string | null
   priceSnapshot?: Prisma.DecimalFilter<"BookingService"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFilter<"BookingService"> | string
-  artistConfirmationState?: Prisma.StringFilter<"BookingService"> | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFilter<"BookingService"> | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFilter<"BookingService"> | $Enums.ArtistConfirmationState
   version?: Prisma.IntFilter<"BookingService"> | number
   createdAt?: Prisma.DateTimeFilter<"BookingService"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BookingService"> | Date | string
+  booking?: Prisma.XOR<Prisma.BookingScalarRelationFilter, Prisma.BookingWhereInput>
   service?: Prisma.XOR<Prisma.ServiceScalarRelationFilter, Prisma.ServiceWhereInput>
   assignments?: Prisma.BookingServiceAssignmentListRelationFilter
   sessions?: Prisma.ServiceSessionListRelationFilter
@@ -409,17 +412,17 @@ export type BookingServiceScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"BookingService"> | string
   bookingId?: Prisma.StringWithAggregatesFilter<"BookingService"> | string
   serviceId?: Prisma.StringWithAggregatesFilter<"BookingService"> | string
-  assignmentStrategy?: Prisma.StringWithAggregatesFilter<"BookingService"> | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyWithAggregatesFilter<"BookingService"> | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.StringNullableWithAggregatesFilter<"BookingService"> | string | null
   plannedStartAt?: Prisma.DateTimeWithAggregatesFilter<"BookingService"> | Date | string
   plannedEndAt?: Prisma.DateTimeWithAggregatesFilter<"BookingService"> | Date | string
   bufferMinutes?: Prisma.IntWithAggregatesFilter<"BookingService"> | number
-  executionStatus?: Prisma.StringWithAggregatesFilter<"BookingService"> | string
+  executionStatus?: Prisma.EnumSessionStatusEnumWithAggregatesFilter<"BookingService"> | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.DateTimeNullableWithAggregatesFilter<"BookingService"> | Date | string | null
   actualEndAt?: Prisma.DateTimeNullableWithAggregatesFilter<"BookingService"> | Date | string | null
   priceSnapshot?: Prisma.DecimalWithAggregatesFilter<"BookingService"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringWithAggregatesFilter<"BookingService"> | string
-  artistConfirmationState?: Prisma.StringWithAggregatesFilter<"BookingService"> | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusWithAggregatesFilter<"BookingService"> | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateWithAggregatesFilter<"BookingService"> | $Enums.ArtistConfirmationState
   version?: Prisma.IntWithAggregatesFilter<"BookingService"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"BookingService"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"BookingService"> | Date | string
@@ -427,21 +430,21 @@ export type BookingServiceScalarWhereWithAggregatesInput = {
 
 export type BookingServiceCreateInput = {
   id?: string
-  bookingId: string
-  assignmentStrategy: string
+  assignmentStrategy: $Enums.AssignmentStrategy
   requestedArtistId?: string | null
   plannedStartAt: Date | string
   plannedEndAt: Date | string
   bufferMinutes?: number
-  executionStatus?: string
+  executionStatus?: $Enums.SessionStatusEnum
   actualStartAt?: Date | string | null
   actualEndAt?: Date | string | null
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: string
-  artistConfirmationState?: string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  booking: Prisma.BookingCreateNestedOneWithoutServicesInput
   service: Prisma.ServiceCreateNestedOneWithoutBookingServicesInput
   assignments?: Prisma.BookingServiceAssignmentCreateNestedManyWithoutBookingServiceInput
   sessions?: Prisma.ServiceSessionCreateNestedManyWithoutBookingServiceInput
@@ -452,17 +455,17 @@ export type BookingServiceUncheckedCreateInput = {
   id?: string
   bookingId: string
   serviceId: string
-  assignmentStrategy: string
+  assignmentStrategy: $Enums.AssignmentStrategy
   requestedArtistId?: string | null
   plannedStartAt: Date | string
   plannedEndAt: Date | string
   bufferMinutes?: number
-  executionStatus?: string
+  executionStatus?: $Enums.SessionStatusEnum
   actualStartAt?: Date | string | null
   actualEndAt?: Date | string | null
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: string
-  artistConfirmationState?: string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -473,21 +476,21 @@ export type BookingServiceUncheckedCreateInput = {
 
 export type BookingServiceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  bookingId?: Prisma.StringFieldUpdateOperationsInput | string
-  assignmentStrategy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  executionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  artistConfirmationState?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  booking?: Prisma.BookingUpdateOneRequiredWithoutServicesNestedInput
   service?: Prisma.ServiceUpdateOneRequiredWithoutBookingServicesNestedInput
   assignments?: Prisma.BookingServiceAssignmentUpdateManyWithoutBookingServiceNestedInput
   sessions?: Prisma.ServiceSessionUpdateManyWithoutBookingServiceNestedInput
@@ -498,17 +501,17 @@ export type BookingServiceUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   bookingId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
-  assignmentStrategy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  executionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  artistConfirmationState?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -521,17 +524,17 @@ export type BookingServiceCreateManyInput = {
   id?: string
   bookingId: string
   serviceId: string
-  assignmentStrategy: string
+  assignmentStrategy: $Enums.AssignmentStrategy
   requestedArtistId?: string | null
   plannedStartAt: Date | string
   plannedEndAt: Date | string
   bufferMinutes?: number
-  executionStatus?: string
+  executionStatus?: $Enums.SessionStatusEnum
   actualStartAt?: Date | string | null
   actualEndAt?: Date | string | null
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: string
-  artistConfirmationState?: string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -539,18 +542,17 @@ export type BookingServiceCreateManyInput = {
 
 export type BookingServiceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  bookingId?: Prisma.StringFieldUpdateOperationsInput | string
-  assignmentStrategy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  executionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  artistConfirmationState?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -560,17 +562,17 @@ export type BookingServiceUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   bookingId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
-  assignmentStrategy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  executionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  artistConfirmationState?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -705,6 +707,22 @@ export type BookingServiceUncheckedUpdateManyWithoutServiceNestedInput = {
   deleteMany?: Prisma.BookingServiceScalarWhereInput | Prisma.BookingServiceScalarWhereInput[]
 }
 
+export type EnumAssignmentStrategyFieldUpdateOperationsInput = {
+  set?: $Enums.AssignmentStrategy
+}
+
+export type EnumSessionStatusEnumFieldUpdateOperationsInput = {
+  set?: $Enums.SessionStatusEnum
+}
+
+export type EnumAssignmentStatusFieldUpdateOperationsInput = {
+  set?: $Enums.AssignmentStatus
+}
+
+export type EnumArtistConfirmationStateFieldUpdateOperationsInput = {
+  set?: $Enums.ArtistConfirmationState
+}
+
 export type BookingServiceCreateNestedOneWithoutAssignmentsInput = {
   create?: Prisma.XOR<Prisma.BookingServiceCreateWithoutAssignmentsInput, Prisma.BookingServiceUncheckedCreateWithoutAssignmentsInput>
   connectOrCreate?: Prisma.BookingServiceCreateOrConnectWithoutAssignmentsInput
@@ -747,23 +765,65 @@ export type BookingServiceUpdateOneRequiredWithoutConsentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.BookingServiceUpdateToOneWithWhereWithoutConsentsInput, Prisma.BookingServiceUpdateWithoutConsentsInput>, Prisma.BookingServiceUncheckedUpdateWithoutConsentsInput>
 }
 
+export type BookingServiceCreateNestedManyWithoutBookingInput = {
+  create?: Prisma.XOR<Prisma.BookingServiceCreateWithoutBookingInput, Prisma.BookingServiceUncheckedCreateWithoutBookingInput> | Prisma.BookingServiceCreateWithoutBookingInput[] | Prisma.BookingServiceUncheckedCreateWithoutBookingInput[]
+  connectOrCreate?: Prisma.BookingServiceCreateOrConnectWithoutBookingInput | Prisma.BookingServiceCreateOrConnectWithoutBookingInput[]
+  createMany?: Prisma.BookingServiceCreateManyBookingInputEnvelope
+  connect?: Prisma.BookingServiceWhereUniqueInput | Prisma.BookingServiceWhereUniqueInput[]
+}
+
+export type BookingServiceUncheckedCreateNestedManyWithoutBookingInput = {
+  create?: Prisma.XOR<Prisma.BookingServiceCreateWithoutBookingInput, Prisma.BookingServiceUncheckedCreateWithoutBookingInput> | Prisma.BookingServiceCreateWithoutBookingInput[] | Prisma.BookingServiceUncheckedCreateWithoutBookingInput[]
+  connectOrCreate?: Prisma.BookingServiceCreateOrConnectWithoutBookingInput | Prisma.BookingServiceCreateOrConnectWithoutBookingInput[]
+  createMany?: Prisma.BookingServiceCreateManyBookingInputEnvelope
+  connect?: Prisma.BookingServiceWhereUniqueInput | Prisma.BookingServiceWhereUniqueInput[]
+}
+
+export type BookingServiceUpdateManyWithoutBookingNestedInput = {
+  create?: Prisma.XOR<Prisma.BookingServiceCreateWithoutBookingInput, Prisma.BookingServiceUncheckedCreateWithoutBookingInput> | Prisma.BookingServiceCreateWithoutBookingInput[] | Prisma.BookingServiceUncheckedCreateWithoutBookingInput[]
+  connectOrCreate?: Prisma.BookingServiceCreateOrConnectWithoutBookingInput | Prisma.BookingServiceCreateOrConnectWithoutBookingInput[]
+  upsert?: Prisma.BookingServiceUpsertWithWhereUniqueWithoutBookingInput | Prisma.BookingServiceUpsertWithWhereUniqueWithoutBookingInput[]
+  createMany?: Prisma.BookingServiceCreateManyBookingInputEnvelope
+  set?: Prisma.BookingServiceWhereUniqueInput | Prisma.BookingServiceWhereUniqueInput[]
+  disconnect?: Prisma.BookingServiceWhereUniqueInput | Prisma.BookingServiceWhereUniqueInput[]
+  delete?: Prisma.BookingServiceWhereUniqueInput | Prisma.BookingServiceWhereUniqueInput[]
+  connect?: Prisma.BookingServiceWhereUniqueInput | Prisma.BookingServiceWhereUniqueInput[]
+  update?: Prisma.BookingServiceUpdateWithWhereUniqueWithoutBookingInput | Prisma.BookingServiceUpdateWithWhereUniqueWithoutBookingInput[]
+  updateMany?: Prisma.BookingServiceUpdateManyWithWhereWithoutBookingInput | Prisma.BookingServiceUpdateManyWithWhereWithoutBookingInput[]
+  deleteMany?: Prisma.BookingServiceScalarWhereInput | Prisma.BookingServiceScalarWhereInput[]
+}
+
+export type BookingServiceUncheckedUpdateManyWithoutBookingNestedInput = {
+  create?: Prisma.XOR<Prisma.BookingServiceCreateWithoutBookingInput, Prisma.BookingServiceUncheckedCreateWithoutBookingInput> | Prisma.BookingServiceCreateWithoutBookingInput[] | Prisma.BookingServiceUncheckedCreateWithoutBookingInput[]
+  connectOrCreate?: Prisma.BookingServiceCreateOrConnectWithoutBookingInput | Prisma.BookingServiceCreateOrConnectWithoutBookingInput[]
+  upsert?: Prisma.BookingServiceUpsertWithWhereUniqueWithoutBookingInput | Prisma.BookingServiceUpsertWithWhereUniqueWithoutBookingInput[]
+  createMany?: Prisma.BookingServiceCreateManyBookingInputEnvelope
+  set?: Prisma.BookingServiceWhereUniqueInput | Prisma.BookingServiceWhereUniqueInput[]
+  disconnect?: Prisma.BookingServiceWhereUniqueInput | Prisma.BookingServiceWhereUniqueInput[]
+  delete?: Prisma.BookingServiceWhereUniqueInput | Prisma.BookingServiceWhereUniqueInput[]
+  connect?: Prisma.BookingServiceWhereUniqueInput | Prisma.BookingServiceWhereUniqueInput[]
+  update?: Prisma.BookingServiceUpdateWithWhereUniqueWithoutBookingInput | Prisma.BookingServiceUpdateWithWhereUniqueWithoutBookingInput[]
+  updateMany?: Prisma.BookingServiceUpdateManyWithWhereWithoutBookingInput | Prisma.BookingServiceUpdateManyWithWhereWithoutBookingInput[]
+  deleteMany?: Prisma.BookingServiceScalarWhereInput | Prisma.BookingServiceScalarWhereInput[]
+}
+
 export type BookingServiceCreateWithoutServiceInput = {
   id?: string
-  bookingId: string
-  assignmentStrategy: string
+  assignmentStrategy: $Enums.AssignmentStrategy
   requestedArtistId?: string | null
   plannedStartAt: Date | string
   plannedEndAt: Date | string
   bufferMinutes?: number
-  executionStatus?: string
+  executionStatus?: $Enums.SessionStatusEnum
   actualStartAt?: Date | string | null
   actualEndAt?: Date | string | null
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: string
-  artistConfirmationState?: string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  booking: Prisma.BookingCreateNestedOneWithoutServicesInput
   assignments?: Prisma.BookingServiceAssignmentCreateNestedManyWithoutBookingServiceInput
   sessions?: Prisma.ServiceSessionCreateNestedManyWithoutBookingServiceInput
   consents?: Prisma.ServiceConsentCreateNestedManyWithoutBookingServiceInput
@@ -772,17 +832,17 @@ export type BookingServiceCreateWithoutServiceInput = {
 export type BookingServiceUncheckedCreateWithoutServiceInput = {
   id?: string
   bookingId: string
-  assignmentStrategy: string
+  assignmentStrategy: $Enums.AssignmentStrategy
   requestedArtistId?: string | null
   plannedStartAt: Date | string
   plannedEndAt: Date | string
   bufferMinutes?: number
-  executionStatus?: string
+  executionStatus?: $Enums.SessionStatusEnum
   actualStartAt?: Date | string | null
   actualEndAt?: Date | string | null
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: string
-  artistConfirmationState?: string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -824,17 +884,17 @@ export type BookingServiceScalarWhereInput = {
   id?: Prisma.StringFilter<"BookingService"> | string
   bookingId?: Prisma.StringFilter<"BookingService"> | string
   serviceId?: Prisma.StringFilter<"BookingService"> | string
-  assignmentStrategy?: Prisma.StringFilter<"BookingService"> | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFilter<"BookingService"> | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.StringNullableFilter<"BookingService"> | string | null
   plannedStartAt?: Prisma.DateTimeFilter<"BookingService"> | Date | string
   plannedEndAt?: Prisma.DateTimeFilter<"BookingService"> | Date | string
   bufferMinutes?: Prisma.IntFilter<"BookingService"> | number
-  executionStatus?: Prisma.StringFilter<"BookingService"> | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFilter<"BookingService"> | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.DateTimeNullableFilter<"BookingService"> | Date | string | null
   actualEndAt?: Prisma.DateTimeNullableFilter<"BookingService"> | Date | string | null
   priceSnapshot?: Prisma.DecimalFilter<"BookingService"> | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFilter<"BookingService"> | string
-  artistConfirmationState?: Prisma.StringFilter<"BookingService"> | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFilter<"BookingService"> | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFilter<"BookingService"> | $Enums.ArtistConfirmationState
   version?: Prisma.IntFilter<"BookingService"> | number
   createdAt?: Prisma.DateTimeFilter<"BookingService"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"BookingService"> | Date | string
@@ -842,21 +902,21 @@ export type BookingServiceScalarWhereInput = {
 
 export type BookingServiceCreateWithoutAssignmentsInput = {
   id?: string
-  bookingId: string
-  assignmentStrategy: string
+  assignmentStrategy: $Enums.AssignmentStrategy
   requestedArtistId?: string | null
   plannedStartAt: Date | string
   plannedEndAt: Date | string
   bufferMinutes?: number
-  executionStatus?: string
+  executionStatus?: $Enums.SessionStatusEnum
   actualStartAt?: Date | string | null
   actualEndAt?: Date | string | null
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: string
-  artistConfirmationState?: string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  booking: Prisma.BookingCreateNestedOneWithoutServicesInput
   service: Prisma.ServiceCreateNestedOneWithoutBookingServicesInput
   sessions?: Prisma.ServiceSessionCreateNestedManyWithoutBookingServiceInput
   consents?: Prisma.ServiceConsentCreateNestedManyWithoutBookingServiceInput
@@ -866,17 +926,17 @@ export type BookingServiceUncheckedCreateWithoutAssignmentsInput = {
   id?: string
   bookingId: string
   serviceId: string
-  assignmentStrategy: string
+  assignmentStrategy: $Enums.AssignmentStrategy
   requestedArtistId?: string | null
   plannedStartAt: Date | string
   plannedEndAt: Date | string
   bufferMinutes?: number
-  executionStatus?: string
+  executionStatus?: $Enums.SessionStatusEnum
   actualStartAt?: Date | string | null
   actualEndAt?: Date | string | null
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: string
-  artistConfirmationState?: string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -902,21 +962,21 @@ export type BookingServiceUpdateToOneWithWhereWithoutAssignmentsInput = {
 
 export type BookingServiceUpdateWithoutAssignmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  bookingId?: Prisma.StringFieldUpdateOperationsInput | string
-  assignmentStrategy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  executionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  artistConfirmationState?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  booking?: Prisma.BookingUpdateOneRequiredWithoutServicesNestedInput
   service?: Prisma.ServiceUpdateOneRequiredWithoutBookingServicesNestedInput
   sessions?: Prisma.ServiceSessionUpdateManyWithoutBookingServiceNestedInput
   consents?: Prisma.ServiceConsentUpdateManyWithoutBookingServiceNestedInput
@@ -926,17 +986,17 @@ export type BookingServiceUncheckedUpdateWithoutAssignmentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   bookingId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
-  assignmentStrategy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  executionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  artistConfirmationState?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -946,21 +1006,21 @@ export type BookingServiceUncheckedUpdateWithoutAssignmentsInput = {
 
 export type BookingServiceCreateWithoutSessionsInput = {
   id?: string
-  bookingId: string
-  assignmentStrategy: string
+  assignmentStrategy: $Enums.AssignmentStrategy
   requestedArtistId?: string | null
   plannedStartAt: Date | string
   plannedEndAt: Date | string
   bufferMinutes?: number
-  executionStatus?: string
+  executionStatus?: $Enums.SessionStatusEnum
   actualStartAt?: Date | string | null
   actualEndAt?: Date | string | null
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: string
-  artistConfirmationState?: string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  booking: Prisma.BookingCreateNestedOneWithoutServicesInput
   service: Prisma.ServiceCreateNestedOneWithoutBookingServicesInput
   assignments?: Prisma.BookingServiceAssignmentCreateNestedManyWithoutBookingServiceInput
   consents?: Prisma.ServiceConsentCreateNestedManyWithoutBookingServiceInput
@@ -970,17 +1030,17 @@ export type BookingServiceUncheckedCreateWithoutSessionsInput = {
   id?: string
   bookingId: string
   serviceId: string
-  assignmentStrategy: string
+  assignmentStrategy: $Enums.AssignmentStrategy
   requestedArtistId?: string | null
   plannedStartAt: Date | string
   plannedEndAt: Date | string
   bufferMinutes?: number
-  executionStatus?: string
+  executionStatus?: $Enums.SessionStatusEnum
   actualStartAt?: Date | string | null
   actualEndAt?: Date | string | null
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: string
-  artistConfirmationState?: string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1006,21 +1066,21 @@ export type BookingServiceUpdateToOneWithWhereWithoutSessionsInput = {
 
 export type BookingServiceUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  bookingId?: Prisma.StringFieldUpdateOperationsInput | string
-  assignmentStrategy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  executionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  artistConfirmationState?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  booking?: Prisma.BookingUpdateOneRequiredWithoutServicesNestedInput
   service?: Prisma.ServiceUpdateOneRequiredWithoutBookingServicesNestedInput
   assignments?: Prisma.BookingServiceAssignmentUpdateManyWithoutBookingServiceNestedInput
   consents?: Prisma.ServiceConsentUpdateManyWithoutBookingServiceNestedInput
@@ -1030,17 +1090,17 @@ export type BookingServiceUncheckedUpdateWithoutSessionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   bookingId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
-  assignmentStrategy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  executionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  artistConfirmationState?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1050,21 +1110,21 @@ export type BookingServiceUncheckedUpdateWithoutSessionsInput = {
 
 export type BookingServiceCreateWithoutConsentsInput = {
   id?: string
-  bookingId: string
-  assignmentStrategy: string
+  assignmentStrategy: $Enums.AssignmentStrategy
   requestedArtistId?: string | null
   plannedStartAt: Date | string
   plannedEndAt: Date | string
   bufferMinutes?: number
-  executionStatus?: string
+  executionStatus?: $Enums.SessionStatusEnum
   actualStartAt?: Date | string | null
   actualEndAt?: Date | string | null
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: string
-  artistConfirmationState?: string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  booking: Prisma.BookingCreateNestedOneWithoutServicesInput
   service: Prisma.ServiceCreateNestedOneWithoutBookingServicesInput
   assignments?: Prisma.BookingServiceAssignmentCreateNestedManyWithoutBookingServiceInput
   sessions?: Prisma.ServiceSessionCreateNestedManyWithoutBookingServiceInput
@@ -1074,17 +1134,17 @@ export type BookingServiceUncheckedCreateWithoutConsentsInput = {
   id?: string
   bookingId: string
   serviceId: string
-  assignmentStrategy: string
+  assignmentStrategy: $Enums.AssignmentStrategy
   requestedArtistId?: string | null
   plannedStartAt: Date | string
   plannedEndAt: Date | string
   bufferMinutes?: number
-  executionStatus?: string
+  executionStatus?: $Enums.SessionStatusEnum
   actualStartAt?: Date | string | null
   actualEndAt?: Date | string | null
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: string
-  artistConfirmationState?: string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1110,21 +1170,21 @@ export type BookingServiceUpdateToOneWithWhereWithoutConsentsInput = {
 
 export type BookingServiceUpdateWithoutConsentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  bookingId?: Prisma.StringFieldUpdateOperationsInput | string
-  assignmentStrategy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  executionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  artistConfirmationState?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  booking?: Prisma.BookingUpdateOneRequiredWithoutServicesNestedInput
   service?: Prisma.ServiceUpdateOneRequiredWithoutBookingServicesNestedInput
   assignments?: Prisma.BookingServiceAssignmentUpdateManyWithoutBookingServiceNestedInput
   sessions?: Prisma.ServiceSessionUpdateManyWithoutBookingServiceNestedInput
@@ -1134,17 +1194,17 @@ export type BookingServiceUncheckedUpdateWithoutConsentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   bookingId?: Prisma.StringFieldUpdateOperationsInput | string
   serviceId?: Prisma.StringFieldUpdateOperationsInput | string
-  assignmentStrategy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  executionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  artistConfirmationState?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1152,20 +1212,90 @@ export type BookingServiceUncheckedUpdateWithoutConsentsInput = {
   sessions?: Prisma.ServiceSessionUncheckedUpdateManyWithoutBookingServiceNestedInput
 }
 
-export type BookingServiceCreateManyServiceInput = {
+export type BookingServiceCreateWithoutBookingInput = {
   id?: string
-  bookingId: string
-  assignmentStrategy: string
+  assignmentStrategy: $Enums.AssignmentStrategy
   requestedArtistId?: string | null
   plannedStartAt: Date | string
   plannedEndAt: Date | string
   bufferMinutes?: number
-  executionStatus?: string
+  executionStatus?: $Enums.SessionStatusEnum
   actualStartAt?: Date | string | null
   actualEndAt?: Date | string | null
   priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: string
-  artistConfirmationState?: string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
+  version?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  service: Prisma.ServiceCreateNestedOneWithoutBookingServicesInput
+  assignments?: Prisma.BookingServiceAssignmentCreateNestedManyWithoutBookingServiceInput
+  sessions?: Prisma.ServiceSessionCreateNestedManyWithoutBookingServiceInput
+  consents?: Prisma.ServiceConsentCreateNestedManyWithoutBookingServiceInput
+}
+
+export type BookingServiceUncheckedCreateWithoutBookingInput = {
+  id?: string
+  serviceId: string
+  assignmentStrategy: $Enums.AssignmentStrategy
+  requestedArtistId?: string | null
+  plannedStartAt: Date | string
+  plannedEndAt: Date | string
+  bufferMinutes?: number
+  executionStatus?: $Enums.SessionStatusEnum
+  actualStartAt?: Date | string | null
+  actualEndAt?: Date | string | null
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
+  version?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  assignments?: Prisma.BookingServiceAssignmentUncheckedCreateNestedManyWithoutBookingServiceInput
+  sessions?: Prisma.ServiceSessionUncheckedCreateNestedManyWithoutBookingServiceInput
+  consents?: Prisma.ServiceConsentUncheckedCreateNestedManyWithoutBookingServiceInput
+}
+
+export type BookingServiceCreateOrConnectWithoutBookingInput = {
+  where: Prisma.BookingServiceWhereUniqueInput
+  create: Prisma.XOR<Prisma.BookingServiceCreateWithoutBookingInput, Prisma.BookingServiceUncheckedCreateWithoutBookingInput>
+}
+
+export type BookingServiceCreateManyBookingInputEnvelope = {
+  data: Prisma.BookingServiceCreateManyBookingInput | Prisma.BookingServiceCreateManyBookingInput[]
+  skipDuplicates?: boolean
+}
+
+export type BookingServiceUpsertWithWhereUniqueWithoutBookingInput = {
+  where: Prisma.BookingServiceWhereUniqueInput
+  update: Prisma.XOR<Prisma.BookingServiceUpdateWithoutBookingInput, Prisma.BookingServiceUncheckedUpdateWithoutBookingInput>
+  create: Prisma.XOR<Prisma.BookingServiceCreateWithoutBookingInput, Prisma.BookingServiceUncheckedCreateWithoutBookingInput>
+}
+
+export type BookingServiceUpdateWithWhereUniqueWithoutBookingInput = {
+  where: Prisma.BookingServiceWhereUniqueInput
+  data: Prisma.XOR<Prisma.BookingServiceUpdateWithoutBookingInput, Prisma.BookingServiceUncheckedUpdateWithoutBookingInput>
+}
+
+export type BookingServiceUpdateManyWithWhereWithoutBookingInput = {
+  where: Prisma.BookingServiceScalarWhereInput
+  data: Prisma.XOR<Prisma.BookingServiceUpdateManyMutationInput, Prisma.BookingServiceUncheckedUpdateManyWithoutBookingInput>
+}
+
+export type BookingServiceCreateManyServiceInput = {
+  id?: string
+  bookingId: string
+  assignmentStrategy: $Enums.AssignmentStrategy
+  requestedArtistId?: string | null
+  plannedStartAt: Date | string
+  plannedEndAt: Date | string
+  bufferMinutes?: number
+  executionStatus?: $Enums.SessionStatusEnum
+  actualStartAt?: Date | string | null
+  actualEndAt?: Date | string | null
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1173,21 +1303,21 @@ export type BookingServiceCreateManyServiceInput = {
 
 export type BookingServiceUpdateWithoutServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  bookingId?: Prisma.StringFieldUpdateOperationsInput | string
-  assignmentStrategy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  executionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  artistConfirmationState?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  booking?: Prisma.BookingUpdateOneRequiredWithoutServicesNestedInput
   assignments?: Prisma.BookingServiceAssignmentUpdateManyWithoutBookingServiceNestedInput
   sessions?: Prisma.ServiceSessionUpdateManyWithoutBookingServiceNestedInput
   consents?: Prisma.ServiceConsentUpdateManyWithoutBookingServiceNestedInput
@@ -1196,17 +1326,17 @@ export type BookingServiceUpdateWithoutServiceInput = {
 export type BookingServiceUncheckedUpdateWithoutServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   bookingId?: Prisma.StringFieldUpdateOperationsInput | string
-  assignmentStrategy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  executionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  artistConfirmationState?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1218,17 +1348,99 @@ export type BookingServiceUncheckedUpdateWithoutServiceInput = {
 export type BookingServiceUncheckedUpdateManyWithoutServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   bookingId?: Prisma.StringFieldUpdateOperationsInput | string
-  assignmentStrategy?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
   requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
-  executionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
   actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
-  assignmentStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  artistConfirmationState?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type BookingServiceCreateManyBookingInput = {
+  id?: string
+  serviceId: string
+  assignmentStrategy: $Enums.AssignmentStrategy
+  requestedArtistId?: string | null
+  plannedStartAt: Date | string
+  plannedEndAt: Date | string
+  bufferMinutes?: number
+  executionStatus?: $Enums.SessionStatusEnum
+  actualStartAt?: Date | string | null
+  actualEndAt?: Date | string | null
+  priceSnapshot: runtime.Decimal | runtime.DecimalJsLike | number | string
+  assignmentStatus?: $Enums.AssignmentStatus
+  artistConfirmationState?: $Enums.ArtistConfirmationState
+  version?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type BookingServiceUpdateWithoutBookingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
+  requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
+  actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  service?: Prisma.ServiceUpdateOneRequiredWithoutBookingServicesNestedInput
+  assignments?: Prisma.BookingServiceAssignmentUpdateManyWithoutBookingServiceNestedInput
+  sessions?: Prisma.ServiceSessionUpdateManyWithoutBookingServiceNestedInput
+  consents?: Prisma.ServiceConsentUpdateManyWithoutBookingServiceNestedInput
+}
+
+export type BookingServiceUncheckedUpdateWithoutBookingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
+  requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
+  actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  assignments?: Prisma.BookingServiceAssignmentUncheckedUpdateManyWithoutBookingServiceNestedInput
+  sessions?: Prisma.ServiceSessionUncheckedUpdateManyWithoutBookingServiceNestedInput
+  consents?: Prisma.ServiceConsentUncheckedUpdateManyWithoutBookingServiceNestedInput
+}
+
+export type BookingServiceUncheckedUpdateManyWithoutBookingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  serviceId?: Prisma.StringFieldUpdateOperationsInput | string
+  assignmentStrategy?: Prisma.EnumAssignmentStrategyFieldUpdateOperationsInput | $Enums.AssignmentStrategy
+  requestedArtistId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  plannedStartAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plannedEndAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bufferMinutes?: Prisma.IntFieldUpdateOperationsInput | number
+  executionStatus?: Prisma.EnumSessionStatusEnumFieldUpdateOperationsInput | $Enums.SessionStatusEnum
+  actualStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  actualEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  priceSnapshot?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  assignmentStatus?: Prisma.EnumAssignmentStatusFieldUpdateOperationsInput | $Enums.AssignmentStatus
+  artistConfirmationState?: Prisma.EnumArtistConfirmationStateFieldUpdateOperationsInput | $Enums.ArtistConfirmationState
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1301,6 +1513,7 @@ export type BookingServiceSelect<ExtArgs extends runtime.Types.Extensions.Intern
   version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
   assignments?: boolean | Prisma.BookingService$assignmentsArgs<ExtArgs>
   sessions?: boolean | Prisma.BookingService$sessionsArgs<ExtArgs>
@@ -1326,6 +1539,7 @@ export type BookingServiceSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["bookingService"]>
 
@@ -1347,6 +1561,7 @@ export type BookingServiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["bookingService"]>
 
@@ -1372,6 +1587,7 @@ export type BookingServiceSelectScalar = {
 
 export type BookingServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "bookingId" | "serviceId" | "assignmentStrategy" | "requestedArtistId" | "plannedStartAt" | "plannedEndAt" | "bufferMinutes" | "executionStatus" | "actualStartAt" | "actualEndAt" | "priceSnapshot" | "assignmentStatus" | "artistConfirmationState" | "version" | "createdAt" | "updatedAt", ExtArgs["result"]["bookingService"]>
 export type BookingServiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
   assignments?: boolean | Prisma.BookingService$assignmentsArgs<ExtArgs>
   sessions?: boolean | Prisma.BookingService$sessionsArgs<ExtArgs>
@@ -1379,15 +1595,18 @@ export type BookingServiceInclude<ExtArgs extends runtime.Types.Extensions.Inter
   _count?: boolean | Prisma.BookingServiceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type BookingServiceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }
 export type BookingServiceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  booking?: boolean | Prisma.BookingDefaultArgs<ExtArgs>
   service?: boolean | Prisma.ServiceDefaultArgs<ExtArgs>
 }
 
 export type $BookingServicePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "BookingService"
   objects: {
+    booking: Prisma.$BookingPayload<ExtArgs>
     service: Prisma.$ServicePayload<ExtArgs>
     assignments: Prisma.$BookingServiceAssignmentPayload<ExtArgs>[]
     sessions: Prisma.$ServiceSessionPayload<ExtArgs>[]
@@ -1397,17 +1616,17 @@ export type $BookingServicePayload<ExtArgs extends runtime.Types.Extensions.Inte
     id: string
     bookingId: string
     serviceId: string
-    assignmentStrategy: string
+    assignmentStrategy: $Enums.AssignmentStrategy
     requestedArtistId: string | null
     plannedStartAt: Date
     plannedEndAt: Date
     bufferMinutes: number
-    executionStatus: string
+    executionStatus: $Enums.SessionStatusEnum
     actualStartAt: Date | null
     actualEndAt: Date | null
     priceSnapshot: runtime.Decimal
-    assignmentStatus: string
-    artistConfirmationState: string
+    assignmentStatus: $Enums.AssignmentStatus
+    artistConfirmationState: $Enums.ArtistConfirmationState
     version: number
     createdAt: Date
     updatedAt: Date
@@ -1805,6 +2024,7 @@ readonly fields: BookingServiceFieldRefs;
  */
 export interface Prisma__BookingServiceClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  booking<T extends Prisma.BookingDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BookingDefaultArgs<ExtArgs>>): Prisma.Prisma__BookingClient<runtime.Types.Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   service<T extends Prisma.ServiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ServiceDefaultArgs<ExtArgs>>): Prisma.Prisma__ServiceClient<runtime.Types.Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   assignments<T extends Prisma.BookingService$assignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BookingService$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingServiceAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.BookingService$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BookingService$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1841,17 +2061,17 @@ export interface BookingServiceFieldRefs {
   readonly id: Prisma.FieldRef<"BookingService", 'String'>
   readonly bookingId: Prisma.FieldRef<"BookingService", 'String'>
   readonly serviceId: Prisma.FieldRef<"BookingService", 'String'>
-  readonly assignmentStrategy: Prisma.FieldRef<"BookingService", 'String'>
+  readonly assignmentStrategy: Prisma.FieldRef<"BookingService", 'AssignmentStrategy'>
   readonly requestedArtistId: Prisma.FieldRef<"BookingService", 'String'>
   readonly plannedStartAt: Prisma.FieldRef<"BookingService", 'DateTime'>
   readonly plannedEndAt: Prisma.FieldRef<"BookingService", 'DateTime'>
   readonly bufferMinutes: Prisma.FieldRef<"BookingService", 'Int'>
-  readonly executionStatus: Prisma.FieldRef<"BookingService", 'String'>
+  readonly executionStatus: Prisma.FieldRef<"BookingService", 'SessionStatusEnum'>
   readonly actualStartAt: Prisma.FieldRef<"BookingService", 'DateTime'>
   readonly actualEndAt: Prisma.FieldRef<"BookingService", 'DateTime'>
   readonly priceSnapshot: Prisma.FieldRef<"BookingService", 'Decimal'>
-  readonly assignmentStatus: Prisma.FieldRef<"BookingService", 'String'>
-  readonly artistConfirmationState: Prisma.FieldRef<"BookingService", 'String'>
+  readonly assignmentStatus: Prisma.FieldRef<"BookingService", 'AssignmentStatus'>
+  readonly artistConfirmationState: Prisma.FieldRef<"BookingService", 'ArtistConfirmationState'>
   readonly version: Prisma.FieldRef<"BookingService", 'Int'>
   readonly createdAt: Prisma.FieldRef<"BookingService", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"BookingService", 'DateTime'>

@@ -9,6 +9,7 @@ import { errorHandler } from "./middleware/error-handler.middleware.js";
 import authRoutes from "./auth/auth.router.js";
 import adminRoutes from "./admin/admin.router.js";
 import { catalogueRouter } from "./catalogue/catalogue.router.js";
+import { bookingRouter } from "./booking/booking.router.js";
 
 const app = express();
 
@@ -36,6 +37,9 @@ app.use("/api/v1/admin", adminRoutes);
 
 // Catalogue routes (public read access)
 app.use("/api/v1", catalogueRouter);
+
+// Booking & Availability routes
+app.use("/api/v1", bookingRouter);
 
 // Error handler MUST be after all routes.
 app.use(errorHandler);
