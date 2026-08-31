@@ -1,9 +1,11 @@
 import type { NextFunction, Request, Response } from "express";
-import { PrismaClient } from "../shared/generated/prisma/index.js";
-import { AppError } from "../shared/errors/app-error.js";
+import { PrismaClient, Prisma } from "../generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { AppError } from "../../shared/errors/index.js";
 import { hashRequest } from "./idempotency.utils.js";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 interface IdempotencyRequest extends Request {
   idempotencyKey?: string;
@@ -64,7 +66,7 @@ export async function idempotencyMiddleware(
         // Completed request - return cached response
         res.setHeader('Idempotency-Key', idempotencyKey);
         res.setHeader('X-Idempotency-Replay', 'true');
-        res.status(existing.responseStatus).json(existing.responseBody);
+        res.status(existing.responseStatus || 200).json(existing.responseBody);
         return;
       } else {
         // In-progress request - conflict
@@ -88,7 +90,7 @@ export async function idempotencyMiddleware(
         method: req.method,
         requestHash,
         responseStatus: 0,
-        responseBody: null,
+        responseBody: Prisma.JsonNull,
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
       },
     });

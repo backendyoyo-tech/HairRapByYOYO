@@ -207,6 +207,7 @@ export type BookingServiceAssignmentWhereInput = {
   assignedByStaffId?: Prisma.StringNullableFilter<"BookingServiceAssignment"> | string | null
   assignedAt?: Prisma.DateTimeFilter<"BookingServiceAssignment"> | Date | string
   bookingService?: Prisma.XOR<Prisma.BookingServiceScalarRelationFilter, Prisma.BookingServiceWhereInput>
+  artist?: Prisma.XOR<Prisma.ArtistProfileScalarRelationFilter, Prisma.ArtistProfileWhereInput>
 }
 
 export type BookingServiceAssignmentOrderByWithRelationInput = {
@@ -219,6 +220,7 @@ export type BookingServiceAssignmentOrderByWithRelationInput = {
   assignedByStaffId?: Prisma.SortOrderInput | Prisma.SortOrder
   assignedAt?: Prisma.SortOrder
   bookingService?: Prisma.BookingServiceOrderByWithRelationInput
+  artist?: Prisma.ArtistProfileOrderByWithRelationInput
 }
 
 export type BookingServiceAssignmentWhereUniqueInput = Prisma.AtLeast<{
@@ -235,6 +237,7 @@ export type BookingServiceAssignmentWhereUniqueInput = Prisma.AtLeast<{
   assignedByStaffId?: Prisma.StringNullableFilter<"BookingServiceAssignment"> | string | null
   assignedAt?: Prisma.DateTimeFilter<"BookingServiceAssignment"> | Date | string
   bookingService?: Prisma.XOR<Prisma.BookingServiceScalarRelationFilter, Prisma.BookingServiceWhereInput>
+  artist?: Prisma.XOR<Prisma.ArtistProfileScalarRelationFilter, Prisma.ArtistProfileWhereInput>
 }, "id" | "bookingServiceId_artistId">
 
 export type BookingServiceAssignmentOrderByWithAggregationInput = {
@@ -267,13 +270,13 @@ export type BookingServiceAssignmentScalarWhereWithAggregatesInput = {
 
 export type BookingServiceAssignmentCreateInput = {
   id?: string
-  artistId: string
   role: $Enums.AssignmentRole
   assignmentSource: $Enums.AssignmentSource
   status?: $Enums.AssignmentRowStatus
   assignedByStaffId?: string | null
   assignedAt?: Date | string
   bookingService: Prisma.BookingServiceCreateNestedOneWithoutAssignmentsInput
+  artist: Prisma.ArtistProfileCreateNestedOneWithoutBookingAssignmentsInput
 }
 
 export type BookingServiceAssignmentUncheckedCreateInput = {
@@ -289,13 +292,13 @@ export type BookingServiceAssignmentUncheckedCreateInput = {
 
 export type BookingServiceAssignmentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  artistId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumAssignmentRoleFieldUpdateOperationsInput | $Enums.AssignmentRole
   assignmentSource?: Prisma.EnumAssignmentSourceFieldUpdateOperationsInput | $Enums.AssignmentSource
   status?: Prisma.EnumAssignmentRowStatusFieldUpdateOperationsInput | $Enums.AssignmentRowStatus
   assignedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   bookingService?: Prisma.BookingServiceUpdateOneRequiredWithoutAssignmentsNestedInput
+  artist?: Prisma.ArtistProfileUpdateOneRequiredWithoutBookingAssignmentsNestedInput
 }
 
 export type BookingServiceAssignmentUncheckedUpdateInput = {
@@ -322,7 +325,6 @@ export type BookingServiceAssignmentCreateManyInput = {
 
 export type BookingServiceAssignmentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  artistId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumAssignmentRoleFieldUpdateOperationsInput | $Enums.AssignmentRole
   assignmentSource?: Prisma.EnumAssignmentSourceFieldUpdateOperationsInput | $Enums.AssignmentSource
   status?: Prisma.EnumAssignmentRowStatusFieldUpdateOperationsInput | $Enums.AssignmentRowStatus
@@ -389,6 +391,48 @@ export type BookingServiceAssignmentMinOrderByAggregateInput = {
   assignedAt?: Prisma.SortOrder
 }
 
+export type BookingServiceAssignmentCreateNestedManyWithoutArtistInput = {
+  create?: Prisma.XOR<Prisma.BookingServiceAssignmentCreateWithoutArtistInput, Prisma.BookingServiceAssignmentUncheckedCreateWithoutArtistInput> | Prisma.BookingServiceAssignmentCreateWithoutArtistInput[] | Prisma.BookingServiceAssignmentUncheckedCreateWithoutArtistInput[]
+  connectOrCreate?: Prisma.BookingServiceAssignmentCreateOrConnectWithoutArtistInput | Prisma.BookingServiceAssignmentCreateOrConnectWithoutArtistInput[]
+  createMany?: Prisma.BookingServiceAssignmentCreateManyArtistInputEnvelope
+  connect?: Prisma.BookingServiceAssignmentWhereUniqueInput | Prisma.BookingServiceAssignmentWhereUniqueInput[]
+}
+
+export type BookingServiceAssignmentUncheckedCreateNestedManyWithoutArtistInput = {
+  create?: Prisma.XOR<Prisma.BookingServiceAssignmentCreateWithoutArtistInput, Prisma.BookingServiceAssignmentUncheckedCreateWithoutArtistInput> | Prisma.BookingServiceAssignmentCreateWithoutArtistInput[] | Prisma.BookingServiceAssignmentUncheckedCreateWithoutArtistInput[]
+  connectOrCreate?: Prisma.BookingServiceAssignmentCreateOrConnectWithoutArtistInput | Prisma.BookingServiceAssignmentCreateOrConnectWithoutArtistInput[]
+  createMany?: Prisma.BookingServiceAssignmentCreateManyArtistInputEnvelope
+  connect?: Prisma.BookingServiceAssignmentWhereUniqueInput | Prisma.BookingServiceAssignmentWhereUniqueInput[]
+}
+
+export type BookingServiceAssignmentUpdateManyWithoutArtistNestedInput = {
+  create?: Prisma.XOR<Prisma.BookingServiceAssignmentCreateWithoutArtistInput, Prisma.BookingServiceAssignmentUncheckedCreateWithoutArtistInput> | Prisma.BookingServiceAssignmentCreateWithoutArtistInput[] | Prisma.BookingServiceAssignmentUncheckedCreateWithoutArtistInput[]
+  connectOrCreate?: Prisma.BookingServiceAssignmentCreateOrConnectWithoutArtistInput | Prisma.BookingServiceAssignmentCreateOrConnectWithoutArtistInput[]
+  upsert?: Prisma.BookingServiceAssignmentUpsertWithWhereUniqueWithoutArtistInput | Prisma.BookingServiceAssignmentUpsertWithWhereUniqueWithoutArtistInput[]
+  createMany?: Prisma.BookingServiceAssignmentCreateManyArtistInputEnvelope
+  set?: Prisma.BookingServiceAssignmentWhereUniqueInput | Prisma.BookingServiceAssignmentWhereUniqueInput[]
+  disconnect?: Prisma.BookingServiceAssignmentWhereUniqueInput | Prisma.BookingServiceAssignmentWhereUniqueInput[]
+  delete?: Prisma.BookingServiceAssignmentWhereUniqueInput | Prisma.BookingServiceAssignmentWhereUniqueInput[]
+  connect?: Prisma.BookingServiceAssignmentWhereUniqueInput | Prisma.BookingServiceAssignmentWhereUniqueInput[]
+  update?: Prisma.BookingServiceAssignmentUpdateWithWhereUniqueWithoutArtistInput | Prisma.BookingServiceAssignmentUpdateWithWhereUniqueWithoutArtistInput[]
+  updateMany?: Prisma.BookingServiceAssignmentUpdateManyWithWhereWithoutArtistInput | Prisma.BookingServiceAssignmentUpdateManyWithWhereWithoutArtistInput[]
+  deleteMany?: Prisma.BookingServiceAssignmentScalarWhereInput | Prisma.BookingServiceAssignmentScalarWhereInput[]
+}
+
+export type BookingServiceAssignmentUncheckedUpdateManyWithoutArtistNestedInput = {
+  create?: Prisma.XOR<Prisma.BookingServiceAssignmentCreateWithoutArtistInput, Prisma.BookingServiceAssignmentUncheckedCreateWithoutArtistInput> | Prisma.BookingServiceAssignmentCreateWithoutArtistInput[] | Prisma.BookingServiceAssignmentUncheckedCreateWithoutArtistInput[]
+  connectOrCreate?: Prisma.BookingServiceAssignmentCreateOrConnectWithoutArtistInput | Prisma.BookingServiceAssignmentCreateOrConnectWithoutArtistInput[]
+  upsert?: Prisma.BookingServiceAssignmentUpsertWithWhereUniqueWithoutArtistInput | Prisma.BookingServiceAssignmentUpsertWithWhereUniqueWithoutArtistInput[]
+  createMany?: Prisma.BookingServiceAssignmentCreateManyArtistInputEnvelope
+  set?: Prisma.BookingServiceAssignmentWhereUniqueInput | Prisma.BookingServiceAssignmentWhereUniqueInput[]
+  disconnect?: Prisma.BookingServiceAssignmentWhereUniqueInput | Prisma.BookingServiceAssignmentWhereUniqueInput[]
+  delete?: Prisma.BookingServiceAssignmentWhereUniqueInput | Prisma.BookingServiceAssignmentWhereUniqueInput[]
+  connect?: Prisma.BookingServiceAssignmentWhereUniqueInput | Prisma.BookingServiceAssignmentWhereUniqueInput[]
+  update?: Prisma.BookingServiceAssignmentUpdateWithWhereUniqueWithoutArtistInput | Prisma.BookingServiceAssignmentUpdateWithWhereUniqueWithoutArtistInput[]
+  updateMany?: Prisma.BookingServiceAssignmentUpdateManyWithWhereWithoutArtistInput | Prisma.BookingServiceAssignmentUpdateManyWithWhereWithoutArtistInput[]
+  deleteMany?: Prisma.BookingServiceAssignmentScalarWhereInput | Prisma.BookingServiceAssignmentScalarWhereInput[]
+}
+
 export type BookingServiceAssignmentCreateNestedManyWithoutBookingServiceInput = {
   create?: Prisma.XOR<Prisma.BookingServiceAssignmentCreateWithoutBookingServiceInput, Prisma.BookingServiceAssignmentUncheckedCreateWithoutBookingServiceInput> | Prisma.BookingServiceAssignmentCreateWithoutBookingServiceInput[] | Prisma.BookingServiceAssignmentUncheckedCreateWithoutBookingServiceInput[]
   connectOrCreate?: Prisma.BookingServiceAssignmentCreateOrConnectWithoutBookingServiceInput | Prisma.BookingServiceAssignmentCreateOrConnectWithoutBookingServiceInput[]
@@ -443,14 +487,74 @@ export type EnumAssignmentRowStatusFieldUpdateOperationsInput = {
   set?: $Enums.AssignmentRowStatus
 }
 
-export type BookingServiceAssignmentCreateWithoutBookingServiceInput = {
+export type BookingServiceAssignmentCreateWithoutArtistInput = {
   id?: string
-  artistId: string
   role: $Enums.AssignmentRole
   assignmentSource: $Enums.AssignmentSource
   status?: $Enums.AssignmentRowStatus
   assignedByStaffId?: string | null
   assignedAt?: Date | string
+  bookingService: Prisma.BookingServiceCreateNestedOneWithoutAssignmentsInput
+}
+
+export type BookingServiceAssignmentUncheckedCreateWithoutArtistInput = {
+  id?: string
+  bookingServiceId: string
+  role: $Enums.AssignmentRole
+  assignmentSource: $Enums.AssignmentSource
+  status?: $Enums.AssignmentRowStatus
+  assignedByStaffId?: string | null
+  assignedAt?: Date | string
+}
+
+export type BookingServiceAssignmentCreateOrConnectWithoutArtistInput = {
+  where: Prisma.BookingServiceAssignmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.BookingServiceAssignmentCreateWithoutArtistInput, Prisma.BookingServiceAssignmentUncheckedCreateWithoutArtistInput>
+}
+
+export type BookingServiceAssignmentCreateManyArtistInputEnvelope = {
+  data: Prisma.BookingServiceAssignmentCreateManyArtistInput | Prisma.BookingServiceAssignmentCreateManyArtistInput[]
+  skipDuplicates?: boolean
+}
+
+export type BookingServiceAssignmentUpsertWithWhereUniqueWithoutArtistInput = {
+  where: Prisma.BookingServiceAssignmentWhereUniqueInput
+  update: Prisma.XOR<Prisma.BookingServiceAssignmentUpdateWithoutArtistInput, Prisma.BookingServiceAssignmentUncheckedUpdateWithoutArtistInput>
+  create: Prisma.XOR<Prisma.BookingServiceAssignmentCreateWithoutArtistInput, Prisma.BookingServiceAssignmentUncheckedCreateWithoutArtistInput>
+}
+
+export type BookingServiceAssignmentUpdateWithWhereUniqueWithoutArtistInput = {
+  where: Prisma.BookingServiceAssignmentWhereUniqueInput
+  data: Prisma.XOR<Prisma.BookingServiceAssignmentUpdateWithoutArtistInput, Prisma.BookingServiceAssignmentUncheckedUpdateWithoutArtistInput>
+}
+
+export type BookingServiceAssignmentUpdateManyWithWhereWithoutArtistInput = {
+  where: Prisma.BookingServiceAssignmentScalarWhereInput
+  data: Prisma.XOR<Prisma.BookingServiceAssignmentUpdateManyMutationInput, Prisma.BookingServiceAssignmentUncheckedUpdateManyWithoutArtistInput>
+}
+
+export type BookingServiceAssignmentScalarWhereInput = {
+  AND?: Prisma.BookingServiceAssignmentScalarWhereInput | Prisma.BookingServiceAssignmentScalarWhereInput[]
+  OR?: Prisma.BookingServiceAssignmentScalarWhereInput[]
+  NOT?: Prisma.BookingServiceAssignmentScalarWhereInput | Prisma.BookingServiceAssignmentScalarWhereInput[]
+  id?: Prisma.StringFilter<"BookingServiceAssignment"> | string
+  bookingServiceId?: Prisma.StringFilter<"BookingServiceAssignment"> | string
+  artistId?: Prisma.StringFilter<"BookingServiceAssignment"> | string
+  role?: Prisma.EnumAssignmentRoleFilter<"BookingServiceAssignment"> | $Enums.AssignmentRole
+  assignmentSource?: Prisma.EnumAssignmentSourceFilter<"BookingServiceAssignment"> | $Enums.AssignmentSource
+  status?: Prisma.EnumAssignmentRowStatusFilter<"BookingServiceAssignment"> | $Enums.AssignmentRowStatus
+  assignedByStaffId?: Prisma.StringNullableFilter<"BookingServiceAssignment"> | string | null
+  assignedAt?: Prisma.DateTimeFilter<"BookingServiceAssignment"> | Date | string
+}
+
+export type BookingServiceAssignmentCreateWithoutBookingServiceInput = {
+  id?: string
+  role: $Enums.AssignmentRole
+  assignmentSource: $Enums.AssignmentSource
+  status?: $Enums.AssignmentRowStatus
+  assignedByStaffId?: string | null
+  assignedAt?: Date | string
+  artist: Prisma.ArtistProfileCreateNestedOneWithoutBookingAssignmentsInput
 }
 
 export type BookingServiceAssignmentUncheckedCreateWithoutBookingServiceInput = {
@@ -489,18 +593,44 @@ export type BookingServiceAssignmentUpdateManyWithWhereWithoutBookingServiceInpu
   data: Prisma.XOR<Prisma.BookingServiceAssignmentUpdateManyMutationInput, Prisma.BookingServiceAssignmentUncheckedUpdateManyWithoutBookingServiceInput>
 }
 
-export type BookingServiceAssignmentScalarWhereInput = {
-  AND?: Prisma.BookingServiceAssignmentScalarWhereInput | Prisma.BookingServiceAssignmentScalarWhereInput[]
-  OR?: Prisma.BookingServiceAssignmentScalarWhereInput[]
-  NOT?: Prisma.BookingServiceAssignmentScalarWhereInput | Prisma.BookingServiceAssignmentScalarWhereInput[]
-  id?: Prisma.StringFilter<"BookingServiceAssignment"> | string
-  bookingServiceId?: Prisma.StringFilter<"BookingServiceAssignment"> | string
-  artistId?: Prisma.StringFilter<"BookingServiceAssignment"> | string
-  role?: Prisma.EnumAssignmentRoleFilter<"BookingServiceAssignment"> | $Enums.AssignmentRole
-  assignmentSource?: Prisma.EnumAssignmentSourceFilter<"BookingServiceAssignment"> | $Enums.AssignmentSource
-  status?: Prisma.EnumAssignmentRowStatusFilter<"BookingServiceAssignment"> | $Enums.AssignmentRowStatus
-  assignedByStaffId?: Prisma.StringNullableFilter<"BookingServiceAssignment"> | string | null
-  assignedAt?: Prisma.DateTimeFilter<"BookingServiceAssignment"> | Date | string
+export type BookingServiceAssignmentCreateManyArtistInput = {
+  id?: string
+  bookingServiceId: string
+  role: $Enums.AssignmentRole
+  assignmentSource: $Enums.AssignmentSource
+  status?: $Enums.AssignmentRowStatus
+  assignedByStaffId?: string | null
+  assignedAt?: Date | string
+}
+
+export type BookingServiceAssignmentUpdateWithoutArtistInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumAssignmentRoleFieldUpdateOperationsInput | $Enums.AssignmentRole
+  assignmentSource?: Prisma.EnumAssignmentSourceFieldUpdateOperationsInput | $Enums.AssignmentSource
+  status?: Prisma.EnumAssignmentRowStatusFieldUpdateOperationsInput | $Enums.AssignmentRowStatus
+  assignedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  bookingService?: Prisma.BookingServiceUpdateOneRequiredWithoutAssignmentsNestedInput
+}
+
+export type BookingServiceAssignmentUncheckedUpdateWithoutArtistInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  bookingServiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumAssignmentRoleFieldUpdateOperationsInput | $Enums.AssignmentRole
+  assignmentSource?: Prisma.EnumAssignmentSourceFieldUpdateOperationsInput | $Enums.AssignmentSource
+  status?: Prisma.EnumAssignmentRowStatusFieldUpdateOperationsInput | $Enums.AssignmentRowStatus
+  assignedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type BookingServiceAssignmentUncheckedUpdateManyWithoutArtistInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  bookingServiceId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumAssignmentRoleFieldUpdateOperationsInput | $Enums.AssignmentRole
+  assignmentSource?: Prisma.EnumAssignmentSourceFieldUpdateOperationsInput | $Enums.AssignmentSource
+  status?: Prisma.EnumAssignmentRowStatusFieldUpdateOperationsInput | $Enums.AssignmentRowStatus
+  assignedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type BookingServiceAssignmentCreateManyBookingServiceInput = {
@@ -515,12 +645,12 @@ export type BookingServiceAssignmentCreateManyBookingServiceInput = {
 
 export type BookingServiceAssignmentUpdateWithoutBookingServiceInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  artistId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.EnumAssignmentRoleFieldUpdateOperationsInput | $Enums.AssignmentRole
   assignmentSource?: Prisma.EnumAssignmentSourceFieldUpdateOperationsInput | $Enums.AssignmentSource
   status?: Prisma.EnumAssignmentRowStatusFieldUpdateOperationsInput | $Enums.AssignmentRowStatus
   assignedByStaffId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artist?: Prisma.ArtistProfileUpdateOneRequiredWithoutBookingAssignmentsNestedInput
 }
 
 export type BookingServiceAssignmentUncheckedUpdateWithoutBookingServiceInput = {
@@ -555,6 +685,7 @@ export type BookingServiceAssignmentSelect<ExtArgs extends runtime.Types.Extensi
   assignedByStaffId?: boolean
   assignedAt?: boolean
   bookingService?: boolean | Prisma.BookingServiceDefaultArgs<ExtArgs>
+  artist?: boolean | Prisma.ArtistProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["bookingServiceAssignment"]>
 
 export type BookingServiceAssignmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -567,6 +698,7 @@ export type BookingServiceAssignmentSelectCreateManyAndReturn<ExtArgs extends ru
   assignedByStaffId?: boolean
   assignedAt?: boolean
   bookingService?: boolean | Prisma.BookingServiceDefaultArgs<ExtArgs>
+  artist?: boolean | Prisma.ArtistProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["bookingServiceAssignment"]>
 
 export type BookingServiceAssignmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -579,6 +711,7 @@ export type BookingServiceAssignmentSelectUpdateManyAndReturn<ExtArgs extends ru
   assignedByStaffId?: boolean
   assignedAt?: boolean
   bookingService?: boolean | Prisma.BookingServiceDefaultArgs<ExtArgs>
+  artist?: boolean | Prisma.ArtistProfileDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["bookingServiceAssignment"]>
 
 export type BookingServiceAssignmentSelectScalar = {
@@ -595,18 +728,22 @@ export type BookingServiceAssignmentSelectScalar = {
 export type BookingServiceAssignmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "bookingServiceId" | "artistId" | "role" | "assignmentSource" | "status" | "assignedByStaffId" | "assignedAt", ExtArgs["result"]["bookingServiceAssignment"]>
 export type BookingServiceAssignmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bookingService?: boolean | Prisma.BookingServiceDefaultArgs<ExtArgs>
+  artist?: boolean | Prisma.ArtistProfileDefaultArgs<ExtArgs>
 }
 export type BookingServiceAssignmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bookingService?: boolean | Prisma.BookingServiceDefaultArgs<ExtArgs>
+  artist?: boolean | Prisma.ArtistProfileDefaultArgs<ExtArgs>
 }
 export type BookingServiceAssignmentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   bookingService?: boolean | Prisma.BookingServiceDefaultArgs<ExtArgs>
+  artist?: boolean | Prisma.ArtistProfileDefaultArgs<ExtArgs>
 }
 
 export type $BookingServiceAssignmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "BookingServiceAssignment"
   objects: {
     bookingService: Prisma.$BookingServicePayload<ExtArgs>
+    artist: Prisma.$ArtistProfilePayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1012,6 +1149,7 @@ readonly fields: BookingServiceAssignmentFieldRefs;
 export interface Prisma__BookingServiceAssignmentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   bookingService<T extends Prisma.BookingServiceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.BookingServiceDefaultArgs<ExtArgs>>): Prisma.Prisma__BookingServiceClient<runtime.Types.Result.GetResult<Prisma.$BookingServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  artist<T extends Prisma.ArtistProfileDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ArtistProfileDefaultArgs<ExtArgs>>): Prisma.Prisma__ArtistProfileClient<runtime.Types.Result.GetResult<Prisma.$ArtistProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

@@ -226,6 +226,7 @@ export type ArtistProfileWhereInput = {
   artistServices?: Prisma.ArtistServiceListRelationFilter
   workSchedules?: Prisma.ArtistWorkScheduleListRelationFilter
   scheduleExceptions?: Prisma.ArtistScheduleExceptionListRelationFilter
+  bookingAssignments?: Prisma.BookingServiceAssignmentListRelationFilter
 }
 
 export type ArtistProfileOrderByWithRelationInput = {
@@ -243,6 +244,7 @@ export type ArtistProfileOrderByWithRelationInput = {
   artistServices?: Prisma.ArtistServiceOrderByRelationAggregateInput
   workSchedules?: Prisma.ArtistWorkScheduleOrderByRelationAggregateInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionOrderByRelationAggregateInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentOrderByRelationAggregateInput
 }
 
 export type ArtistProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -263,6 +265,7 @@ export type ArtistProfileWhereUniqueInput = Prisma.AtLeast<{
   artistServices?: Prisma.ArtistServiceListRelationFilter
   workSchedules?: Prisma.ArtistWorkScheduleListRelationFilter
   scheduleExceptions?: Prisma.ArtistScheduleExceptionListRelationFilter
+  bookingAssignments?: Prisma.BookingServiceAssignmentListRelationFilter
 }, "id" | "accountId">
 
 export type ArtistProfileOrderByWithAggregationInput = {
@@ -311,6 +314,7 @@ export type ArtistProfileCreateInput = {
   artistServices?: Prisma.ArtistServiceCreateNestedManyWithoutArtistInput
   workSchedules?: Prisma.ArtistWorkScheduleCreateNestedManyWithoutArtistInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionCreateNestedManyWithoutArtistInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileUncheckedCreateInput = {
@@ -327,6 +331,7 @@ export type ArtistProfileUncheckedCreateInput = {
   artistServices?: Prisma.ArtistServiceUncheckedCreateNestedManyWithoutArtistInput
   workSchedules?: Prisma.ArtistWorkScheduleUncheckedCreateNestedManyWithoutArtistInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionUncheckedCreateNestedManyWithoutArtistInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUncheckedCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileUpdateInput = {
@@ -343,6 +348,7 @@ export type ArtistProfileUpdateInput = {
   artistServices?: Prisma.ArtistServiceUpdateManyWithoutArtistNestedInput
   workSchedules?: Prisma.ArtistWorkScheduleUpdateManyWithoutArtistNestedInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionUpdateManyWithoutArtistNestedInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUpdateManyWithoutArtistNestedInput
 }
 
 export type ArtistProfileUncheckedUpdateInput = {
@@ -359,6 +365,7 @@ export type ArtistProfileUncheckedUpdateInput = {
   artistServices?: Prisma.ArtistServiceUncheckedUpdateManyWithoutArtistNestedInput
   workSchedules?: Prisma.ArtistWorkScheduleUncheckedUpdateManyWithoutArtistNestedInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionUncheckedUpdateManyWithoutArtistNestedInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUncheckedUpdateManyWithoutArtistNestedInput
 }
 
 export type ArtistProfileCreateManyInput = {
@@ -494,6 +501,20 @@ export type ArtistProfileUpdateOneRequiredWithoutArtistServicesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ArtistProfileUpdateToOneWithWhereWithoutArtistServicesInput, Prisma.ArtistProfileUpdateWithoutArtistServicesInput>, Prisma.ArtistProfileUncheckedUpdateWithoutArtistServicesInput>
 }
 
+export type ArtistProfileCreateNestedOneWithoutBookingAssignmentsInput = {
+  create?: Prisma.XOR<Prisma.ArtistProfileCreateWithoutBookingAssignmentsInput, Prisma.ArtistProfileUncheckedCreateWithoutBookingAssignmentsInput>
+  connectOrCreate?: Prisma.ArtistProfileCreateOrConnectWithoutBookingAssignmentsInput
+  connect?: Prisma.ArtistProfileWhereUniqueInput
+}
+
+export type ArtistProfileUpdateOneRequiredWithoutBookingAssignmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.ArtistProfileCreateWithoutBookingAssignmentsInput, Prisma.ArtistProfileUncheckedCreateWithoutBookingAssignmentsInput>
+  connectOrCreate?: Prisma.ArtistProfileCreateOrConnectWithoutBookingAssignmentsInput
+  upsert?: Prisma.ArtistProfileUpsertWithoutBookingAssignmentsInput
+  connect?: Prisma.ArtistProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ArtistProfileUpdateToOneWithWhereWithoutBookingAssignmentsInput, Prisma.ArtistProfileUpdateWithoutBookingAssignmentsInput>, Prisma.ArtistProfileUncheckedUpdateWithoutBookingAssignmentsInput>
+}
+
 export type ArtistProfileCreateNestedOneWithoutWorkSchedulesInput = {
   create?: Prisma.XOR<Prisma.ArtistProfileCreateWithoutWorkSchedulesInput, Prisma.ArtistProfileUncheckedCreateWithoutWorkSchedulesInput>
   connectOrCreate?: Prisma.ArtistProfileCreateOrConnectWithoutWorkSchedulesInput
@@ -535,6 +556,7 @@ export type ArtistProfileCreateWithoutAccountInput = {
   artistServices?: Prisma.ArtistServiceCreateNestedManyWithoutArtistInput
   workSchedules?: Prisma.ArtistWorkScheduleCreateNestedManyWithoutArtistInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionCreateNestedManyWithoutArtistInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileUncheckedCreateWithoutAccountInput = {
@@ -550,6 +572,7 @@ export type ArtistProfileUncheckedCreateWithoutAccountInput = {
   artistServices?: Prisma.ArtistServiceUncheckedCreateNestedManyWithoutArtistInput
   workSchedules?: Prisma.ArtistWorkScheduleUncheckedCreateNestedManyWithoutArtistInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionUncheckedCreateNestedManyWithoutArtistInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUncheckedCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileCreateOrConnectWithoutAccountInput = {
@@ -581,6 +604,7 @@ export type ArtistProfileUpdateWithoutAccountInput = {
   artistServices?: Prisma.ArtistServiceUpdateManyWithoutArtistNestedInput
   workSchedules?: Prisma.ArtistWorkScheduleUpdateManyWithoutArtistNestedInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionUpdateManyWithoutArtistNestedInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUpdateManyWithoutArtistNestedInput
 }
 
 export type ArtistProfileUncheckedUpdateWithoutAccountInput = {
@@ -596,6 +620,7 @@ export type ArtistProfileUncheckedUpdateWithoutAccountInput = {
   artistServices?: Prisma.ArtistServiceUncheckedUpdateManyWithoutArtistNestedInput
   workSchedules?: Prisma.ArtistWorkScheduleUncheckedUpdateManyWithoutArtistNestedInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionUncheckedUpdateManyWithoutArtistNestedInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUncheckedUpdateManyWithoutArtistNestedInput
 }
 
 export type ArtistProfileCreateWithoutArtistServicesInput = {
@@ -611,6 +636,7 @@ export type ArtistProfileCreateWithoutArtistServicesInput = {
   account: Prisma.AccountCreateNestedOneWithoutArtistProfileInput
   workSchedules?: Prisma.ArtistWorkScheduleCreateNestedManyWithoutArtistInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionCreateNestedManyWithoutArtistInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileUncheckedCreateWithoutArtistServicesInput = {
@@ -626,6 +652,7 @@ export type ArtistProfileUncheckedCreateWithoutArtistServicesInput = {
   updatedAt?: Date | string
   workSchedules?: Prisma.ArtistWorkScheduleUncheckedCreateNestedManyWithoutArtistInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionUncheckedCreateNestedManyWithoutArtistInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUncheckedCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileCreateOrConnectWithoutArtistServicesInput = {
@@ -657,6 +684,7 @@ export type ArtistProfileUpdateWithoutArtistServicesInput = {
   account?: Prisma.AccountUpdateOneRequiredWithoutArtistProfileNestedInput
   workSchedules?: Prisma.ArtistWorkScheduleUpdateManyWithoutArtistNestedInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionUpdateManyWithoutArtistNestedInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUpdateManyWithoutArtistNestedInput
 }
 
 export type ArtistProfileUncheckedUpdateWithoutArtistServicesInput = {
@@ -670,6 +698,87 @@ export type ArtistProfileUncheckedUpdateWithoutArtistServicesInput = {
   isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  workSchedules?: Prisma.ArtistWorkScheduleUncheckedUpdateManyWithoutArtistNestedInput
+  scheduleExceptions?: Prisma.ArtistScheduleExceptionUncheckedUpdateManyWithoutArtistNestedInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUncheckedUpdateManyWithoutArtistNestedInput
+}
+
+export type ArtistProfileCreateWithoutBookingAssignmentsInput = {
+  id?: string
+  firstName: string
+  lastName: string
+  displayName: string
+  specialization?: string | null
+  bio?: string | null
+  isAvailable?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  account: Prisma.AccountCreateNestedOneWithoutArtistProfileInput
+  artistServices?: Prisma.ArtistServiceCreateNestedManyWithoutArtistInput
+  workSchedules?: Prisma.ArtistWorkScheduleCreateNestedManyWithoutArtistInput
+  scheduleExceptions?: Prisma.ArtistScheduleExceptionCreateNestedManyWithoutArtistInput
+}
+
+export type ArtistProfileUncheckedCreateWithoutBookingAssignmentsInput = {
+  id?: string
+  accountId: string
+  firstName: string
+  lastName: string
+  displayName: string
+  specialization?: string | null
+  bio?: string | null
+  isAvailable?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  artistServices?: Prisma.ArtistServiceUncheckedCreateNestedManyWithoutArtistInput
+  workSchedules?: Prisma.ArtistWorkScheduleUncheckedCreateNestedManyWithoutArtistInput
+  scheduleExceptions?: Prisma.ArtistScheduleExceptionUncheckedCreateNestedManyWithoutArtistInput
+}
+
+export type ArtistProfileCreateOrConnectWithoutBookingAssignmentsInput = {
+  where: Prisma.ArtistProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.ArtistProfileCreateWithoutBookingAssignmentsInput, Prisma.ArtistProfileUncheckedCreateWithoutBookingAssignmentsInput>
+}
+
+export type ArtistProfileUpsertWithoutBookingAssignmentsInput = {
+  update: Prisma.XOR<Prisma.ArtistProfileUpdateWithoutBookingAssignmentsInput, Prisma.ArtistProfileUncheckedUpdateWithoutBookingAssignmentsInput>
+  create: Prisma.XOR<Prisma.ArtistProfileCreateWithoutBookingAssignmentsInput, Prisma.ArtistProfileUncheckedCreateWithoutBookingAssignmentsInput>
+  where?: Prisma.ArtistProfileWhereInput
+}
+
+export type ArtistProfileUpdateToOneWithWhereWithoutBookingAssignmentsInput = {
+  where?: Prisma.ArtistProfileWhereInput
+  data: Prisma.XOR<Prisma.ArtistProfileUpdateWithoutBookingAssignmentsInput, Prisma.ArtistProfileUncheckedUpdateWithoutBookingAssignmentsInput>
+}
+
+export type ArtistProfileUpdateWithoutBookingAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  account?: Prisma.AccountUpdateOneRequiredWithoutArtistProfileNestedInput
+  artistServices?: Prisma.ArtistServiceUpdateManyWithoutArtistNestedInput
+  workSchedules?: Prisma.ArtistWorkScheduleUpdateManyWithoutArtistNestedInput
+  scheduleExceptions?: Prisma.ArtistScheduleExceptionUpdateManyWithoutArtistNestedInput
+}
+
+export type ArtistProfileUncheckedUpdateWithoutBookingAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  firstName?: Prisma.StringFieldUpdateOperationsInput | string
+  lastName?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  specialization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  artistServices?: Prisma.ArtistServiceUncheckedUpdateManyWithoutArtistNestedInput
   workSchedules?: Prisma.ArtistWorkScheduleUncheckedUpdateManyWithoutArtistNestedInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionUncheckedUpdateManyWithoutArtistNestedInput
 }
@@ -687,6 +796,7 @@ export type ArtistProfileCreateWithoutWorkSchedulesInput = {
   account: Prisma.AccountCreateNestedOneWithoutArtistProfileInput
   artistServices?: Prisma.ArtistServiceCreateNestedManyWithoutArtistInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionCreateNestedManyWithoutArtistInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileUncheckedCreateWithoutWorkSchedulesInput = {
@@ -702,6 +812,7 @@ export type ArtistProfileUncheckedCreateWithoutWorkSchedulesInput = {
   updatedAt?: Date | string
   artistServices?: Prisma.ArtistServiceUncheckedCreateNestedManyWithoutArtistInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionUncheckedCreateNestedManyWithoutArtistInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUncheckedCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileCreateOrConnectWithoutWorkSchedulesInput = {
@@ -733,6 +844,7 @@ export type ArtistProfileUpdateWithoutWorkSchedulesInput = {
   account?: Prisma.AccountUpdateOneRequiredWithoutArtistProfileNestedInput
   artistServices?: Prisma.ArtistServiceUpdateManyWithoutArtistNestedInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionUpdateManyWithoutArtistNestedInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUpdateManyWithoutArtistNestedInput
 }
 
 export type ArtistProfileUncheckedUpdateWithoutWorkSchedulesInput = {
@@ -748,6 +860,7 @@ export type ArtistProfileUncheckedUpdateWithoutWorkSchedulesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   artistServices?: Prisma.ArtistServiceUncheckedUpdateManyWithoutArtistNestedInput
   scheduleExceptions?: Prisma.ArtistScheduleExceptionUncheckedUpdateManyWithoutArtistNestedInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUncheckedUpdateManyWithoutArtistNestedInput
 }
 
 export type ArtistProfileCreateWithoutScheduleExceptionsInput = {
@@ -763,6 +876,7 @@ export type ArtistProfileCreateWithoutScheduleExceptionsInput = {
   account: Prisma.AccountCreateNestedOneWithoutArtistProfileInput
   artistServices?: Prisma.ArtistServiceCreateNestedManyWithoutArtistInput
   workSchedules?: Prisma.ArtistWorkScheduleCreateNestedManyWithoutArtistInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileUncheckedCreateWithoutScheduleExceptionsInput = {
@@ -778,6 +892,7 @@ export type ArtistProfileUncheckedCreateWithoutScheduleExceptionsInput = {
   updatedAt?: Date | string
   artistServices?: Prisma.ArtistServiceUncheckedCreateNestedManyWithoutArtistInput
   workSchedules?: Prisma.ArtistWorkScheduleUncheckedCreateNestedManyWithoutArtistInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUncheckedCreateNestedManyWithoutArtistInput
 }
 
 export type ArtistProfileCreateOrConnectWithoutScheduleExceptionsInput = {
@@ -809,6 +924,7 @@ export type ArtistProfileUpdateWithoutScheduleExceptionsInput = {
   account?: Prisma.AccountUpdateOneRequiredWithoutArtistProfileNestedInput
   artistServices?: Prisma.ArtistServiceUpdateManyWithoutArtistNestedInput
   workSchedules?: Prisma.ArtistWorkScheduleUpdateManyWithoutArtistNestedInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUpdateManyWithoutArtistNestedInput
 }
 
 export type ArtistProfileUncheckedUpdateWithoutScheduleExceptionsInput = {
@@ -824,6 +940,7 @@ export type ArtistProfileUncheckedUpdateWithoutScheduleExceptionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   artistServices?: Prisma.ArtistServiceUncheckedUpdateManyWithoutArtistNestedInput
   workSchedules?: Prisma.ArtistWorkScheduleUncheckedUpdateManyWithoutArtistNestedInput
+  bookingAssignments?: Prisma.BookingServiceAssignmentUncheckedUpdateManyWithoutArtistNestedInput
 }
 
 
@@ -835,12 +952,14 @@ export type ArtistProfileCountOutputType = {
   artistServices: number
   workSchedules: number
   scheduleExceptions: number
+  bookingAssignments: number
 }
 
 export type ArtistProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   artistServices?: boolean | ArtistProfileCountOutputTypeCountArtistServicesArgs
   workSchedules?: boolean | ArtistProfileCountOutputTypeCountWorkSchedulesArgs
   scheduleExceptions?: boolean | ArtistProfileCountOutputTypeCountScheduleExceptionsArgs
+  bookingAssignments?: boolean | ArtistProfileCountOutputTypeCountBookingAssignmentsArgs
 }
 
 /**
@@ -874,6 +993,13 @@ export type ArtistProfileCountOutputTypeCountScheduleExceptionsArgs<ExtArgs exte
   where?: Prisma.ArtistScheduleExceptionWhereInput
 }
 
+/**
+ * ArtistProfileCountOutputType without action
+ */
+export type ArtistProfileCountOutputTypeCountBookingAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BookingServiceAssignmentWhereInput
+}
+
 
 export type ArtistProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -890,6 +1016,7 @@ export type ArtistProfileSelect<ExtArgs extends runtime.Types.Extensions.Interna
   artistServices?: boolean | Prisma.ArtistProfile$artistServicesArgs<ExtArgs>
   workSchedules?: boolean | Prisma.ArtistProfile$workSchedulesArgs<ExtArgs>
   scheduleExceptions?: boolean | Prisma.ArtistProfile$scheduleExceptionsArgs<ExtArgs>
+  bookingAssignments?: boolean | Prisma.ArtistProfile$bookingAssignmentsArgs<ExtArgs>
   _count?: boolean | Prisma.ArtistProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["artistProfile"]>
 
@@ -940,6 +1067,7 @@ export type ArtistProfileInclude<ExtArgs extends runtime.Types.Extensions.Intern
   artistServices?: boolean | Prisma.ArtistProfile$artistServicesArgs<ExtArgs>
   workSchedules?: boolean | Prisma.ArtistProfile$workSchedulesArgs<ExtArgs>
   scheduleExceptions?: boolean | Prisma.ArtistProfile$scheduleExceptionsArgs<ExtArgs>
+  bookingAssignments?: boolean | Prisma.ArtistProfile$bookingAssignmentsArgs<ExtArgs>
   _count?: boolean | Prisma.ArtistProfileCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ArtistProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -956,6 +1084,7 @@ export type $ArtistProfilePayload<ExtArgs extends runtime.Types.Extensions.Inter
     artistServices: Prisma.$ArtistServicePayload<ExtArgs>[]
     workSchedules: Prisma.$ArtistWorkSchedulePayload<ExtArgs>[]
     scheduleExceptions: Prisma.$ArtistScheduleExceptionPayload<ExtArgs>[]
+    bookingAssignments: Prisma.$BookingServiceAssignmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1366,6 +1495,7 @@ export interface Prisma__ArtistProfileClient<T, Null = never, ExtArgs extends ru
   artistServices<T extends Prisma.ArtistProfile$artistServicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ArtistProfile$artistServicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArtistServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   workSchedules<T extends Prisma.ArtistProfile$workSchedulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ArtistProfile$workSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArtistWorkSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   scheduleExceptions<T extends Prisma.ArtistProfile$scheduleExceptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ArtistProfile$scheduleExceptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ArtistScheduleExceptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  bookingAssignments<T extends Prisma.ArtistProfile$bookingAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ArtistProfile$bookingAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BookingServiceAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1875,6 +2005,30 @@ export type ArtistProfile$scheduleExceptionsArgs<ExtArgs extends runtime.Types.E
   take?: number
   skip?: number
   distinct?: Prisma.ArtistScheduleExceptionScalarFieldEnum | Prisma.ArtistScheduleExceptionScalarFieldEnum[]
+}
+
+/**
+ * ArtistProfile.bookingAssignments
+ */
+export type ArtistProfile$bookingAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BookingServiceAssignment
+   */
+  select?: Prisma.BookingServiceAssignmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BookingServiceAssignment
+   */
+  omit?: Prisma.BookingServiceAssignmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BookingServiceAssignmentInclude<ExtArgs> | null
+  where?: Prisma.BookingServiceAssignmentWhereInput
+  orderBy?: Prisma.BookingServiceAssignmentOrderByWithRelationInput | Prisma.BookingServiceAssignmentOrderByWithRelationInput[]
+  cursor?: Prisma.BookingServiceAssignmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BookingServiceAssignmentScalarFieldEnum | Prisma.BookingServiceAssignmentScalarFieldEnum[]
 }
 
 /**

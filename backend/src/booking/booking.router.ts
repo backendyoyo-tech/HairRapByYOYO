@@ -10,7 +10,7 @@ const router = Router();
 // ============================================================
 
 // Availability search - public (for booking widget)
-router.get('/availability/search', bookingController.searchAvailability);
+router.post('/availability/search', bookingController.searchAvailability);
 
 // Booking quotes - client authenticated
 router.post('/booking-quotes', requireAuth, requireRole('CLIENT', 'RECEPTIONIST', 'ADMIN', 'SUPER_ADMIN'), bookingController.createQuote);

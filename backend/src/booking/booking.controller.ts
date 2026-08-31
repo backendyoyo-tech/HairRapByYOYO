@@ -1,26 +1,32 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import { AppError } from "../shared/errors/app-error.js";
-import { availabilityService, AvailabilitySearchParams } from "./availability.service.js";
+import { AppError } from "../shared/errors/index.js";
+import { availabilityService, AvailabilitySearchRequest } from "./availability.service.js";
 import { bookingQuoteService, BookingQuoteRequest } from "./booking-quote.service.js";
 import { bookingHoldService, CreateHoldRequest, HoldResourceInput } from "./booking-hold.service.js";
 import { bookingService, CreateBookingFromHoldRequest, RescheduleRequest, AssignArtistRequest, ReassignArtistRequest } from "./booking.service.js";
-import { PrismaClient } from "../shared/generated/prisma/index.js";
+import { PrismaClient } from "./generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { requireAuth, requireRole } from "../auth/actor.middleware.js";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 // ============================================================
 // ZOD VALIDATION SCHEMAS
 // ============================================================
 
 const AvailabilitySearchQuerySchema = z.object({
-  serviceIds: z.string().transform(s => s.split(',')).refine(arr => arr.length > 0, 'At least one serviceId required'),
-  date: z.string().datetime().transform(s => new Date(s)),
-  requestedArtistId: z.string().optional(),
-  partySize: z.coerce.number().int().positive().optional().default(1),
-  page: z.coerce.number().int().positive().optional().default(1),
-  limit: z.coerce.number().int().positive().max(100).optional().default(50),
+  clientId: z.string().uuid(),
+  requestedStartDate: z.string().datetime().transform(s => new Date(s)),
+  services: z.array(z.object({
+    serviceId: z.string(),
+    requestedArtistId: z.string().optional(),
+    preferredStartAt: z.string().datetime().transform(s => new Date(s)).optional(),
+  })).min(1, 'At least one service required'),
+  groupContext: z.object({
+    participantCount: z.number().int().positive().max(5).optional().default(1),
+  }).optional(),
 });
 
 const BookingQuoteSchema = z.object({
@@ -96,13 +102,13 @@ const TransitionStateSchema = z.object({
 
 export class BookingController {
   /**
-   * GET /api/v1/availability/search
+   * POST /api/v1/availability/search
    * Search available artist slots for services on a date
    */
   async searchAvailability(req: Request, res: Response, next: NextFunction) {
     try {
-      const query = AvailabilitySearchQuerySchema.parse(req.query);
-      const result = await availabilityService.searchAvailability(query as AvailabilitySearchParams);
+      const body = AvailabilitySearchQuerySchema.parse(req.body);
+      const result = await availabilityService.searchAvailability(body);
 
       res.json({
         success: true,
@@ -149,7 +155,7 @@ export class BookingController {
   async getQuote(req: Request, res: Response, next: NextFunction) {
     try {
       const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
-      const { quoteId } = req.params;
+      const { quoteId } = req.params as { quoteId: string };
 
       const quote = await bookingQuoteService.getQuote(quoteId);
       if (!quote) {
@@ -204,7 +210,7 @@ export class BookingController {
   async getHold(req: Request, res: Response, next: NextFunction) {
     try {
       const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
-      const { holdId } = req.params;
+      const { holdId } = req.params as { holdId: string };
 
       const hold = await bookingHoldService.getHold(holdId, clientId);
 
@@ -224,7 +230,7 @@ export class BookingController {
   async releaseHold(req: Request, res: Response, next: NextFunction) {
     try {
       const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
-      const { holdId } = req.params;
+      const { holdId } = req.params as { holdId: string };
 
       await bookingHoldService.releaseHold(holdId, clientId);
 
@@ -296,7 +302,7 @@ export class BookingController {
     try {
       const requesterId = (req as any).user?.accountId;
       const requesterRole = (req as any).user?.role;
-      const { bookingId } = req.params;
+      const { bookingId } = req.params as { bookingId: string };
 
       const booking = await bookingService.getBooking(bookingId, requesterId, requesterRole);
 
@@ -316,7 +322,7 @@ export class BookingController {
   async cancelBooking(req: Request, res: Response, next: NextFunction) {
     try {
       const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
-      const { bookingId } = req.params;
+      const { bookingId } = req.params as { bookingId: string };
 
       const body = CancelSchema.parse(req.body);
 
@@ -339,7 +345,7 @@ export class BookingController {
     try {
       const actorId = (req as any).user?.accountId;
       const actorType = (req as any).user?.role === 'CLIENT' ? 'CLIENT' : 'STAFF';
-      const { bookingId } = req.params;
+      const { bookingId } = req.params as { bookingId: string };
 
       const body = RescheduleSchema.parse(req.body);
       const request: RescheduleRequest = {
@@ -367,7 +373,7 @@ export class BookingController {
   async assignArtist(req: Request, res: Response, next: NextFunction) {
     try {
       const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
-      const { bookingServiceId } = req.params;
+      const { bookingServiceId } = req.params as { bookingServiceId: string };
 
       const body = AssignArtistSchema.parse(req.body);
       const request: AssignArtistRequest = {
@@ -396,7 +402,7 @@ export class BookingController {
   async reassignArtist(req: Request, res: Response, next: NextFunction) {
     try {
       const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
-      const { assignmentId } = req.params;
+      const { assignmentId } = req.params as { assignmentId: string };
 
       const body = ReassignArtistSchema.parse(req.body);
       const request: ReassignArtistRequest = {
@@ -423,7 +429,7 @@ export class BookingController {
   async transitionState(req: Request, res: Response, next: NextFunction) {
     try {
       const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
-      const { bookingId } = req.params;
+      const { bookingId } = req.params as { bookingId: string };
 
       const body = TransitionStateSchema.parse(req.body);
       const booking = await prisma.booking.findUnique({ where: { id: bookingId } });

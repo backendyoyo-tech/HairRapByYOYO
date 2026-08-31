@@ -1,9 +1,11 @@
-import { PrismaClient, Prisma } from "../shared/generated/prisma/index.js";
-import { AppError } from "../shared/errors/app-error.js";
+import { PrismaClient, Prisma } from "./generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { AppError } from "../shared/errors/index.js";
 import { bookingHoldService } from "./booking-hold.service.js";
 import { availabilityService } from "./availability.service.js";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 // State machine transition guards
 const VALID_TRANSITIONS: Record<string, string[]> = {
@@ -91,36 +93,50 @@ export class BookingService {
 
     // Build booking services from hold resources
     const quoteServices = quote.services as any[];
-    const bookingServicesData = hold.resources.map((resource, idx) => {
-      const quoteService = quoteServices[resource.serviceIndex || idx];
+    const bookingServicesData: Array<{
+      serviceId: string | undefined;
+      assignmentStrategy: string;
+      requestedArtistId: string | undefined;
+      plannedStartAt: Date;
+      plannedEndAt: Date;
+      bufferMinutes: number;
+      priceSnapshot: number;
+    }> = [];
+
+    for (let idx = 0; idx < hold.resources.length; idx++) {
+      const resource = hold.resources[idx];
+      const quoteService = quoteServices[resource.bookingServiceId
+        ? quoteServices.findIndex((qs: any) => qs.serviceId === resource.bookingServiceId)
+        : idx];
       const serviceId = quoteService?.serviceId;
       const service = quoteServices.find((qs: any) => qs.serviceId === serviceId);
       const serviceDetails = service ? await prisma.service.findUnique({ where: { id: serviceId } }) : null;
 
-      return {
+      bookingServicesData.push({
         serviceId,
         assignmentStrategy: quoteService?.assignmentStrategy || 'AUTO_ASSIGN',
         requestedArtistId: quoteService?.requestedArtistId || resource.artistId,
         plannedStartAt: resource.startAt,
         plannedEndAt: resource.endAt,
         bufferMinutes: 10,
-        priceSnapshot: serviceDetails?.price || 0,
-      };
-    });
+        priceSnapshot: serviceDetails ? Number(serviceDetails.price.toString()) : 0,
+      });
+    }
 
     // Calculate totals
-    const totalPrice = Number(quote.serviceTotal);
-    const totalAdvanceRequired = Number(quote.advanceRequired);
+    const totalPrice = Number(quote.serviceTotal.toString());
+    const totalAdvanceRequired = Number(quote.advanceRequired.toString());
     const advanceRule = quote.advanceRule;
 
     // Create booking in transaction
     const booking = await prisma.$transaction(async (tx) => {
       // Create booking
+      const firstSvc = bookingServicesData[0];
       const newBooking = await tx.booking.create({
         data: {
           clientId,
           status: 'CONFIRMED',
-          assignmentStrategy: bookingServicesData[0]?.assignmentStrategy || 'AUTO_ASSIGN',
+          assignmentStrategy: (firstSvc?.assignmentStrategy as any) || 'AUTO_ASSIGN',
           totalPrice,
           totalAdvanceRequired,
           advanceRule,
@@ -134,7 +150,13 @@ export class BookingService {
         await tx.bookingService.create({
           data: {
             bookingId: newBooking.id,
-            ...svcData,
+            serviceId: svcData.serviceId!,
+            assignmentStrategy: svcData.assignmentStrategy as any,
+            requestedArtistId: svcData.requestedArtistId,
+            plannedStartAt: svcData.plannedStartAt,
+            plannedEndAt: svcData.plannedEndAt,
+            bufferMinutes: svcData.bufferMinutes,
+            priceSnapshot: svcData.priceSnapshot,
           },
         });
       }
@@ -194,8 +216,6 @@ export class BookingService {
             assignments: {
               include: { artist: { include: { account: { select: { id: true } } } } },
             },
-            sessions: true,
-            consents: true,
           },
         },
         statusHistory: { orderBy: { createdAt: 'asc' } },
@@ -528,7 +548,7 @@ export class BookingService {
 
     await prisma.bookingService.update({
       where: { id: bookingServiceId },
-      data: { assignmentStatus },
+      data: { assignmentStatus: assignmentStatus as any },
     });
 
     return assignment;

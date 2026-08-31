@@ -1,8 +1,10 @@
-import { PrismaClient } from "../shared/generated/prisma/index.js";
-import { AppError } from "../shared/errors/app-error.js";
-import { availabilityService, AvailabilitySlot } from "./availability.service.js";
+import { PrismaClient } from "./generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { AppError } from "../shared/errors/index.js";
+import { availabilityService, AvailabilitySearchRequest, AvailabilitySlot } from "./availability.service.js";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 export interface QuoteServiceItem {
   serviceId: string;
@@ -76,14 +78,16 @@ export class BookingQuoteService {
       if (!service) continue;
 
       const availability = await availabilityService.searchAvailability({
-        serviceIds: [item.serviceId],
-        date,
-        requestedArtistId: item.requestedArtistId,
-        partySize,
-        limit: 10,
+        clientId,
+        requestedStartDate: date,
+        services: [{
+          serviceId: item.serviceId,
+          requestedArtistId: item.requestedArtistId,
+        }],
+        groupContext: { participantCount: partySize },
       });
 
-      if (availability.slots.length === 0) {
+      if (availability.length === 0 || availability[0].slots.length === 0) {
         warnings.push(`No availability for "${service.name}" on the requested date`);
       }
 
@@ -94,7 +98,7 @@ export class BookingQuoteService {
         price: Number(service.price),
         requestedArtistId: item.requestedArtistId,
         assignmentStrategy: item.assignmentStrategy,
-        availableSlots: availability.slots,
+        availableSlots: availability[0]?.slots || [],
       });
     }
 
@@ -130,7 +134,7 @@ export class BookingQuoteService {
         advanceRule,
         advanceRequired,
         expiresAt,
-        warnings: warnings.length > 0 ? warnings : null,
+        warnings: warnings.length > 0 ? warnings : undefined,
       },
     });
 
@@ -156,7 +160,7 @@ export class BookingQuoteService {
     if (!quote) return null;
 
     // Reconstruct service details
-    const serviceItems = quote.services as QuoteServiceItem[];
+    const serviceItems = quote.services as unknown as QuoteServiceItem[];
     const serviceIds = serviceItems.map(s => s.serviceId);
     const services = await prisma.service.findMany({
       where: { id: { in: serviceIds } },
@@ -169,10 +173,13 @@ export class BookingQuoteService {
       if (!service) continue;
 
       const availability = await availabilityService.searchAvailability({
-        serviceIds: [item.serviceId],
-        date: new Date(), // We'd need to store the date in the quote for exact reconstruction
-        requestedArtistId: item.requestedArtistId,
-        limit: 10,
+        clientId: quote.clientId,
+        requestedStartDate: new Date(), // We'd need to store the date in the quote for exact reconstruction
+        services: [{
+          serviceId: item.serviceId,
+          requestedArtistId: item.requestedArtistId,
+        }],
+        groupContext: { participantCount: 1 },
       });
 
       serviceResponses.push({
@@ -182,7 +189,7 @@ export class BookingQuoteService {
         price: Number(service.price),
         requestedArtistId: item.requestedArtistId,
         assignmentStrategy: item.assignmentStrategy,
-        availableSlots: availability.slots,
+        availableSlots: availability[0]?.slots || [],
       });
     }
 
@@ -193,7 +200,7 @@ export class BookingQuoteService {
       advanceRule: quote.advanceRule,
       advanceRequired: Number(quote.advanceRequired),
       expiresAt: quote.expiresAt,
-      warnings: quote.warnings as string[] || [],
+      warnings: quote.warnings as string[] | undefined || [],
     };
   }
 

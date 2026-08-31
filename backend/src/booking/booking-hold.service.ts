@@ -1,9 +1,11 @@
-import { PrismaClient, Prisma } from "../shared/generated/prisma/index.js";
-import { AppError } from "../shared/errors/app-error.js";
+import { PrismaClient, Prisma } from "./generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { AppError } from "../shared/errors/index.js";
 import { bookingQuoteService } from "./booking-quote.service.js";
 import { availabilityService } from "./availability.service.js";
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 export interface HoldResourceInput {
   serviceIndex: number; // Index into quote.services array
@@ -53,7 +55,7 @@ export class BookingHoldService {
     if (existingKey) {
       // Return cached response if exists
       if (existingKey.responseBody) {
-        return existingKey.responseBody as CreateHoldResponse;
+        return existingKey.responseBody as unknown as CreateHoldResponse;
       }
       throw new AppError(409, 'IDEMPOTENCY_CONFLICT', 'Idempotency key already used with different request');
     }
