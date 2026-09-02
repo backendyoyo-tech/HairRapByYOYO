@@ -5,29 +5,17 @@ import { availabilityService, AvailabilitySearchRequest } from "./availability.s
 import { bookingQuoteService, BookingQuoteRequest } from "./booking-quote.service.js";
 import { bookingHoldService, CreateHoldRequest, HoldResourceInput } from "./booking-hold.service.js";
 import { bookingService, CreateBookingFromHoldRequest, RescheduleRequest, AssignArtistRequest, ReassignArtistRequest } from "./booking.service.js";
+import { paymentService, CreateAdvanceOrderRequest, VerifyPaymentRequest } from "./payment.service.js";
 import { PrismaClient } from "./generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { requireAuth, requireRole } from "../auth/actor.middleware.js";
-
+import { AvailabilitySearchQuerySchema } from './booking.validation.js';
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
 // ============================================================
 // ZOD VALIDATION SCHEMAS
 // ============================================================
-
-const AvailabilitySearchQuerySchema = z.object({
-  clientId: z.string().uuid(),
-  requestedStartDate: z.string().datetime().transform(s => new Date(s)),
-  services: z.array(z.object({
-    serviceId: z.string(),
-    requestedArtistId: z.string().optional(),
-    preferredStartAt: z.string().datetime().transform(s => new Date(s)).optional(),
-  })).min(1, 'At least one service required'),
-  groupContext: z.object({
-    participantCount: z.number().int().positive().max(5).optional().default(1),
-  }).optional(),
-});
 
 const BookingQuoteSchema = z.object({
   serviceItems: z.array(z.object({
@@ -52,6 +40,19 @@ const CreateHoldSchema = z.object({
 
 const CreateBookingFromHoldSchema = z.object({
   holdId: z.string(),
+  idempotencyKey: z.string().min(1, 'Idempotency key required'),
+});
+
+const AdvanceOrderSchema = z.object({
+  holdId: z.string(),
+  idempotencyKey: z.string().min(1, 'Idempotency key required'),
+});
+
+const VerifyPaymentSchema = z.object({
+  holdId: z.string(),
+  razorpayPaymentId: z.string(),
+  razorpayOrderId: z.string(),
+  razorpaySignature: z.string(),
   idempotencyKey: z.string().min(1, 'Idempotency key required'),
 });
 
@@ -96,6 +97,11 @@ const TransitionStateSchema = z.object({
   reason: z.string().optional(),
 });
 
+const WebhookSchema = z.object({
+  event: z.string(),
+  payload: z.any(),
+});
+
 // ============================================================
 // CONTROLLER
 // ============================================================
@@ -107,12 +113,76 @@ export class BookingController {
    */
   async searchAvailability(req: Request, res: Response, next: NextFunction) {
     try {
+      // Validate public API request
       const body = AvailabilitySearchQuerySchema.parse(req.body);
-      const result = await availabilityService.searchAvailability(body);
 
-      res.json({
+      // Convert YYYY-MM-DD into the Date format expected by availabilityService
+      const requestedStartDate = new Date(`${body.date}T00:00:00`);
+
+      // Convert public API shape into internal availability service shape
+      const availabilityRequest: AvailabilitySearchRequest = {
+        requestedStartDate,
+
+        services: body.serviceIds.map((serviceId) => ({
+          serviceId,
+          ...(body.artistId
+            ? { requestedArtistId: body.artistId }
+            : {}),
+        })),
+
+        groupContext: {
+          participantCount: body.partySize,
+        },
+      };
+
+      const result = await availabilityService.searchAvailability(
+        availabilityRequest
+      );
+
+      // Apply preferred time-window filters to generated slots
+      const filteredResult = result.map((serviceResult) => {
+        const slots = serviceResult.slots.filter((slot) => {
+          const hours = slot.startAt.getHours().toString().padStart(2, '0');
+          const minutes = slot.startAt.getMinutes().toString().padStart(2, '0');
+          const slotTime = `${hours}:${minutes}`;
+
+          if (
+            body.preferredStartWindow &&
+            slotTime < body.preferredStartWindow
+          ) {
+            return false;
+          }
+
+          if (
+            body.preferredEndWindow &&
+            slotTime >= body.preferredEndWindow
+          ) {
+            return false;
+          }
+
+          return true;
+        });
+
+        const page = 1;
+        const limit = 50;
+        const total = slots.length;
+        const totalPages = Math.ceil(total / limit);
+
+        return {
+          ...serviceResult,
+          slots: slots.slice(0, limit),
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages,
+          },
+        };
+      });
+
+      return res.status(200).json({
         success: true,
-        data: result,
+        data: filteredResult,
       });
     } catch (error) {
       next(error);
@@ -449,6 +519,106 @@ export class BookingController {
       res.json({
         success: true,
         data: { message: `Booking transitioned to ${body.toStatus}` },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/booking-holds/:holdId/advance-order
+   * Create Razorpay advance order for hold
+   */
+  async createAdvanceOrder(req: Request, res: Response, next: NextFunction) {
+    try {
+      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
+      if (!clientId) {
+        throw new AppError(401, 'UNAUTHORIZED', 'Client authentication required');
+      }
+
+      const { holdId } = req.params as { holdId: string };
+      const body = AdvanceOrderSchema.parse(req.body);
+      const request: CreateAdvanceOrderRequest = {
+        holdId,
+        idempotencyKey: body.idempotencyKey,
+      };
+
+      const order = await paymentService.createAdvanceOrder(request, clientId);
+
+      res.status(201).json({
+        success: true,
+        data: order,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/booking-holds/:holdId/verify-payment
+   * Verify payment and confirm booking
+   */
+  async verifyPayment(req: Request, res: Response, next: NextFunction) {
+    try {
+      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
+      if (!clientId) {
+        throw new AppError(401, 'UNAUTHORIZED', 'Client authentication required');
+      }
+
+      const { holdId } = req.params as { holdId: string };
+      const body = VerifyPaymentSchema.parse(req.body);
+      const request: VerifyPaymentRequest = {
+        holdId,
+        razorpayPaymentId: body.razorpayPaymentId,
+        razorpayOrderId: body.razorpayOrderId,
+        razorpaySignature: body.razorpaySignature,
+        idempotencyKey: body.idempotencyKey,
+      };
+
+      const result = await paymentService.verifyPaymentAndConfirmBooking(request, clientId);
+
+      res.status(201).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/webhooks/razorpay
+   * Handle Razorpay webhook events
+   */
+  async handleRazorpayWebhook(req: Request, res: Response, next: NextFunction) {
+    try {
+      const signature = req.headers['x-razorpay-signature'] as string;
+      const body = WebhookSchema.parse(req.body);
+
+      await paymentService.handleRazorpayWebhook(body, signature);
+
+      res.json({ success: true });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/v1/payments/:paymentId
+   * Get payment details
+   */
+  async getPayment(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { paymentId } = req.params as { paymentId: string };
+
+      const payment = await paymentService.getPayment(paymentId);
+      if (!payment) {
+        throw new AppError(404, 'NOT_FOUND', 'Payment not found');
+      }
+
+      res.json({
+        success: true,
+        data: payment,
       });
     } catch (error) {
       next(error);

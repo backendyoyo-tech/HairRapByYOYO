@@ -26,7 +26,7 @@ enum AccountType {
   CLIENT
 }
 
-enum AuthSessionStatus {
+enum SessionStatus {
   ACTIVE
   REVOKED
   EXPIRED
@@ -260,6 +260,9 @@ model ClientProfile {
 
   bookings      Booking[]
   holds         BookingHold[]
+  payments      Payment[]
+  invoices      Invoice[]
+  refunds       Refund[]
 }
 
 model Session {
@@ -268,7 +271,7 @@ model Session {
   account      Account        @relation(fields: [accountId], references: [id], onDelete: Cascade)
   refreshToken String         @unique
   accessToken  String         @unique
-  status       AuthSessionStatus  @default(ACTIVE)
+  status       SessionStatus @default(ACTIVE)
   expiresAt    DateTime
   createdAt    DateTime       @default(now())
   revokedAt    DateTime?
@@ -617,6 +620,8 @@ model Booking {
   holds               BookingHold[]
   statusHistory       BookingStatusHistory[]
   rescheduleHistory   BookingRescheduleHistory[]
+  payments            Payment[]
+  invoice             Invoice?
 
   @@index([clientId, status])
   @@index([status])
@@ -753,4 +758,125 @@ model IdempotencyKey {
 
   @@index([key])
   @@index([expiresAt])
+}
+
+// ============================================================
+// CLUSTER 6 — PAYMENTS & FINANCE (Day 9)
+// ============================================================
+
+model Payment {
+  id                  String   @id @default(cuid())
+  bookingId           String?
+  booking             Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  invoiceId           String?
+  invoice             Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  clientId            String
+  client              ClientProfile @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  purpose             PaymentPurpose
+  status              PaymentStatus @default(INITIATED)
+  amount              Decimal  @db.Decimal(10, 2)
+  currency            String   @default("INR")
+  provider            String?  // "razorpay", "cash", "wallet", "membership"
+  providerPaymentId   String?  @unique
+  providerOrderId     String?
+  providerSignature   String?
+  metadata            Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  succeededAt         DateTime?
+  failedAt            DateTime?
+  cancelledAt         DateTime?
+
+  refunds             Refund[]
+
+  @@index([bookingId])
+  @@index([invoiceId])
+  @@index([clientId, status])
+  @@index([providerPaymentId])
+  @@index([status, createdAt])
+}
+
+model PaymentWebhookEvent {
+  id                  String   @id @default(cuid())
+  provider            String   // "razorpay"
+  providerEventId     String   @unique
+  eventType           String   // "payment.captured", "payment.failed", etc.
+  payload             Json
+  processingStatus    WebhookProcessingStatus @default(RECEIVED)
+  errorMessage        String?
+  processedAt         DateTime?
+  createdAt           DateTime @default(now())
+
+  @@index([providerEventId])
+  @@index([provider, eventType])
+  @@index([processingStatus])
+}
+
+model Invoice {
+  id                  String   @id @default(cuid())
+  bookingId           String   @unique
+  booking             Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  clientId            String
+  client              ClientProfile @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  status              String   // "OPEN", "PARTIALLY_SETTLED", "CLOSED"
+  totalAmount         Decimal  @db.Decimal(10, 2)
+  advanceApplied      Decimal  @db.Decimal(10, 2) @default(0)
+  cashApplied         Decimal  @db.Decimal(10, 2) @default(0)
+  onlineApplied       Decimal  @db.Decimal(10, 2) @default(0)
+  walletApplied       Decimal  @db.Decimal(10, 2) @default(0)
+  membershipApplied   Decimal  @db.Decimal(10, 2) @default(0)
+  tipAmount           Decimal  @db.Decimal(10, 2) @default(0)
+  closedAt            DateTime?
+  closedByAccountId   String?
+  version             Int      @default(1)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  lineItems           InvoiceLineItem[]
+  payments            Payment[]
+
+  @@index([clientId, status])
+  @@index([status, createdAt])
+}
+
+model InvoiceLineItem {
+  id                  String   @id @default(cuid())
+  invoiceId           String
+  invoice             Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  type                String   // "SERVICE", "PRODUCT", "TIP", "FEE"
+  description         String
+  quantity            Int      @default(1)
+  unitPrice           Decimal  @db.Decimal(10, 2)
+  totalPrice          Decimal  @db.Decimal(10, 2)
+  bookingServiceId    String?
+  productId           String?
+  artistId            String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([invoiceId])
+  @@index([bookingServiceId])
+}
+
+model Refund {
+  id                  String   @id @default(cuid())
+  paymentId           String
+  payment             Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  clientId            String
+  client              ClientProfile @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  amount              Decimal  @db.Decimal(10, 2)
+  status              RefundStatus @default(REQUESTED)
+  destination         RefundDestination?
+  reason              String?
+  approvedByAccountId String?
+  approvedAt          DateTime?
+  executedAt          DateTime?
+  providerRefundId    String?
+  idempotencyKey      String   @unique
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([paymentId])
+  @@index([clientId, status])
+  @@index([status, createdAt])
 }
