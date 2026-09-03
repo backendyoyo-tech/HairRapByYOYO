@@ -6,6 +6,7 @@ import { bookingQuoteService, BookingQuoteRequest } from "./booking-quote.servic
 import { bookingHoldService, CreateHoldRequest, HoldResourceInput } from "./booking-hold.service.js";
 import { bookingService, CreateBookingFromHoldRequest, RescheduleRequest, AssignArtistRequest, ReassignArtistRequest } from "./booking.service.js";
 import { paymentService, CreateAdvanceOrderRequest, VerifyPaymentRequest } from "./payment.service.js";
+import { t30ConfirmationService, ConfirmProvisionalRequest, ResolveUnavailableArtistRequest } from "./t30-confirmation.service.js";
 import { PrismaClient } from "./generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { requireAuth, requireRole } from "../auth/actor.middleware.js";
@@ -108,6 +109,20 @@ const TransitionStateSchema = z.object({
 const WebhookSchema = z.object({
   event: z.string(),
   payload: z.any(),
+});
+
+const ConfirmProvisionalSchema = z.object({
+  idempotencyKey: z.string().min(1, 'Idempotency key required'),
+});
+
+const ResolveUnavailableArtistSchema = z.object({
+  recoveryOption: z.object({
+    type: z.enum(['SAME_ARTIST_DIFFERENT_TIME', 'SAME_TIME_DIFFERENT_ARTIST']),
+    newStartAt: z.string().datetime().transform(s => new Date(s)).optional(),
+    newEndAt: z.string().datetime().transform(s => new Date(s)).optional(),
+    newArtistId: z.string().optional(),
+  }),
+  idempotencyKey: z.string().min(1, 'Idempotency key required'),
 });
 
 // ============================================================
@@ -688,6 +703,117 @@ export class BookingController {
       res.json({
         success: true,
         data: payment,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/v1/admin/t30/queue
+   * Get T-30 provisional booking confirmation queue
+   */
+  async getT30Queue(req: Request, res: Response, next: NextFunction) {
+    try {
+      const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
+      
+      const queue = await t30ConfirmationService.getT30Queue();
+      
+      res.json({
+        success: true,
+        data: queue,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/admin/t30/confirm
+   * Confirm provisional specific artist at T-30
+   */
+  async confirmProvisional(req: Request, res: Response, next: NextFunction) {
+    try {
+      const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
+      const { bookingServiceId } = req.params as { bookingServiceId: string };
+      const body = ConfirmProvisionalSchema.parse(req.body);
+      
+      const request: ConfirmProvisionalRequest = {
+        bookingServiceId,
+        idempotencyKey: body.idempotencyKey,
+      };
+      
+      const result = await t30ConfirmationService.confirmProvisional(request, staffId);
+      
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/admin/t30/mark-exception
+   * Mark provisional booking as exception (artist unavailable at T-30)
+   */
+  async markProvisionalException(req: Request, res: Response, next: NextFunction) {
+    try {
+      const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
+      const { bookingServiceId } = req.params as { bookingServiceId: string };
+      
+      const result = await t30ConfirmationService.markProvisionalException(bookingServiceId, staffId);
+      
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * GET /api/v1/admin/t30/recovery-options
+   * Get recovery options for unavailable artist
+   */
+  async getRecoveryOptions(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { bookingServiceId } = req.params as { bookingServiceId: string };
+      
+      const options = await t30ConfirmationService.getRecoveryOptions(bookingServiceId);
+      
+      res.json({
+        success: true,
+        data: options,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/admin/t30/resolve-unavailable
+   * Resolve unavailable artist for provisional booking (admin action with client choice)
+   */
+  async resolveUnavailableArtist(req: Request, res: Response, next: NextFunction) {
+    try {
+      const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
+      const { bookingServiceId } = req.params as { bookingServiceId: string };
+      const body = ResolveUnavailableArtistSchema.parse(req.body);
+      
+      const request: ResolveUnavailableArtistRequest = {
+        bookingServiceId,
+        recoveryOption: body.recoveryOption,
+        idempotencyKey: body.idempotencyKey,
+      };
+      
+      const result = await t30ConfirmationService.resolveUnavailableArtist(request, staffId);
+      
+      res.json({
+        success: true,
+        data: result,
       });
     } catch (error) {
       next(error);

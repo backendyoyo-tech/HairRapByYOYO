@@ -44,11 +44,24 @@ router.get('/payments/:paymentId', requireAuth, requireRole('CLIENT', 'RECEPTION
 // STAFF ONLY ENDPOINTS
 // ============================================================
 
-// Artist assignment - receptionist/admin/super_admin
-router.post('/booking-services/:bookingServiceId/assign', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN', 'RECEPTIONIST'), bookingController.assignArtist);
-router.post('/booking-service-assignments/:assignmentId/reassign', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN', 'RECEPTIONIST'), bookingController.reassignArtist);
+// Artist assignment - admin/super_admin only (Receptionist not allowed per RBAC)
+router.post('/booking-services/:bookingServiceId/assign', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN'), bookingController.assignArtist);
+router.post('/booking-service-assignments/:assignmentId/reassign', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN'), bookingController.reassignArtist);
 
-// State machine transitions - receptionist/admin/super_admin
-router.post('/bookings/:bookingId/transition', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN', 'RECEPTIONIST'), bookingController.transitionState);
+// State machine transitions - admin/super_admin only
+router.post('/bookings/:bookingId/transition', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN'), bookingController.transitionState);
+
+// Assignment queue - admin/super_admin only
+router.get('/admin/assignment-queue', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN'), bookingController.getAssignmentQueue);
+
+// ============================================================
+// T-30 SPECIFIC ARTIST CONFIRMATION - ADMIN ONLY
+// ============================================================
+
+router.get('/admin/t30/queue', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN'), bookingController.getT30Queue);
+router.post('/admin/t30/confirm', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN'), idempotencyMiddleware, bookingController.confirmProvisional);
+router.post('/admin/t30/mark-exception', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN'), bookingController.markProvisionalException);
+router.get('/admin/t30/recovery-options/:bookingServiceId', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN'), bookingController.getRecoveryOptions);
+router.post('/admin/t30/resolve-unavailable', requireAuth, requireRole('SUPER_ADMIN', 'ADMIN'), idempotencyMiddleware, bookingController.resolveUnavailableArtist);
 
 export const bookingRouter = router;
