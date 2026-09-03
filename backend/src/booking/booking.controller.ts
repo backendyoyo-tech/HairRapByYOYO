@@ -576,6 +576,25 @@ export class BookingController {
   }
 
   /**
+   * GET /api/v1/admin/assignment-queue
+   * Get assignment queue for services needing manual assignment
+   */
+  async getAssignmentQueue(req: Request, res: Response, next: NextFunction) {
+    try {
+      const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
+      
+      const queue = await bookingService.getAssignmentQueue();
+      
+      res.json({
+        success: true,
+        data: queue,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
    * POST /api/v1/booking-holds/:holdId/advance-order
    * Create Razorpay advance order for hold
    */

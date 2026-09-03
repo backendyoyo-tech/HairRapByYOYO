@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from "./generated/prisma/client.js";
+import { PrismaClient } from "./generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { AppError } from "../shared/errors/index.js";
 import { bookingHoldService } from "./booking-hold.service.js";
@@ -109,8 +109,7 @@ export class BookingService {
         ? quoteServices.findIndex((qs: any) => qs.serviceId === resource.bookingServiceId)
         : idx];
       const serviceId = quoteService?.serviceId;
-      const service = quoteServices.find((qs: any) => qs.serviceId === serviceId);
-      const serviceDetails = service ? await prisma.service.findUnique({ where: { id: serviceId } }) : null;
+      const serviceDetails = serviceId ? await prisma.service.findUnique({ where: { id: serviceId } }) : null;
 
       bookingServicesData.push({
         serviceId,
@@ -286,72 +285,6 @@ export class BookingService {
   }
 
   /**
-   * Cancel booking with state machine validation
-   */
-  async cancelBooking(bookingId: string, clientId: string, reason: string) {
-    const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
-    if (!booking) {
-      throw new AppError(404, 'NOT_FOUND', 'Booking not found');
-    }
-    if (booking.clientId !== clientId) {
-      throw new AppError(403, 'FORBIDDEN', 'Not authorized to cancel this booking');
-    }
-
-    // State machine validation
-    if (!VALID_TRANSITIONS[booking.status].includes('CANCELLED')) {
-      throw new AppError(400, 'INVALID_STATE_TRANSITION',
-        `Cannot cancel booking in ${booking.status} state`);
-    }
-
-    // Check cancellation policy (e.g., not within 2 hours of service)
-    const upcomingService = await prisma.bookingService.findFirst({
-      where: {
-        bookingId,
-        plannedStartAt: { gt: new Date() },
-      },
-      orderBy: { plannedStartAt: 'asc' },
-    });
-
-    if (upcomingService) {
-      const hoursUntilService = (upcomingService.plannedStartAt.getTime() - Date.now()) / (1000 * 60 * 60);
-      if (hoursUntilService < 2) {
-        throw new AppError(400, 'CANCELLATION_POLICY', 'Cannot cancel within 2 hours of service start');
-      }
-    }
-
-    await prisma.$transaction(async (tx) => {
-      await tx.booking.update({
-        where: { id: bookingId },
-        data: {
-          status: 'CANCELLED',
-          cancelledAt: new Date(),
-          cancelReason: reason,
-          version: { increment: 1 },
-        },
-      });
-
-      await tx.bookingStatusHistory.create({
-        data: {
-          bookingId,
-          fromStatus: booking.status,
-          toStatus: 'CANCELLED',
-          actorType: 'CLIENT',
-          actorId: clientId,
-          reason,
-        },
-      });
-
-      // Release any active holds
-      await tx.bookingHold.updateMany({
-        where: { bookingId, status: 'HOLD_ACTIVE' },
-        data: { status: 'HOLD_RELEASED', releasedAt: new Date() },
-      });
-    });
-
-    return { success: true, status: 'CANCELLED' };
-  }
-
-  /**
    * Check in booking (client arrived)
    */
   async checkInBooking(bookingId: string, staffId: string, reason?: string) {
@@ -447,6 +380,72 @@ export class BookingService {
     });
 
     return { success: true, status: 'NO_SHOW' };
+  }
+
+  /**
+   * Cancel booking with state machine validation
+   */
+  async cancelBooking(bookingId: string, clientId: string, reason: string) {
+    const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+    if (!booking) {
+      throw new AppError(404, 'NOT_FOUND', 'Booking not found');
+    }
+    if (booking.clientId !== clientId) {
+      throw new AppError(403, 'FORBIDDEN', 'Not authorized to cancel this booking');
+    }
+
+    // State machine validation
+    if (!VALID_TRANSITIONS[booking.status].includes('CANCELLED')) {
+      throw new AppError(400, 'INVALID_STATE_TRANSITION',
+        `Cannot cancel booking in ${booking.status} state`);
+    }
+
+    // Check cancellation policy (e.g., not within 2 hours of service)
+    const upcomingService = await prisma.bookingService.findFirst({
+      where: {
+        bookingId,
+        plannedStartAt: { gt: new Date() },
+      },
+      orderBy: { plannedStartAt: 'asc' },
+    });
+
+    if (upcomingService) {
+      const hoursUntilService = (upcomingService.plannedStartAt.getTime() - Date.now()) / (1000 * 60 * 60);
+      if (hoursUntilService < 2) {
+        throw new AppError(400, 'CANCELLATION_POLICY', 'Cannot cancel within 2 hours of service start');
+      }
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.booking.update({
+        where: { id: bookingId },
+        data: {
+          status: 'CANCELLED',
+          cancelledAt: new Date(),
+          cancelReason: reason,
+          version: { increment: 1 },
+        },
+      });
+
+      await tx.bookingStatusHistory.create({
+        data: {
+          bookingId,
+          fromStatus: booking.status,
+          toStatus: 'CANCELLED',
+          actorType: 'CLIENT',
+          actorId: clientId,
+          reason,
+        },
+      });
+
+      // Release any active holds
+      await tx.bookingHold.updateMany({
+        where: { bookingId, status: 'HOLD_ACTIVE' },
+        data: { status: 'HOLD_RELEASED', releasedAt: new Date() },
+      });
+    });
+
+    return { success: true, status: 'CANCELLED' };
   }
 
   /**
@@ -584,6 +583,64 @@ export class BookingService {
     });
 
     return { success: true, moneyActionRequired };
+  }
+
+  /**
+   * Get assignment queue for services needing manual assignment
+   */
+  async getAssignmentQueue() {
+    const services = await prisma.bookingService.findMany({
+      where: {
+        assignmentStatus: {
+          in: ['AWAITING_ASSIGNMENT', 'PARTIALLY_ASSIGNED'],
+        },
+      },
+      include: {
+        booking: {
+          include: {
+            client: {
+              include: {
+                account: {
+                  select: { id: true, email: true, phone: true },
+                },
+              },
+            },
+          },
+        },
+        service: true,
+        assignments: {
+          include: {
+            artist: {
+              include: {
+                account: {
+                  select: { id: true, email: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return services.map((s) => ({
+      bookingServiceId: s.id,
+      bookingId: s.bookingId,
+      clientName: `${s.booking.client.firstName} ${s.booking.client.lastName}`,
+      serviceName: s.service.name,
+      serviceId: s.serviceId,
+      assignmentStatus: s.assignmentStatus,
+      requiredArtistCount: s.service.requiredArtistCount,
+      plannedStartAt: s.plannedStartAt,
+      plannedEndAt: s.plannedEndAt,
+      assignmentStrategy: s.assignmentStrategy,
+      requestedArtistId: s.requestedArtistId,
+      currentAssignments: s.assignments.map((a) => ({
+        artistId: a.artistId,
+        artistName: `${a.artist.firstName} ${a.artist.lastName}`,
+        role: a.role,
+        status: a.status,
+      })),
+    }));
   }
 
   /**
