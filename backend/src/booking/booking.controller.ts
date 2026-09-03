@@ -72,6 +72,14 @@ const CancelSchema = z.object({
   reason: z.string().min(1, 'Cancellation reason required'),
 });
 
+const CheckInSchema = z.object({
+  reason: z.string().optional(),
+});
+
+const NoShowSchema = z.object({
+  reason: z.string().optional(),
+});
+
 const AssignArtistSchema = z.object({
   artistId: z.string(),
   role: z.enum(['PRIMARY', 'LEAD', 'SUPPORT']),
@@ -379,6 +387,48 @@ export class BookingController {
       res.json({
         success: true,
         data: booking,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/bookings/:bookingId/check-in
+   * Check in client for booking
+   */
+  async checkInBooking(req: Request, res: Response, next: NextFunction) {
+    try {
+      const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
+      const { bookingId } = req.params as { bookingId: string };
+      const body = CheckInSchema.parse(req.body);
+
+      const result = await bookingService.checkInBooking(bookingId, staffId, body.reason);
+
+      res.json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * POST /api/v1/bookings/:bookingId/no-show
+   * Mark booking as no-show
+   */
+  async markNoShow(req: Request, res: Response, next: NextFunction) {
+    try {
+      const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
+      const { bookingId } = req.params as { bookingId: string };
+      const body = NoShowSchema.parse(req.body);
+
+      const result = await bookingService.markNoShow(bookingId, staffId, body.reason);
+
+      res.json({
+        success: true,
+        data: result,
       });
     } catch (error) {
       next(error);

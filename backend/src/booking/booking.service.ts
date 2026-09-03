@@ -352,6 +352,104 @@ export class BookingService {
   }
 
   /**
+   * Check in booking (client arrived)
+   */
+  async checkInBooking(bookingId: string, staffId: string, reason?: string) {
+    const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+    if (!booking) {
+      throw new AppError(404, 'NOT_FOUND', 'Booking not found');
+    }
+
+    // State machine validation - only CONFIRMED can check in
+    if (booking.status !== 'CONFIRMED') {
+      throw new AppError(400, 'INVALID_STATE_TRANSITION',
+        `Cannot check in booking in ${booking.status} state. Only CONFIRMED bookings can be checked in.`);
+    }
+
+    // Check if client has already been checked in
+    if (booking.checkedInAt) {
+      throw new AppError(400, 'ALREADY_CHECKED_IN', 'Client already checked in');
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.booking.update({
+        where: { id: bookingId },
+        data: {
+          status: 'CHECKED_IN',
+          checkedInAt: new Date(),
+          version: { increment: 1 },
+        },
+      });
+
+      await tx.bookingStatusHistory.create({
+        data: {
+          bookingId,
+          fromStatus: 'CONFIRMED',
+          toStatus: 'CHECKED_IN',
+          actorType: 'STAFF',
+          actorId: staffId,
+          reason: reason || 'Client checked in',
+        },
+      });
+    });
+
+    return { success: true, status: 'CHECKED_IN', checkedInAt: new Date() };
+  }
+
+  /**
+   * Mark booking as no-show
+   */
+  async markNoShow(bookingId: string, staffId: string, reason?: string) {
+    const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+    if (!booking) {
+      throw new AppError(404, 'NOT_FOUND', 'Booking not found');
+    }
+
+    // State machine validation - only CONFIRMED and CHECKED_IN can be marked no-show
+    if (!['CONFIRMED', 'CHECKED_IN'].includes(booking.status)) {
+      throw new AppError(400, 'INVALID_STATE_TRANSITION',
+        `Cannot mark no-show for booking in ${booking.status} state`);
+    }
+
+    // Check if already checked in
+    if (booking.status === 'CHECKED_IN') {
+      throw new AppError(400, 'INVALID_STATE_TRANSITION',
+        'Cannot mark as no-show after client has checked in');
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.booking.update({
+        where: { id: bookingId },
+        data: {
+          status: 'NO_SHOW',
+          cancelledAt: new Date(),
+          cancelReason: reason || 'No-show',
+          version: { increment: 1 },
+        },
+      });
+
+      await tx.bookingStatusHistory.create({
+        data: {
+          bookingId,
+          fromStatus: booking.status,
+          toStatus: 'NO_SHOW',
+          actorType: 'STAFF',
+          actorId: staffId,
+          reason: reason || 'Client no-show',
+        },
+      });
+
+      // Release any active holds
+      await tx.bookingHold.updateMany({
+        where: { bookingId, status: 'HOLD_ACTIVE' },
+        data: { status: 'HOLD_RELEASED', releasedAt: new Date() },
+      });
+    });
+
+    return { success: true, status: 'NO_SHOW' };
+  }
+
+  /**
    * Reschedule booking with optimistic concurrency
    */
   async rescheduleBooking(request: RescheduleRequest, actorId: string, actorType: 'STAFF' | 'CLIENT') {
