@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import { PrismaClient } from "./generated/prisma/client.js";
+// src/auth/actor.middleware.ts
+import { PrismaClient } from "../generated/prisma/client.js"
 import { PrismaPg } from "@prisma/adapter-pg";
 import { AppError } from "../shared/errors/index.js";
 import { verifyAccessToken, type AccessTokenPayload } from "./jwt.utils.js";

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { validate } from "../middleware/validation.middleware.js";
 import { requireAuth } from "../auth/actor.middleware.js";
 import { requireSimplePermission } from "../auth/rbac.middleware.js";
-import { PrismaClient } from "../auth/generated/prisma/client.js";
+import { PrismaClient } from "../generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { z } from "zod";
 import { successResponse } from "../shared/responses/index.js";

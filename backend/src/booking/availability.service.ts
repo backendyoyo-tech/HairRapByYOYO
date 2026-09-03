@@ -11,7 +11,7 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
 export interface AvailabilitySearchRequest {
-  clientId: string;
+  clientId?: string;
   requestedStartDate: Date;
   services: Array<{
     serviceId: string;
@@ -69,10 +69,10 @@ export class AvailabilityService {
     const now = new Date();
     const horizonEnd = new Date(now);
     horizonEnd.setDate(horizonEnd.getDate() + this.BOOKING_HORIZON_DAYS);
-    
+
     const dayStart = new Date(requestedStartDate);
     dayStart.setHours(0, 0, 0, 0);
-    
+
     if (dayStart > horizonEnd) {
       throw new AppError(422, 'BOOKING_HORIZON_EXCEEDED', 'Booking is available only up to 60 days in advance');
     }
@@ -88,7 +88,10 @@ export class AvailabilityService {
     // Validate all services exist and are active
     const serviceIds = services.map(s => s.serviceId);
     const serviceDetails = await prisma.service.findMany({
-      where: { id: { in: serviceIds }, isActive: true },
+      where: {
+        id: { in: serviceIds },
+        active: true,
+      },
       select: {
         id: true,
         name: true,
@@ -170,7 +173,6 @@ export class AvailabilityService {
       select: {
         id: true,
         serviceId: true,
-        artistId: true,
         requestedArtistId: true,
         plannedStartAt: true,
         plannedEndAt: true,
@@ -230,10 +232,10 @@ export class AvailabilityService {
 
       for (const artist of artists) {
         const artistId = artist.id;
-        
+
         // Check if this specific artist was requested for this service
         const isSpecificArtistRequest = service.requestedArtistId === artistId;
-        
+
         // If specific artist requested but this isn't the requested artist, skip
         if (service.requestedArtistId && !isSpecificArtistRequest) {
           continue;
@@ -258,10 +260,10 @@ export class AvailabilityService {
           scheduleEnd.setHours(schedule.endTime.getHours(), schedule.endTime.getMinutes(), 0, 0);
 
           // Check for partial exception overriding this schedule
-          const blockingException = exceptions.find(e => 
-            e.startTime !== null && e.endTime !== null && 
+          const blockingException = exceptions.find(e =>
+            e.startTime !== null && e.endTime !== null &&
             !e.isAvailable &&
-            this.timeOverlaps(scheduleStart, scheduleEnd, 
+            this.timeOverlaps(scheduleStart, scheduleEnd,
               new Date(dayStart.getTime() + e.startTime!.getHours() * 60 * 60 * 1000 + e.startTime!.getMinutes() * 60 * 1000),
               new Date(dayStart.getTime() + e.endTime!.getHours() * 60 * 60 * 1000 + e.endTime!.getMinutes() * 60 * 1000))
           );
@@ -272,7 +274,7 @@ export class AvailabilityService {
 
           // Generate slots at 15-minute intervals
           const busyIntervals = artistBusyIntervals.get(artistId) || [];
-          
+
           let slotStart = new Date(scheduleStart);
           while (slotStart < scheduleEnd) {
             const slotEnd = new Date(slotStart.getTime() + totalDurationWithBuffer * 60000);
@@ -557,8 +559,8 @@ export class AvailabilityService {
 
   private isSameDay(date1: Date, date2: Date): boolean {
     return date1.getFullYear() === date2.getFullYear() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getDate() === date2.getDate();
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate();
   }
 
   private getMinutesUntil(target: Date, from: Date): number {

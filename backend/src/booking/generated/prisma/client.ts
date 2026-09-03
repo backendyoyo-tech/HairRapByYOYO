@@ -191,3 +191,28 @@ export type ArtistScheduleException = Prisma.ArtistScheduleExceptionModel
  * 
  */
 export type IdempotencyKey = Prisma.IdempotencyKeyModel
+/**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
+ * Model PaymentWebhookEvent
+ * 
+ */
+export type PaymentWebhookEvent = Prisma.PaymentWebhookEventModel
+/**
+ * Model Invoice
+ * 
+ */
+export type Invoice = Prisma.InvoiceModel
+/**
+ * Model InvoiceLineItem
+ * 
+ */
+export type InvoiceLineItem = Prisma.InvoiceLineItemModel
+/**
+ * Model Refund
+ * 
+ */
+export type Refund = Prisma.RefundModel

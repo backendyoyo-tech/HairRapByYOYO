@@ -1,5 +1,4 @@
-import assert from 'node:assert';
-import { describe, it } from 'node:test';
+import { describe, it, expect } from 'vitest';
 import { ActorContext } from '../actor.middleware.js';
 import { can } from '../permissions.js';
 
@@ -18,70 +17,70 @@ function actor(role: string, actorId = 'actor-1', accountId = 'account-1'): Acto
 describe('RBAC permissions', () => {
   describe('view_booking_calendar', () => {
     it('should allow RECEPTIONIST, ADMIN, SUPER_ADMIN', () => {
-      assert.ok(can('view_booking_calendar', actor('RECEPTIONIST')));
-      assert.ok(can('view_booking_calendar', actor('ADMIN')));
-      assert.ok(can('view_booking_calendar', actor('SUPER_ADMIN')));
+      expect(can('view_booking_calendar', actor('RECEPTIONIST'))).toBe(true);
+      expect(can('view_booking_calendar', actor('ADMIN'))).toBe(true);
+      expect(can('view_booking_calendar', actor('SUPER_ADMIN'))).toBe(true);
     });
 
     it('should allow ARTIST only for OWN schedule', () => {
       // Without resource, OWN scope returns false.
-      assert.ok(!can('view_booking_calendar', actor('ARTIST')));
+      expect(can('view_booking_calendar', actor('ARTIST'))).toBe(false);
       // With resource where they are the owner.
-      assert.ok(can('view_booking_calendar', actor('ARTIST', 'artist-1'), { ownerId: 'artist-1' }));
-      assert.ok(!can('view_booking_calendar', actor('ARTIST'), { ownerId: 'other' }));
+      expect(can('view_booking_calendar', actor('ARTIST', 'artist-1'), { ownerId: 'artist-1' })).toBe(true);
+      expect(can('view_booking_calendar', actor('ARTIST'), { ownerId: 'other' })).toBe(false);
     });
 
     it('should allow CLIENT only for OWN bookings', () => {
-      assert.ok(!can('view_booking_calendar', actor('CLIENT')));
-      assert.ok(can('view_booking_calendar', actor('CLIENT', 'client-1'), { ownerId: 'client-1' }));
-      assert.ok(!can('view_booking_calendar', actor('CLIENT'), { ownerId: 'other' }));
+      expect(can('view_booking_calendar', actor('CLIENT'))).toBe(false);
+      expect(can('view_booking_calendar', actor('CLIENT', 'client-1'), { ownerId: 'client-1' })).toBe(true);
+      expect(can('view_booking_calendar', actor('CLIENT'), { ownerId: 'other' })).toBe(false);
     });
   });
 
   describe('create_booking_for_client', () => {
     it('should allow RECEPTIONIST, ADMIN, SUPER_ADMIN, CLIENT', () => {
-      assert.ok(can('create_booking_for_client', actor('RECEPTIONIST')));
-      assert.ok(can('create_booking_for_client', actor('ADMIN')));
-      assert.ok(can('create_booking_for_client', actor('SUPER_ADMIN')));
+      expect(can('create_booking_for_client', actor('RECEPTIONIST'))).toBe(true);
+      expect(can('create_booking_for_client', actor('ADMIN'))).toBe(true);
+      expect(can('create_booking_for_client', actor('SUPER_ADMIN'))).toBe(true);
       // CLIENT has OWN scope – needs resource.
-      assert.ok(!can('create_booking_for_client', actor('CLIENT')));
-      assert.ok(can('create_booking_for_client', actor('CLIENT', 'client-1'), { ownerId: 'client-1' }));
+      expect(can('create_booking_for_client', actor('CLIENT'))).toBe(false);
+      expect(can('create_booking_for_client', actor('CLIENT', 'client-1'), { ownerId: 'client-1' })).toBe(true);
     });
 
     it('should deny ARTIST', () => {
-      assert.ok(!can('create_booking_for_client', actor('ARTIST')));
+      expect(can('create_booking_for_client', actor('ARTIST'))).toBe(false);
     });
   });
 
   describe('approve_refund', () => {
     it('should allow ADMIN, SUPER_ADMIN to approve', () => {
-      assert.ok(can('approve_refund', actor('ADMIN')));
-      assert.ok(can('approve_refund', actor('SUPER_ADMIN')));
+      expect(can('approve_refund', actor('ADMIN'))).toBe(true);
+      expect(can('approve_refund', actor('SUPER_ADMIN'))).toBe(true);
     });
 
     it('should allow CLIENT to initiate', () => {
-      assert.ok(can('approve_refund', actor('CLIENT'))); // INITIATE allows
+      expect(can('approve_refund', actor('CLIENT'))).toBe(true); // INITIATE allows
     });
 
     it('should deny RECEPTIONIST, ARTIST', () => {
-      assert.ok(!can('approve_refund', actor('RECEPTIONIST')));
-      assert.ok(!can('approve_refund', actor('ARTIST')));
+      expect(can('approve_refund', actor('RECEPTIONIST'))).toBe(false);
+      expect(can('approve_refund', actor('ARTIST'))).toBe(false);
     });
   });
 
   describe('manage_staff_users_roles', () => {
     it('should allow only SUPER_ADMIN', () => {
-      assert.ok(can('manage_staff_users_roles', actor('SUPER_ADMIN')));
-      assert.ok(!can('manage_staff_users_roles', actor('ADMIN')));
-      assert.ok(!can('manage_staff_users_roles', actor('RECEPTIONIST')));
-      assert.ok(!can('manage_staff_users_roles', actor('ARTIST')));
-      assert.ok(!can('manage_staff_users_roles', actor('CLIENT')));
+      expect(can('manage_staff_users_roles', actor('SUPER_ADMIN'))).toBe(true);
+      expect(can('manage_staff_users_roles', actor('ADMIN'))).toBe(false);
+      expect(can('manage_staff_users_roles', actor('RECEPTIONIST'))).toBe(false);
+      expect(can('manage_staff_users_roles', actor('ARTIST'))).toBe(false);
+      expect(can('manage_staff_users_roles', actor('CLIENT'))).toBe(false);
     });
   });
 
   describe('unknown action', () => {
     it('should deny unknown actions', () => {
-      assert.ok(!can('unknown_action', actor('SUPER_ADMIN')));
+      expect(can('unknown_action', actor('SUPER_ADMIN'))).toBe(false);
     });
   });
 });

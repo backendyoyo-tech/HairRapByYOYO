@@ -651,7 +651,7 @@ export class BookingService {
 
     const bookingService = await prisma.bookingService.findUnique({
       where: { id: bookingServiceId },
-      include: { assignments: true, booking: true },
+      include: { assignments: true, booking: true, service: true },
     });
 
     if (!bookingService) {
@@ -684,6 +684,76 @@ export class BookingService {
       throw new AppError(409, 'ASSIGNMENT_EXISTS', 'Artist already assigned to this service');
     }
 
+    // Get required artist count from service
+    const requiredCount = bookingService.service.requiredArtistCount || 1;
+    const currentAssignments = bookingService.assignments.filter(a =>
+      a.status === 'PENDING' || a.status === 'CONFIRMED'
+    );
+
+    // Check if this assignment would exceed required count
+    if (currentAssignments.length >= bookingService.service.requiredArtistCount) {
+      throw new AppError(409, 'ASSIGNMENT_LIMIT_EXCEEDED',
+        `Service already has required ${bookingService.service.requiredArtistCount} artist(s) assigned`);
+    }
+
+    // For 2-artist services, enforce Lead/Support roles and prevent duplicate artists
+    if (bookingService.service.requiredArtistCount === 2) {
+      // If client requested a specific artist, preserve as Lead
+      let effectiveRole = role;
+      if (bookingService.requestedArtistId) {
+        // Client requested a specific artist - they must be Lead
+        if (bookingService.requestedArtistId === artistId) {
+          effectiveRole = 'LEAD';
+        } else {
+          // Support artist for a requested Lead
+          effectiveRole = 'SUPPORT';
+        }
+      }
+
+      // Check for duplicate artist assignment (same artist can't fill both positions)
+      const existingArtistIds = bookingService.assignments
+        .filter(a => a.status === 'PENDING' || a.status === 'CONFIRMED')
+        .map(a => a.artistId);
+      if (existingArtistIds.includes(artistId)) {
+        throw new AppError(409, 'DUPLICATE_ARTIST',
+          'Same artist cannot be assigned to both positions in a 2-artist service');
+      }
+
+      // For 2-artist service, ensure we have distinct roles
+      const existingAssignments = await prisma.bookingServiceAssignment.findMany({
+        where: {
+          bookingServiceId,
+          status: { in: ['PENDING', 'CONFIRMED'] },
+        },
+        select: { role: true },
+      });
+
+      // Prevent duplicate roles (can't have two LEADs or two SUPPORTs)
+      if (existingAssignments.some(a => a.role === 'LEAD') && role === 'LEAD') {
+        throw new AppError(409, 'DUPLICATE_ROLE', 'Service already has a LEAD artist assigned');
+      }
+      if (existingAssignments.some(a => a.role === 'SUPPORT') && role === 'SUPPORT') {
+        throw new AppError(409, 'DUPLICATE_ROLE', 'Service already has a SUPPORT artist assigned');
+      }
+
+      // If this is the first assignment and no role specified, default to LEAD for 2-artist services
+      if (role === 'PRIMARY' && bookingService.service.requiredArtistCount === 2) {
+        // PRIMARY is for 1-artist services; convert to LEAD for 2-artist
+        // This handles legacy/fallback cases
+      }
+    }
+
+    // Validate role is appropriate for service type
+    if (bookingService.service.requiredArtistCount === 1) {
+      if (role !== 'PRIMARY') {
+        throw new AppError(400, 'INVALID_ROLE', 'Single-artist services require PRIMARY role');
+      }
+    } else if (bookingService.service.requiredArtistCount === 2) {
+      if (!['LEAD', 'SUPPORT'].includes(role)) {
+        throw new AppError(400, 'INVALID_ROLE', 'Two-artist services require LEAD or SUPPORT role');
+      }
+    }
+
     const assignment = await prisma.bookingServiceAssignment.create({
       data: {
         bookingServiceId,
@@ -697,7 +767,6 @@ export class BookingService {
 
     // Update booking service assignment status
     const assignmentCount = bookingService.assignments.length + 1;
-    const requiredCount = 1; // Would come from service.requiredArtistCount
     let assignmentStatus = 'PARTIALLY_ASSIGNED';
     if (assignmentCount >= requiredCount) assignmentStatus = 'FULLY_ASSIGNED';
 

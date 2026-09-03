@@ -80,7 +80,12 @@ export const ModelName = {
   BookingRescheduleHistory: 'BookingRescheduleHistory',
   ArtistWorkSchedule: 'ArtistWorkSchedule',
   ArtistScheduleException: 'ArtistScheduleException',
-  IdempotencyKey: 'IdempotencyKey'
+  IdempotencyKey: 'IdempotencyKey',
+  Payment: 'Payment',
+  PaymentWebhookEvent: 'PaymentWebhookEvent',
+  Invoice: 'Invoice',
+  InvoiceLineItem: 'InvoiceLineItem',
+  Refund: 'Refund'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -560,6 +565,105 @@ export const IdempotencyKeyScalarFieldEnum = {
 } as const
 
 export type IdempotencyKeyScalarFieldEnum = (typeof IdempotencyKeyScalarFieldEnum)[keyof typeof IdempotencyKeyScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  invoiceId: 'invoiceId',
+  clientId: 'clientId',
+  purpose: 'purpose',
+  status: 'status',
+  amount: 'amount',
+  currency: 'currency',
+  provider: 'provider',
+  providerPaymentId: 'providerPaymentId',
+  providerOrderId: 'providerOrderId',
+  providerSignature: 'providerSignature',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  succeededAt: 'succeededAt',
+  failedAt: 'failedAt',
+  cancelledAt: 'cancelledAt'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
+
+
+export const PaymentWebhookEventScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  providerEventId: 'providerEventId',
+  eventType: 'eventType',
+  payload: 'payload',
+  processingStatus: 'processingStatus',
+  errorMessage: 'errorMessage',
+  processedAt: 'processedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PaymentWebhookEventScalarFieldEnum = (typeof PaymentWebhookEventScalarFieldEnum)[keyof typeof PaymentWebhookEventScalarFieldEnum]
+
+
+export const InvoiceScalarFieldEnum = {
+  id: 'id',
+  bookingId: 'bookingId',
+  clientId: 'clientId',
+  status: 'status',
+  totalAmount: 'totalAmount',
+  advanceApplied: 'advanceApplied',
+  cashApplied: 'cashApplied',
+  onlineApplied: 'onlineApplied',
+  walletApplied: 'walletApplied',
+  membershipApplied: 'membershipApplied',
+  tipAmount: 'tipAmount',
+  closedAt: 'closedAt',
+  closedByAccountId: 'closedByAccountId',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
+export const InvoiceLineItemScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  type: 'type',
+  description: 'description',
+  quantity: 'quantity',
+  unitPrice: 'unitPrice',
+  totalPrice: 'totalPrice',
+  bookingServiceId: 'bookingServiceId',
+  productId: 'productId',
+  artistId: 'artistId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvoiceLineItemScalarFieldEnum = (typeof InvoiceLineItemScalarFieldEnum)[keyof typeof InvoiceLineItemScalarFieldEnum]
+
+
+export const RefundScalarFieldEnum = {
+  id: 'id',
+  paymentId: 'paymentId',
+  clientId: 'clientId',
+  amount: 'amount',
+  status: 'status',
+  destination: 'destination',
+  reason: 'reason',
+  approvedByAccountId: 'approvedByAccountId',
+  approvedAt: 'approvedAt',
+  executedAt: 'executedAt',
+  providerRefundId: 'providerRefundId',
+  idempotencyKey: 'idempotencyKey',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RefundScalarFieldEnum = (typeof RefundScalarFieldEnum)[keyof typeof RefundScalarFieldEnum]
 
 
 export const SortOrder = {

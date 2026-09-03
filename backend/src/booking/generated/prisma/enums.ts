@@ -29,13 +29,13 @@ export const AccountType = {
 export type AccountType = (typeof AccountType)[keyof typeof AccountType]
 
 
-export const AuthSessionStatus = {
+export const SessionStatus = {
   ACTIVE: 'ACTIVE',
   REVOKED: 'REVOKED',
   EXPIRED: 'EXPIRED'
 } as const
 
-export type AuthSessionStatus = (typeof AuthSessionStatus)[keyof typeof AuthSessionStatus]
+export type SessionStatus = (typeof SessionStatus)[keyof typeof SessionStatus]
 
 
 export const BookingStatus = {

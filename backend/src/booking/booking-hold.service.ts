@@ -42,7 +42,7 @@ export interface ValidateHoldRequest {
 }
 
 export class BookingHoldService {
-  private readonly HOLD_TTL_MINUTES = 10;
+  private readonly HOLD_TTL_MINUTES = 8;
 
   /**
    * Create a booking hold from a valid quote

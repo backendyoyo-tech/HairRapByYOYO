@@ -29,7 +29,7 @@ export type SessionMinAggregateOutputType = {
   accountId: string | null
   refreshToken: string | null
   accessToken: string | null
-  status: $Enums.AuthSessionStatus | null
+  status: $Enums.SessionStatus | null
   expiresAt: Date | null
   createdAt: Date | null
   revokedAt: Date | null
@@ -42,7 +42,7 @@ export type SessionMaxAggregateOutputType = {
   accountId: string | null
   refreshToken: string | null
   accessToken: string | null
-  status: $Enums.AuthSessionStatus | null
+  status: $Enums.SessionStatus | null
   expiresAt: Date | null
   createdAt: Date | null
   revokedAt: Date | null
@@ -182,7 +182,7 @@ export type SessionGroupByOutputType = {
   accountId: string
   refreshToken: string
   accessToken: string
-  status: $Enums.AuthSessionStatus
+  status: $Enums.SessionStatus
   expiresAt: Date
   createdAt: Date
   revokedAt: Date | null
@@ -216,7 +216,7 @@ export type SessionWhereInput = {
   accountId?: Prisma.StringFilter<"Session"> | string
   refreshToken?: Prisma.StringFilter<"Session"> | string
   accessToken?: Prisma.StringFilter<"Session"> | string
-  status?: Prisma.EnumAuthSessionStatusFilter<"Session"> | $Enums.AuthSessionStatus
+  status?: Prisma.EnumSessionStatusFilter<"Session"> | $Enums.SessionStatus
   expiresAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   revokedAt?: Prisma.DateTimeNullableFilter<"Session"> | Date | string | null
@@ -247,7 +247,7 @@ export type SessionWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.SessionWhereInput[]
   NOT?: Prisma.SessionWhereInput | Prisma.SessionWhereInput[]
   accountId?: Prisma.StringFilter<"Session"> | string
-  status?: Prisma.EnumAuthSessionStatusFilter<"Session"> | $Enums.AuthSessionStatus
+  status?: Prisma.EnumSessionStatusFilter<"Session"> | $Enums.SessionStatus
   expiresAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   revokedAt?: Prisma.DateTimeNullableFilter<"Session"> | Date | string | null
@@ -280,7 +280,7 @@ export type SessionScalarWhereWithAggregatesInput = {
   accountId?: Prisma.StringWithAggregatesFilter<"Session"> | string
   refreshToken?: Prisma.StringWithAggregatesFilter<"Session"> | string
   accessToken?: Prisma.StringWithAggregatesFilter<"Session"> | string
-  status?: Prisma.EnumAuthSessionStatusWithAggregatesFilter<"Session"> | $Enums.AuthSessionStatus
+  status?: Prisma.EnumSessionStatusWithAggregatesFilter<"Session"> | $Enums.SessionStatus
   expiresAt?: Prisma.DateTimeWithAggregatesFilter<"Session"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Session"> | Date | string
   revokedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Session"> | Date | string | null
@@ -292,7 +292,7 @@ export type SessionCreateInput = {
   id?: string
   refreshToken: string
   accessToken: string
-  status?: $Enums.AuthSessionStatus
+  status?: $Enums.SessionStatus
   expiresAt: Date | string
   createdAt?: Date | string
   revokedAt?: Date | string | null
@@ -306,7 +306,7 @@ export type SessionUncheckedCreateInput = {
   accountId: string
   refreshToken: string
   accessToken: string
-  status?: $Enums.AuthSessionStatus
+  status?: $Enums.SessionStatus
   expiresAt: Date | string
   createdAt?: Date | string
   revokedAt?: Date | string | null
@@ -318,7 +318,7 @@ export type SessionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumAuthSessionStatusFieldUpdateOperationsInput | $Enums.AuthSessionStatus
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -332,7 +332,7 @@ export type SessionUncheckedUpdateInput = {
   accountId?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumAuthSessionStatusFieldUpdateOperationsInput | $Enums.AuthSessionStatus
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -345,7 +345,7 @@ export type SessionCreateManyInput = {
   accountId: string
   refreshToken: string
   accessToken: string
-  status?: $Enums.AuthSessionStatus
+  status?: $Enums.SessionStatus
   expiresAt: Date | string
   createdAt?: Date | string
   revokedAt?: Date | string | null
@@ -357,7 +357,7 @@ export type SessionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumAuthSessionStatusFieldUpdateOperationsInput | $Enums.AuthSessionStatus
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -370,7 +370,7 @@ export type SessionUncheckedUpdateManyInput = {
   accountId?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumAuthSessionStatusFieldUpdateOperationsInput | $Enums.AuthSessionStatus
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -469,15 +469,15 @@ export type SessionUncheckedUpdateManyWithoutAccountNestedInput = {
   deleteMany?: Prisma.SessionScalarWhereInput | Prisma.SessionScalarWhereInput[]
 }
 
-export type EnumAuthSessionStatusFieldUpdateOperationsInput = {
-  set?: $Enums.AuthSessionStatus
+export type EnumSessionStatusFieldUpdateOperationsInput = {
+  set?: $Enums.SessionStatus
 }
 
 export type SessionCreateWithoutAccountInput = {
   id?: string
   refreshToken: string
   accessToken: string
-  status?: $Enums.AuthSessionStatus
+  status?: $Enums.SessionStatus
   expiresAt: Date | string
   createdAt?: Date | string
   revokedAt?: Date | string | null
@@ -489,7 +489,7 @@ export type SessionUncheckedCreateWithoutAccountInput = {
   id?: string
   refreshToken: string
   accessToken: string
-  status?: $Enums.AuthSessionStatus
+  status?: $Enums.SessionStatus
   expiresAt: Date | string
   createdAt?: Date | string
   revokedAt?: Date | string | null
@@ -531,7 +531,7 @@ export type SessionScalarWhereInput = {
   accountId?: Prisma.StringFilter<"Session"> | string
   refreshToken?: Prisma.StringFilter<"Session"> | string
   accessToken?: Prisma.StringFilter<"Session"> | string
-  status?: Prisma.EnumAuthSessionStatusFilter<"Session"> | $Enums.AuthSessionStatus
+  status?: Prisma.EnumSessionStatusFilter<"Session"> | $Enums.SessionStatus
   expiresAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Session"> | Date | string
   revokedAt?: Prisma.DateTimeNullableFilter<"Session"> | Date | string | null
@@ -543,7 +543,7 @@ export type SessionCreateManyAccountInput = {
   id?: string
   refreshToken: string
   accessToken: string
-  status?: $Enums.AuthSessionStatus
+  status?: $Enums.SessionStatus
   expiresAt: Date | string
   createdAt?: Date | string
   revokedAt?: Date | string | null
@@ -555,7 +555,7 @@ export type SessionUpdateWithoutAccountInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumAuthSessionStatusFieldUpdateOperationsInput | $Enums.AuthSessionStatus
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -567,7 +567,7 @@ export type SessionUncheckedUpdateWithoutAccountInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumAuthSessionStatusFieldUpdateOperationsInput | $Enums.AuthSessionStatus
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -579,7 +579,7 @@ export type SessionUncheckedUpdateManyWithoutAccountInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   refreshToken?: Prisma.StringFieldUpdateOperationsInput | string
   accessToken?: Prisma.StringFieldUpdateOperationsInput | string
-  status?: Prisma.EnumAuthSessionStatusFieldUpdateOperationsInput | $Enums.AuthSessionStatus
+  status?: Prisma.EnumSessionStatusFieldUpdateOperationsInput | $Enums.SessionStatus
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   revokedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -665,7 +665,7 @@ export type $SessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     accountId: string
     refreshToken: string
     accessToken: string
-    status: $Enums.AuthSessionStatus
+    status: $Enums.SessionStatus
     expiresAt: Date
     createdAt: Date
     revokedAt: Date | null
@@ -1099,7 +1099,7 @@ export interface SessionFieldRefs {
   readonly accountId: Prisma.FieldRef<"Session", 'String'>
   readonly refreshToken: Prisma.FieldRef<"Session", 'String'>
   readonly accessToken: Prisma.FieldRef<"Session", 'String'>
-  readonly status: Prisma.FieldRef<"Session", 'AuthSessionStatus'>
+  readonly status: Prisma.FieldRef<"Session", 'SessionStatus'>
   readonly expiresAt: Prisma.FieldRef<"Session", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Session", 'DateTime'>
   readonly revokedAt: Prisma.FieldRef<"Session", 'DateTime'>
