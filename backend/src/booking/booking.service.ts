@@ -299,9 +299,9 @@ export class BookingService {
         `Cannot check in booking in ${booking.status} state. Only CONFIRMED bookings can be checked in.`);
     }
 
-    // Check if client has already been checked in
+    // Check if client has already been checked in - idempotent
     if (booking.checkedInAt) {
-      throw new AppError(400, 'ALREADY_CHECKED_IN', 'Client already checked in');
+      return { success: true, status: 'CHECKED_IN', checkedInAt: booking.checkedInAt, alreadyCheckedIn: true };
     }
 
     await prisma.$transaction(async (tx) => {
@@ -326,6 +326,9 @@ export class BookingService {
       });
     });
 
+    // Publish CLIENT_CHECKED_IN event
+    await this.publishEvent('CLIENT_CHECKED_IN', { bookingId, checkedInAt: new Date(), staffId });
+
     return { success: true, status: 'CHECKED_IN', checkedInAt: new Date() };
   }
 
@@ -338,16 +341,24 @@ export class BookingService {
       throw new AppError(404, 'NOT_FOUND', 'Booking not found');
     }
 
-    // State machine validation - only CONFIRMED and CHECKED_IN can be marked no-show
-    if (!['CONFIRMED', 'CHECKED_IN'].includes(booking.status)) {
+    // State machine validation - only CONFIRMED can be marked no-show (BSM §4, §11)
+    if (booking.status !== 'CONFIRMED') {
       throw new AppError(400, 'INVALID_STATE_TRANSITION',
-        `Cannot mark no-show for booking in ${booking.status} state`);
+        `Cannot mark no-show for booking in ${booking.status} state. Only CONFIRMED bookings can be marked no-show.`);
     }
 
-    // Check if already checked in
-    if (booking.status === 'CHECKED_IN') {
-      throw new AppError(400, 'INVALID_STATE_TRANSITION',
-        'Cannot mark as no-show after client has checked in');
+    // Appointment-time guard: no-show only after appointment time has passed (BSM §11 BSM-NS-01)
+    const upcomingService = await prisma.bookingService.findFirst({
+      where: {
+        bookingId,
+        plannedStartAt: { gt: new Date() }, // Services in the future
+      },
+      orderBy: { plannedStartAt: 'asc' },
+    });
+
+    if (upcomingService) {
+      throw new AppError(400, 'NO_SHOW_TOO_EARLY',
+        `Cannot mark no-show before appointment time. Earliest service at ${upcomingService.plannedStartAt.toISOString()}`);
     }
 
     await prisma.$transaction(async (tx) => {
@@ -378,6 +389,9 @@ export class BookingService {
         data: { status: 'HOLD_RELEASED', releasedAt: new Date() },
       });
     });
+
+    // Publish BOOKING_NO_SHOW event
+    await this.publishEvent('BOOKING_NO_SHOW', { bookingId, staffId, reason: reason || 'Client no-show' });
 
     return { success: true, status: 'NO_SHOW' };
   }
@@ -446,7 +460,10 @@ export class BookingService {
     });
 
     return { success: true, status: 'CANCELLED' };
-  }
+
+  // Publish BOOKING_CANCELLED event
+  await this.publishEvent('BOOKING_CANCELLED', { bookingId, clientId, reason });
+}
 
   /**
    * Reschedule booking with optimistic concurrency
@@ -775,6 +792,32 @@ export class BookingService {
       data: { assignmentStatus: assignmentStatus as any },
     });
 
+    // Publish assignment events
+    if (assignmentStatus === 'FULLY_ASSIGNED') {
+      await this.publishEvent('ARTIST_ASSIGNMENT_FINALIZED', { 
+        bookingServiceId, 
+        bookingId: bookingService.bookingId,
+        artistId,
+        staffId: assignedByStaffId 
+      });
+    } else {
+      await this.publishEvent('ASSIGNMENT_PARTIAL', { 
+        bookingServiceId, 
+        bookingId: bookingService.bookingId,
+        artistId,
+        staffId: assignedByStaffId,
+        requiredCount,
+        currentCount: assignmentCount
+      });
+    }
+    // Also publish ASSIGNMENT_REQUIRED if this was the first assignment
+    if (assignmentCount === 1) {
+      await this.publishEvent('ASSIGNMENT_REQUIRED', { 
+        bookingServiceId, 
+        bookingId: bookingService.bookingId 
+      });
+    }
+
     return assignment;
   }
 
@@ -815,11 +858,18 @@ export class BookingService {
     }
 
     await prisma.$transaction(async (tx) => {
-      // Release old assignment
-      await tx.bookingServiceAssignment.update({
-        where: { id: bookingServiceAssignmentId },
+      // Release old assignment with version check
+      const updated = await tx.bookingServiceAssignment.update({
+        where: { 
+          id: bookingServiceAssignmentId,
+          status: { in: ['PENDING', 'CONFIRMED'] },
+        },
         data: { status: 'REPLACED' },
       });
+      
+      if (!updated) {
+        throw new AppError(409, 'STALE_ASSIGNMENT', 'Assignment was modified concurrently, please refresh and try again');
+      }
 
       // Create new assignment
       await tx.bookingServiceAssignment.create({
@@ -832,7 +882,42 @@ export class BookingService {
           status: 'CONFIRMED',
         },
       });
+
+      // Check if we need to update assignment status
+      const assignments = await tx.bookingServiceAssignment.findMany({
+        where: { bookingServiceId: oldAssignment.bookingServiceId, status: { in: ['PENDING', 'CONFIRMED'] } },
+      });
+      const bookingService = await tx.bookingService.findUnique({ 
+        where: { id: oldAssignment.bookingServiceId },
+        include: { service: true }
+      });
+      const requiredCount = bookingService?.service?.requiredArtistCount || 1;
+      let assignmentStatus = 'PARTIALLY_ASSIGNED';
+      if (assignments.length + 1 >= requiredCount) assignmentStatus = 'FULLY_ASSIGNED';
+      
+      await tx.bookingService.update({
+        where: { id: oldAssignment.bookingServiceId },
+        data: { assignmentStatus: assignmentStatus as any },
+      });
     });
+
+    // Publish ARTIST_ASSIGNMENT_FINALIZED or ARTIST_ASSIGNMENT_EXCEPTION event
+    const bookingService = await prisma.bookingService.findUnique({ 
+      where: { id: oldAssignment.bookingServiceId },
+      include: { service: true }
+    });
+    const assignments = await prisma.bookingServiceAssignment.findMany({
+      where: { bookingServiceId: oldAssignment.bookingServiceId, status: { in: ['PENDING', 'CONFIRMED'] } },
+    });
+    const requiredCount = bookingService?.service?.requiredArtistCount || 1;
+    if (assignments.length >= requiredCount) {
+      await this.publishEvent('ARTIST_ASSIGNMENT_FINALIZED', { 
+        bookingServiceId: oldAssignment.bookingServiceId, 
+        bookingId: bookingService?.bookingId,
+        artistId: newArtistId,
+        staffId: assignedByStaffId 
+      });
+    }
 
     return { success: true };
   }
@@ -877,6 +962,30 @@ export class BookingService {
     });
 
     return { success: true };
+  }
+
+  /**
+   * Publish domain event to outbox/event system
+   */
+  private async publishEvent(eventType: string, payload: Record<string, any>) {
+    try {
+      // Check if there's an event outbox or domain event table
+      // For now, we'll use audit log as the event store
+      await prisma.auditLog.create({
+        data: {
+          accountId: payload.staffId || payload.actorId || 'system',
+          actorType: 'SYSTEM',
+          action: eventType,
+          metadata: payload,
+          ipAddress: 'server',
+          userAgent: 'booking-service',
+          success: true,
+        },
+      });
+    } catch (error) {
+      // Log but don't fail the main operation
+      console.error(`Failed to publish event ${eventType}:`, error);
+    }
   }
 
   private hashRequest(request: any): string {

@@ -270,19 +270,16 @@ export const permissionMatrix: Record<string, Partial<Record<Role, PermissionSco
 
   // Artist Assignment
   assign_artist_to_service: {
-    RECEPTIONIST: 'FULL',
     ADMIN: 'FULL',
     SUPER_ADMIN: 'FULL',
   },
   reassign_artist: {
-    RECEPTIONIST: 'FULL',
     ADMIN: 'FULL',
     SUPER_ADMIN: 'FULL',
   },
 
   // State Machine Transitions
   transition_booking_state: {
-    RECEPTIONIST: 'FULL',
     ADMIN: 'FULL',
     SUPER_ADMIN: 'FULL',
   },
