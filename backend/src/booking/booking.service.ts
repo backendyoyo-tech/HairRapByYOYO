@@ -51,6 +51,14 @@ export interface ReassignArtistRequest {
   assignedByStaffId: string;
 }
 
+export interface CancelBookingRequest {
+  bookingId: string;
+  expectedVersion: number;
+  reason: string;
+  idempotencyKey: string;
+  cancellationType?: 'CLIENT' | 'YOYO'; // 'YOYO' for Admin/Super Admin initiated cancellation
+}
+
 export class BookingService {
   /**
    * Create booking from consumed hold
@@ -398,73 +406,232 @@ export class BookingService {
   }
 
   /**
-   * Cancel booking with state machine validation
-   */
-  async cancelBooking(bookingId: string, clientId: string, reason: string) {
-    const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
-    if (!booking) {
-      throw new AppError(404, 'NOT_FOUND', 'Booking not found');
-    }
-    if (booking.clientId !== clientId) {
-      throw new AppError(403, 'FORBIDDEN', 'Not authorized to cancel this booking');
-    }
+     * Cancel booking with state machine validation, advance settlement, and idempotency
+     * Implements Day 15: Cancellation + Refund / Advance Settlement Engine
+     */
+    async cancelBooking(request: CancelBookingRequest, actorId: string, actorType: 'STAFF' | 'CLIENT') {
+      const { bookingId, expectedVersion, reason, idempotencyKey, cancellationType = 'CLIENT' } = request;
 
-    // State machine validation
-    if (!VALID_TRANSITIONS[booking.status].includes('CANCELLED')) {
-      throw new AppError(400, 'INVALID_STATE_TRANSITION',
-        `Cannot cancel booking in ${booking.status} state`);
-    }
-
-    // Check cancellation policy (e.g., not within 2 hours of service)
-    const upcomingService = await prisma.bookingService.findFirst({
-      where: {
-        bookingId,
-        plannedStartAt: { gt: new Date() },
-      },
-      orderBy: { plannedStartAt: 'asc' },
-    });
-
-    if (upcomingService) {
-      const hoursUntilService = (upcomingService.plannedStartAt.getTime() - Date.now()) / (1000 * 60 * 60);
-      if (hoursUntilService < 2) {
-        throw new AppError(400, 'CANCELLATION_POLICY', 'Cannot cancel within 2 hours of service start');
+      // Check idempotency
+      const existingKey = await prisma.idempotencyKey.findUnique({ where: { key: idempotencyKey } });
+      if (existingKey) {
+        if (existingKey.responseBody) return existingKey.responseBody;
+        throw new AppError(409, 'IDEMPOTENCY_CONFLICT', 'Idempotency key already used');
       }
-    }
 
-    await prisma.$transaction(async (tx) => {
-      await tx.booking.update({
+      const booking = await prisma.booking.findUnique({
         where: { id: bookingId },
-        data: {
-          status: 'CANCELLED',
-          cancelledAt: new Date(),
-          cancelReason: reason,
-          version: { increment: 1 },
+        include: {
+          services: {
+            include: { assignments: true }
+          },
+          payments: {
+            where: { purpose: 'ADVANCE', status: 'SUCCEEDED' }
+          }
         },
       });
 
-      await tx.bookingStatusHistory.create({
-        data: {
+      if (!booking) {
+        throw new AppError(404, 'NOT_FOUND', 'Booking not found');
+      }
+
+      // Authorization
+      const isOwner = booking.clientId === actorId;
+      const isStaff = actorType === 'STAFF';
+      if (!isOwner && !isStaff) {
+        throw new AppError(403, 'FORBIDDEN', 'Not authorized to cancel this booking');
+      }
+
+      // For staff cancellations, they can cancel any booking
+      // For client cancellations, they can only cancel their own
+      if (!isStaff && !isOwner) {
+        throw new AppError(403, 'FORBIDDEN', 'Not authorized to cancel this booking');
+      }
+
+      // State machine validation - only CONFIRMED and CHECKED_IN can be cancelled
+      // (per State Machine §10, NO_SHOW, CANCELLED, CLOSED, SERVICE_COMPLETED, IN_SERVICE cannot be cancelled)
+      const allowedCancelStates = ['CONFIRMED', 'CHECKED_IN'];
+      if (!allowedCancelStates.includes(booking.status)) {
+        throw new AppError(400, 'INVALID_STATE_TRANSITION',
+          `Cannot cancel booking in ${booking.status} state`);
+      }
+
+      // Optimistic concurrency check
+      if (booking.version !== expectedVersion) {
+        throw new AppError(409, 'VERSION_CONFLICT', `Booking version mismatch. Expected ${expectedVersion}, current ${booking.version}`);
+      }
+
+      // Check earliest upcoming service for timing rules
+      const upcomingService = await prisma.bookingService.findFirst({
+        where: {
           bookingId,
-          fromStatus: booking.status,
-          toStatus: 'CANCELLED',
-          actorType: 'CLIENT',
-          actorId: clientId,
-          reason,
+          plannedStartAt: { gt: new Date() },
+        },
+        orderBy: { plannedStartAt: 'asc' },
+      });
+
+      if (!upcomingService) {
+        throw new AppError(400, 'INVALID_STATE_TRANSITION', 'No future service found for this booking');
+      }
+
+      const hoursUntilService = (upcomingService.plannedStartAt.getTime() - Date.now()) / (1000 * 60 * 60);
+      const isTimelyCancellation = hoursUntilService >= 24;
+
+      // Determine advance disposition based on Money Contract rules
+      // Find the ADVANCE payment for this booking
+      const advancePayment = booking.payments.find(p => p.purpose === 'ADVANCE' && p.status === 'SUCCEEDED');
+      const advanceAmount = advancePayment ? Number(advancePayment.amount) : 0;
+      const advanceRule = booking.advanceRule; // 'STANDARD_20_PERCENT' or 'SPECIFIC_CREATIVE_DIRECTOR_FIXED'
+      const isCreativeDirector = advanceRule === 'SPECIFIC_CREATIVE_DIRECTOR_FIXED';
+
+      let advanceDisposition: 'FORFEITED' | 'REFUND_PENDING' | 'TRANSFERRED' | 'NONE' = 'NONE';
+      let refundAmount = 0;
+      let refundDestination: 'ORIGINAL' | 'WALLET' | 'MEMBERSHIP' | null = null;
+
+      // Apply cancellation rules per Money Contract §6 (CAN-001 through CAN-004)
+      if (cancellationType === 'YOYO' && isStaff) {
+        // YOYO cancellation - Admin/Super Admin only - client chooses refund or transfer (CAN-003)
+        // For now, mark as REFUND_PENDING - actual refund processing is separate
+        advanceDisposition = 'REFUND_PENDING';
+        refundAmount = advanceAmount;
+        // Destination will be determined by client choice later
+      } else if (isCreativeDirector) {
+        // Creative Director booking - ₹5,000 is non-refundable for client cancellation
+        // (Money Contract §6, Creative Director client cancellation)
+        advanceDisposition = 'FORFEITED';
+        refundAmount = 0;
+      } else if (isTimelyCancellation) {
+        // Client cancellation 24+ hours before - standard 20% advance may transfer once to reschedule
+        // but for pure cancellation, Money Contract determines treatment per approved policy
+        // Per CAN-002: Forfeit is not refund - advance remains captured with policy disposition
+        // Per Money Contract: "direct cash refund of standard advance is not approved by this contract"
+        advanceDisposition = 'FORFEITED';
+        refundAmount = 0;
+      } else {
+        // Client cancellation <24 hours / same-day - advance forfeited
+        advanceDisposition = 'FORFEITED';
+        refundAmount = 0;
+      }
+
+      // Snapshot old services for history
+      const oldServicesSnapshot = booking.services.map(s => ({
+        serviceId: s.serviceId,
+        plannedStartAt: s.plannedStartAt,
+        plannedEndAt: s.plannedEndAt,
+        artistId: s.assignments[0]?.artistId,
+        assignmentStatus: s.assignmentStatus,
+        artistConfirmationState: s.artistConfirmationState,
+      }));
+
+      // Perform atomic cancellation transaction
+      const result = await prisma.$transaction(async (tx) => {
+        // 1. Update booking status to CANCELLED
+        await tx.booking.update({
+          where: { id: bookingId },
+          data: {
+            status: 'CANCELLED',
+            cancelledAt: new Date(),
+            cancelReason: reason,
+            version: { increment: 1 },
+            // Advance disposition tracking would require additional schema fields
+            // For now, we track via payment/refund records
+          },
+        });
+
+        // 2. Record status history
+        await tx.bookingStatusHistory.create({
+          data: {
+            bookingId,
+            fromStatus: booking.status,
+            toStatus: 'CANCELLED',
+            actorType,
+            actorId,
+            reason,
+            metadata: {
+              advanceDisposition,
+              advanceAmount,
+              advanceRule,
+              hoursUntilService,
+              isTimelyCancellation,
+              cancellationType,
+            },
+          },
+        });
+
+        // 3. Release any active holds
+        await tx.bookingHold.updateMany({
+          where: { bookingId, status: 'HOLD_ACTIVE' },
+          data: { status: 'HOLD_RELEASED', releasedAt: new Date() },
+        });
+
+        // 4. Handle advance disposition
+        if (advanceDisposition === 'FORFEITED' && advanceAmount > 0) {
+          // Mark advance as forfeited - the payment record stays SUCCEEDED but we record disposition
+          // In a full implementation, this would create an advance disposition record
+          // For now, we create a metadata note in the payment record if needed
+          await tx.payment.updateMany({
+            where: { bookingId, purpose: 'ADVANCE', status: 'SUCCEEDED' },
+            data: { metadata: { advanceDisposition: 'FORFEITED', forfeitedAt: new Date() } },
+          });
+        } else if (advanceDisposition === 'REFUND_PENDING' && advanceAmount > 0) {
+          // Create a refund request record for YOYO cancellation
+          // Refund will be processed through the refund workflow
+          await tx.refund.create({
+            data: {
+              paymentId: advancePayment!.id,
+              clientId: booking.clientId,
+              amount: advanceAmount,
+              status: 'REQUESTED',
+              destination: 'ORIGINAL', // Default - client will choose later
+              reason: `YOYO cancellation: ${reason}`,
+              idempotencyKey: `refund-${idempotencyKey}`,
+            },
+          });
+        }
+
+        return {
+          bookingId,
+          status: 'CANCELLED',
+          advanceDisposition,
+          advanceAmount,
+          advanceRule,
+          refundAmount,
+          hoursUntilService,
+          isTimelyCancellation,
+          cancellationType,
+        };
+      });
+
+      // Record idempotency key
+      await prisma.idempotencyKey.create({
+        data: {
+          key: idempotencyKey,
+          endpoint: '/api/v1/bookings/cancel',
+          method: 'POST',
+          requestHash: this.hashRequest(request),
+          responseStatus: 200,
+          responseBody: result,
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
         },
       });
 
-      // Release any active holds
-      await tx.bookingHold.updateMany({
-        where: { bookingId, status: 'HOLD_ACTIVE' },
-        data: { status: 'HOLD_RELEASED', releasedAt: new Date() },
+      // Publish BOOKING_CANCELLED event (per State Machine §15)
+      await this.publishEvent('BOOKING_CANCELLED', {
+        bookingId,
+        actorId,
+        actorType,
+        reason,
+        advanceDisposition,
+        advanceAmount,
+        advanceRule,
+        refundAmount,
+        cancellationType,
+        oldSchedule: oldServicesSnapshot,
+        idempotencyKey,
       });
-    });
 
-    return { success: true, status: 'CANCELLED' };
-
-  // Publish BOOKING_CANCELLED event
-  await this.publishEvent('BOOKING_CANCELLED', { bookingId, clientId, reason });
-}
+      return { success: true, data: result };
+    }
 
   /**
    * Reschedule booking with atomic new-resource-first transaction

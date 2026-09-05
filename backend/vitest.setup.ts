@@ -37,6 +37,11 @@ vi.mock('@prisma/client/runtime/client', () => ({
     getPrismaClient: (config?: any) => class MockPrismaClient {
       constructor() { return {}; }
     },
+    sqltag: (strings: TemplateStringsArray, ...values: any[]) => {
+      return strings.reduce((acc, str, i) => acc + str + (values[i] || ''), '');
+    },
+    empty: '',
+    join: (separator: string, values: any[]) => values.join(separator),
   },
   Decimal: class { constructor(public value: string | number) {} toString() { return this.value.toString(); } toNumber() { return Number(this.value); } equals(other: any) { return this.value === other.value; } lessThan(other: any) { return this.value < other.value; } greaterThan(other: any) { return this.value > other.value; } },
   Bytes: class { constructor(public value: Buffer) {} },
@@ -173,6 +178,14 @@ const mockPrisma = {
     create: vi.fn(),
   },
   auditLog: {
+    create: vi.fn(),
+  },
+  payment: {
+    findMany: vi.fn(),
+    updateMany: vi.fn(),
+    findUnique: vi.fn(),
+  },
+  refund: {
     create: vi.fn(),
   },
   $transaction: vi.fn((cb: any) => cb(mockPrisma)),

@@ -48,6 +48,11 @@ export const runtime = {
       }
     };
   },
+  sqltag: (strings: TemplateStringsArray, ...values: any[]) => {
+    return strings.reduce((acc, str, i) => acc + str + (values[i] || ''), '');
+  },
+  empty: '',
+  join: (separator: string, values: any[]) => values.join(separator),
 };
 
 // Export individual items that might be used

@@ -94,6 +94,9 @@ const RescheduleSchema = z.object({
 
 const CancelSchema = z.object({
   reason: z.string().min(1, 'Cancellation reason required'),
+  expectedVersion: z.number().int().positive(),
+  idempotencyKey: z.string().min(1, 'Idempotency key required'),
+  cancellationType: z.enum(['CLIENT', 'YOYO']).optional(),
 });
 
 const CheckInSchema = z.object({
@@ -503,26 +506,34 @@ export class BookingController {
   }
 
   /**
-   * POST /api/v1/bookings/:bookingId/cancel
-   * Cancel booking
-   */
-  async cancelBooking(req: Request, res: Response, next: NextFunction) {
-    try {
-      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
-      const { bookingId } = req.params as { bookingId: string };
+     * POST /api/v1/bookings/:bookingId/cancel
+     * Cancel booking with idempotency and advance settlement
+     */
+    async cancelBooking(req: Request, res: Response, next: NextFunction) {
+      try {
+        const actorId = (req as any).user?.accountId;
+        const actorType = (req as any).user?.role === 'CLIENT' ? 'CLIENT' : 'STAFF';
+        const { bookingId } = req.params as { bookingId: string };
 
-      const body = CancelSchema.parse(req.body);
+        const body = CancelSchema.parse(req.body);
+        const request = {
+          bookingId,
+          expectedVersion: body.expectedVersion,
+          reason: body.reason,
+          idempotencyKey: body.idempotencyKey,
+          cancellationType: body.cancellationType,
+        };
 
-      const result = await bookingService.cancelBooking(bookingId, clientId, body.reason);
+        const result = await bookingService.cancelBooking(request, actorId, actorType);
 
-      res.json({
-        success: true,
-        data: result,
-      });
-    } catch (error) {
-      next(error);
+        res.json({
+          success: true,
+          data: result,
+        });
+      } catch (error) {
+        next(error);
+      }
     }
-  }
 
   /**
    * POST /api/v1/bookings/:bookingId/reschedule
