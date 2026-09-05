@@ -19,25 +19,47 @@ const prisma = new PrismaClient({ adapter });
 // ============================================================
 
 const BookingQuoteSchema = z.object({
+  clientId: z.string().min(1, 'clientId is required'),
+
   serviceItems: z.array(z.object({
     serviceId: z.string(),
     requestedArtistId: z.string().optional(),
     assignmentStrategy: z.enum(['SPECIFIC_ARTIST', 'AUTO_ASSIGN', 'YOYO_ASSIGNED_TEAM']),
   })).min(1, 'At least one service item required'),
+
   date: z.string().datetime().transform(s => new Date(s)),
+
   partySize: z.coerce.number().int().positive().optional().default(1),
 });
 
+// const CreateHoldSchema = z.object({
+//   quoteId: z.string(),
+
+//   resources: z.array(z.object({
+//     serviceIndex: z.number().int().nonnegative(),
+//     artistId: z.string().optional(),
+//     startAt: z.string().datetime().transform(s => new Date(s)),
+//     endAt: z.string().datetime().transform(s => new Date(s)),
+//   })).min(1, 'At least one resource required'),
+//   idempotencyKey: z.string().min(1, 'Idempotency key required'),
+// });
+
 const CreateHoldSchema = z.object({
+  clientId: z.string().min(1, 'clientId is required'),
+
   quoteId: z.string(),
+
   resources: z.array(z.object({
     serviceIndex: z.number().int().nonnegative(),
     artistId: z.string().optional(),
     startAt: z.string().datetime().transform(s => new Date(s)),
     endAt: z.string().datetime().transform(s => new Date(s)),
   })).min(1, 'At least one resource required'),
+
   idempotencyKey: z.string().min(1, 'Idempotency key required'),
 });
+
+
 
 const CreateBookingFromHoldSchema = z.object({
   holdId: z.string(),
@@ -58,6 +80,7 @@ const VerifyPaymentSchema = z.object({
 });
 
 const RescheduleSchema = z.object({
+  expectedVersion: z.number().int().positive(),
   newServices: z.array(z.object({
     serviceId: z.string(),
     artistId: z.string().optional(),
@@ -218,12 +241,12 @@ export class BookingController {
    */
   async createQuote(req: Request, res: Response, next: NextFunction) {
     try {
-      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
-      if (!clientId) {
-        throw new AppError(401, 'UNAUTHORIZED', 'Client authentication required');
-      }
-
       const body = BookingQuoteSchema.parse(req.body);
+      const clientId = body.clientId;
+
+      if (!clientId) {
+        throw new AppError(400, 'INVALID_REQUEST', 'clientId is required');
+      }
       const request: BookingQuoteRequest = {
         serviceItems: body.serviceItems,
         date: body.date,
@@ -273,12 +296,13 @@ export class BookingController {
    */
   async createHold(req: Request, res: Response, next: NextFunction) {
     try {
-      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
-      if (!clientId) {
-        throw new AppError(401, 'UNAUTHORIZED', 'Client authentication required');
-      }
-
       const body = CreateHoldSchema.parse(req.body);
+
+      const clientId = body.clientId;
+
+      if (!clientId) {
+        throw new AppError(400, 'INVALID_REQUEST', 'clientId is required');
+      }
       const request: CreateHoldRequest = {
         quoteId: body.quoteId,
         resources: body.resources,
@@ -300,12 +324,40 @@ export class BookingController {
    * GET /api/v1/booking-holds/:holdId
    * Get hold details
    */
+  // async getHold(req: Request, res: Response, next: NextFunction) {
+  //   try {
+  //     const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
+  //     const { holdId } = req.params as { holdId: string };
+
+  //     const hold = await bookingHoldService.getHold(holdId, clientId);
+
+  //     res.json({
+  //       success: true,
+  //       data: hold,
+  //     });
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // }
+
   async getHold(req: Request, res: Response, next: NextFunction) {
     try {
-      const clientId = (req as any).user?.clientProfileId || (req as any).user?.accountId;
       const { holdId } = req.params as { holdId: string };
+      const actor = (req as any).actor;
 
-      const hold = await bookingHoldService.getHold(holdId, clientId);
+      const isStaff =
+        actor?.actorType === 'STAFF' ||
+        ['ADMIN', 'SUPER_ADMIN', 'RECEPTIONIST'].includes(actor?.role);
+
+      const clientId = actor?.actorType === 'CLIENT'
+        ? actor.actorId
+        : undefined;
+
+      const hold = await bookingHoldService.getHold(
+        holdId,
+        clientId,
+        isStaff
+      );
 
       res.json({
         success: true,
@@ -485,6 +537,7 @@ export class BookingController {
       const body = RescheduleSchema.parse(req.body);
       const request: RescheduleRequest = {
         bookingId,
+        expectedVersion: body.expectedVersion,
         newServices: body.newServices,
         reason: body.reason,
         idempotencyKey: body.idempotencyKey,
@@ -597,9 +650,9 @@ export class BookingController {
   async getAssignmentQueue(req: Request, res: Response, next: NextFunction) {
     try {
       const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
-      
+
       const queue = await bookingService.getAssignmentQueue();
-      
+
       res.json({
         success: true,
         data: queue,
@@ -716,9 +769,9 @@ export class BookingController {
   async getT30Queue(req: Request, res: Response, next: NextFunction) {
     try {
       const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
-      
+
       const queue = await t30ConfirmationService.getT30Queue();
-      
+
       res.json({
         success: true,
         data: queue,
@@ -737,14 +790,14 @@ export class BookingController {
       const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
       const { bookingServiceId } = req.params as { bookingServiceId: string };
       const body = ConfirmProvisionalSchema.parse(req.body);
-      
+
       const request: ConfirmProvisionalRequest = {
         bookingServiceId,
         idempotencyKey: body.idempotencyKey,
       };
-      
+
       const result = await t30ConfirmationService.confirmProvisional(request, staffId);
-      
+
       res.json({
         success: true,
         data: result,
@@ -762,9 +815,9 @@ export class BookingController {
     try {
       const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
       const { bookingServiceId } = req.params as { bookingServiceId: string };
-      
+
       const result = await t30ConfirmationService.markProvisionalException(bookingServiceId, staffId);
-      
+
       res.json({
         success: true,
         data: result,
@@ -781,9 +834,9 @@ export class BookingController {
   async getRecoveryOptions(req: Request, res: Response, next: NextFunction) {
     try {
       const { bookingServiceId } = req.params as { bookingServiceId: string };
-      
+
       const options = await t30ConfirmationService.getRecoveryOptions(bookingServiceId);
-      
+
       res.json({
         success: true,
         data: options,
@@ -802,15 +855,15 @@ export class BookingController {
       const staffId = (req as any).user?.staffProfileId || (req as any).user?.accountId;
       const { bookingServiceId } = req.params as { bookingServiceId: string };
       const body = ResolveUnavailableArtistSchema.parse(req.body);
-      
+
       const request: ResolveUnavailableArtistRequest = {
         bookingServiceId,
         recoveryOption: body.recoveryOption,
         idempotencyKey: body.idempotencyKey,
       };
-      
+
       const result = await t30ConfirmationService.resolveUnavailableArtist(request, staffId);
-      
+
       res.json({
         success: true,
         data: result,

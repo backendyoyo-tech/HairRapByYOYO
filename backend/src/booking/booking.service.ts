@@ -25,6 +25,7 @@ export interface CreateBookingFromHoldRequest {
 
 export interface RescheduleRequest {
   bookingId: string;
+  expectedVersion: number;
   newServices: Array<{
     serviceId: string;
     artistId?: string;
@@ -466,10 +467,11 @@ export class BookingService {
 }
 
   /**
-   * Reschedule booking with optimistic concurrency
+   * Reschedule booking with atomic new-resource-first transaction
+   * Supports advance transfer rules and provisional boundary recalculation
    */
   async rescheduleBooking(request: RescheduleRequest, actorId: string, actorType: 'STAFF' | 'CLIENT') {
-    const { bookingId, newServices, reason, idempotencyKey } = request;
+    const { bookingId, expectedVersion, newServices, reason, idempotencyKey } = request;
 
     // Check idempotency
     const existingKey = await prisma.idempotencyKey.findUnique({ where: { key: idempotencyKey } });
@@ -480,7 +482,11 @@ export class BookingService {
 
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
-      include: { services: true },
+      include: {
+        services: {
+          include: { assignments: true }
+        }
+      },
     });
 
     if (!booking) {
@@ -501,14 +507,33 @@ export class BookingService {
     }
 
     // Optimistic concurrency check
-    if (booking.version !== 1) { // In real impl, pass expected version from client
-      // For now, we just increment version in transaction
+    if (booking.version !== expectedVersion) {
+      throw new AppError(409, 'VERSION_CONFLICT', `Booking version mismatch. Expected ${expectedVersion}, current ${booking.version}`);
     }
 
-    // Validate new slots availability
+    // Validate new slots availability and collect service details
+    const newServiceIds = newServices.map(s => s.serviceId);
+    const newServicesDetails = await prisma.service.findMany({
+      where: { id: { in: newServiceIds } },
+      select: {
+        id: true,
+        name: true,
+        durationMinutes: true,
+        price: true,
+        creativeDirectorEligible: true,
+        requiredArtistCount: true,
+      },
+    });
+
+    if (newServicesDetails.length !== newServiceIds.length) {
+      throw new AppError(404, 'NOT_FOUND', 'One or more services not found');
+    }
+
+    // Validate each new service slot
     for (const newSvc of newServices) {
+      const artistId = newSvc.artistId || '';
       const isAvailable = await availabilityService.validateSlotAvailability(
-        newSvc.artistId || '',
+        artistId,
         newSvc.startAt,
         newSvc.endAt
       );
@@ -517,63 +542,134 @@ export class BookingService {
       }
     }
 
-    // Check if price changes (simplified)
-    const oldTotal = Number(booking.totalPrice);
-    const newServiceIds = newServices.map(s => s.serviceId);
-    const newServicesDetails = await prisma.service.findMany({
-      where: { id: { in: newServiceIds } },
+    // Check for Creative Director advance rule on new services
+    const hasCreativeDirectorService = newServices.some(ns => {
+      const svc = newServicesDetails.find(s => s.id === ns.serviceId);
+      return svc?.creativeDirectorEligible && ns.artistId;
     });
+
+    const oldTotal = Number(booking.totalPrice);
     const newTotal = newServicesDetails.reduce((sum, s) => sum + Number(s.price), 0);
-    const moneyActionRequired = oldTotal !== newTotal;
 
-    // Perform reschedule in transaction
-    await prisma.$transaction(async (tx) => {
-      // Delete old booking services and create new ones
-      await tx.bookingService.deleteMany({ where: { bookingId } });
+    // Determine advance transfer
+    const standardAdvanceAmount = Math.round(oldTotal * 0.2);
+    const creativeDirectorAdvanceAmount = 5000;
+    let advanceTransferApplied = false;
+    let advanceTransferAmount = 0;
 
+    // Check if reschedule is 24+ hours before appointment (advance transfer eligible)
+        const earliestOldStart = booking.services.reduce((min, s) =>
+          s.plannedStartAt < min ? s.plannedStartAt : min, booking.services[0]?.plannedStartAt);
+        const hoursUntilAppointment = (earliestOldStart.getTime() - Date.now()) / (1000 * 60 * 60);
+        const isTimelyReschedule = hoursUntilAppointment >= 24;
+
+        // Check advance transfer count (CAN-001: Transfer only once)
+        const hasTransferRemaining = booking.advanceTransferCount === 0;
+
+        if (isTimelyReschedule && hasTransferRemaining) {
+          if (hasCreativeDirectorService) {
+            // CD advance transfers to new appointment (RESOLVED-BIZ-CD-RESCHEDULE)
+            advanceTransferApplied = true;
+            advanceTransferAmount = creativeDirectorAdvanceAmount;
+          } else {
+            // Standard 20% advance transfers once
+            advanceTransferApplied = true;
+            advanceTransferAmount = standardAdvanceAmount;
+          }
+        }
+
+    // Snapshot old services for history
+    const oldServicesSnapshot = booking.services.map(s => ({
+      serviceId: s.serviceId,
+      plannedStartAt: s.plannedStartAt,
+      plannedEndAt: s.plannedEndAt,
+      artistId: s.assignments[0]?.artistId,
+      assignmentStatus: s.assignmentStatus,
+      artistConfirmationState: s.artistConfirmationState,
+    }));
+
+    // Perform atomic reschedule transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // 1. Create NEW booking services FIRST (new-resource-first)
       for (const newSvc of newServices) {
         const service = newServicesDetails.find(s => s.id === newSvc.serviceId);
+        const requiredArtistCount = service?.requiredArtistCount || 1;
+        
+        // Determine assignment status and artist confirmation state for new service
+        let assignmentStatus: 'AWAITING_ASSIGNMENT' | 'PARTIALLY_ASSIGNED' | 'FULLY_ASSIGNED' = 'AWAITING_ASSIGNMENT';
+        let artistConfirmationState: 'NONE' | 'PROVISIONAL' | 'FINAL' = 'NONE';
+        
+        if (newSvc.artistId) {
+          // Specific artist requested
+          const daysUntilNew = (newSvc.startAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24);
+          if (daysUntilNew <= 30) {
+            artistConfirmationState = 'FINAL';
+          } else {
+            artistConfirmationState = 'PROVISIONAL';
+          }
+          
+          // Check if artist is already assigned (carry over for same artist)
+          const existingAssignment = booking.services.flatMap(s => s.assignments)
+            .find(a => a.artistId === newSvc.artistId && a.status === 'CONFIRMED');
+          if (existingAssignment) {
+            assignmentStatus = requiredArtistCount === 1 ? 'FULLY_ASSIGNED' : 'PARTIALLY_ASSIGNED';
+          }
+        }
+
         await tx.bookingService.create({
           data: {
             bookingId,
             serviceId: newSvc.serviceId,
-            assignmentStrategy: 'AUTO_ASSIGN',
+            assignmentStrategy: newSvc.artistId ? 'SPECIFIC_ARTIST' : 'AUTO_ASSIGN',
             requestedArtistId: newSvc.artistId,
             plannedStartAt: newSvc.startAt,
             plannedEndAt: newSvc.endAt,
             bufferMinutes: newSvc.bufferMinutes || 10,
-            priceSnapshot: service?.price || 0,
+            priceSnapshot: service ? Number(service.price) : 0,
+            assignmentStatus,
+            artistConfirmationState,
+            requiredArtistCount,
           },
         });
       }
 
-      // Update booking totals and version
+      // 2. Release OLD resources (delete old booking services - releases capacity)
+      await tx.bookingService.deleteMany({ where: { bookingId } });
+
+      // 3. Update booking totals and version
       await tx.booking.update({
         where: { id: bookingId },
         data: {
           totalPrice: newTotal,
-          totalAdvanceRequired: moneyActionRequired
-            ? Math.round(newTotal * 0.2)
-            : booking.totalAdvanceRequired,
+          totalAdvanceRequired: advanceTransferApplied ? 0 : booking.totalAdvanceRequired,
+          advanceTransferCount: advanceTransferApplied ? { increment: 1 } : undefined,
           version: { increment: 1 },
         },
       });
 
-      // Record reschedule history
+      // 4. Record reschedule history
       await tx.bookingRescheduleHistory.create({
         data: {
           bookingId,
           reason,
-          oldServicesJson: booking.services,
-          newServicesJson: newServices,
-          moneyActionRequired,
+          oldServicesJson: oldServicesSnapshot,
+          newServicesJson: newServices.map(ns => ({
+            serviceId: ns.serviceId,
+            artistId: ns.artistId,
+            startAt: ns.startAt,
+            endAt: ns.endAt,
+            bufferMinutes: ns.bufferMinutes || 10,
+          })),
+          moneyActionRequired: oldTotal !== newTotal,
+          advanceTransferApplied,
+          advanceTransferAmount,
           actorType,
           actorId,
           idempotencyKey,
         },
       });
 
-      // Record status history if needed
+      // 5. Record status history (status unchanged, but log the reschedule)
       await tx.bookingStatusHistory.create({
         data: {
           bookingId,
@@ -581,12 +677,23 @@ export class BookingService {
           toStatus: booking.status,
           actorType,
           actorId,
-          reason: `Rescheduled: ${reason}`,
+          event: 'RESCHEDULE',
+          reason,
+          idempotencyKey,
         },
       });
+
+      return {
+        bookingId,
+        status: booking.status,
+        totalPrice: newTotal,
+        advanceTransferApplied,
+        advanceTransferAmount,
+        oldServices: oldServicesSnapshot,
+      };
     });
 
-    // Record idempotency
+    // Record idempotency key
     await prisma.idempotencyKey.create({
       data: {
         key: idempotencyKey,
@@ -594,12 +701,30 @@ export class BookingService {
         method: 'POST',
         requestHash: this.hashRequest(request),
         responseStatus: 200,
-        responseBody: { success: true },
+        responseBody: result,
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       },
     });
 
-    return { success: true, moneyActionRequired };
+    // Publish BOOKING_RESCHEDULED event
+    await this.publishEvent('BOOKING_RESCHEDULED', {
+      bookingId,
+      actorId,
+      actorType,
+      oldSchedule: oldServicesSnapshot,
+      newSchedule: newServices.map(ns => ({
+        serviceId: ns.serviceId,
+        artistId: ns.artistId,
+        startAt: ns.startAt,
+        endAt: ns.endAt,
+      })),
+      advanceTransferApplied,
+      advanceTransferAmount,
+      reason,
+      idempotencyKey,
+    });
+
+    return { success: true, data: result };
   }
 
   /**
